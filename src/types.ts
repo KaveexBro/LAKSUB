@@ -4,6 +4,9 @@ export interface VideoDownloadOption {
   resolution: '480p' | '720p' | '1080p';
   sourceName: string; // e.g. "Telegram", "Pixeldrain"
   url: string;
+  videoType?: string;
+  videoSize?: string;
+  additionalDetails?: string;
 }
 
 export interface Subtitle {

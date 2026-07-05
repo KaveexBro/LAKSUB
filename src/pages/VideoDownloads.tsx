@@ -153,7 +153,18 @@ export const VideoDownloads: React.FC = () => {
                             <h3 className="text-lg font-semibold text-gray-400">{res}</h3>
                             {rawGrouped[res].map(link => (
                               <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-4 bg-[#2a2a2a] hover:bg-[#333333] rounded-xl border border-white/5 transition-all group">
-                                <span className="font-bold text-lg">{link.sourceName}</span>
+                                <div className="flex flex-col">
+                                  <span className="font-bold text-lg">{link.sourceName}</span>
+                                  {(link.videoType || link.videoSize || link.additionalDetails) && (
+                                    <span className="text-xs text-gray-400 mt-1 flex items-center gap-2">
+                                      {link.videoType && <span>{link.videoType}</span>}
+                                      {link.videoType && (link.videoSize || link.additionalDetails) && <span>•</span>}
+                                      {link.videoSize && <span>{link.videoSize}</span>}
+                                      {link.videoSize && link.additionalDetails && <span>•</span>}
+                                      {link.additionalDetails && <span>{link.additionalDetails}</span>}
+                                    </span>
+                                  )}
+                                </div>
                                 <Download className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
                               </a>
                             ))}
@@ -179,7 +190,18 @@ export const VideoDownloads: React.FC = () => {
                             <h3 className="text-lg font-semibold text-gray-400">{res}</h3>
                             {hcGrouped[res].map(link => (
                               <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-4 bg-[#2a2a2a] hover:bg-[#333333] rounded-xl border border-white/5 transition-all group">
-                                <span className="font-bold text-lg">{link.sourceName}</span>
+                                <div className="flex flex-col">
+                                  <span className="font-bold text-lg">{link.sourceName}</span>
+                                  {(link.videoType || link.videoSize || link.additionalDetails) && (
+                                    <span className="text-xs text-gray-400 mt-1 flex items-center gap-2">
+                                      {link.videoType && <span>{link.videoType}</span>}
+                                      {link.videoType && (link.videoSize || link.additionalDetails) && <span>•</span>}
+                                      {link.videoSize && <span>{link.videoSize}</span>}
+                                      {link.videoSize && link.additionalDetails && <span>•</span>}
+                                      {link.additionalDetails && <span>{link.additionalDetails}</span>}
+                                    </span>
+                                  )}
+                                </div>
                                 <Download className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
                               </a>
                             ))}
