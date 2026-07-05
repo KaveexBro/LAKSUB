@@ -1,0 +1,312 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && (
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin') ||
+        (request.auth.token.email == "kaveexbro@gmail.com" && request.auth.token.email_verified == true)
+      );
+    }
+
+    function isCreator() {
+      return isAuthenticated() && (
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'creator') ||
+        isAdmin()
+      );
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+    function isValidUser(data) {
+      return data.uid is string && data.uid.size() > 0 &&
+             data.email is string && data.email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$") &&
+             data.role in ['admin', 'creator', 'user'] &&
+             data.walletBalance is number && data.walletBalance >= 0 &&
+             data.dailyDownloadCount is number && data.dailyDownloadCount >= 0 &&
+             data.totalUploads is number && data.totalUploads >= 0 &&
+             data.totalDownloads is number && data.totalDownloads >= 0 &&
+             data.isEligibleForMonetization is bool &&
+             data.monetizationStatus in ['locked', 'pending_review', 'approved'] &&
+             (!('watchlist' in data) || data.watchlist is list) &&
+             (!('watched' in data) || data.watched is list) &&
+             (!('seriesWatchlist' in data) || data.seriesWatchlist is list);
+    }
+
+    function isValidSubtitle(data) {
+      return data.type in ['movie', 'series'] &&
+             (!('season' in data) || (data.season is number && data.season > 0)) &&
+             (!('episode' in data) || (data.episode is number && data.episode > 0)) &&
+             data.movieTitle is string && data.movieTitle.size() > 0 && data.movieTitle.size() < 100 &&
+             data.releaseYear is number && data.releaseYear > 1900 && data.releaseYear < 2100 &&
+             data.language is string && data.language.size() > 0 && data.language.size() < 50 &&
+             data.genres is list && data.genres.size() > 0 && data.genres.size() < 20 &&
+             data.description is string && data.description.size() < 50000 &&
+             data.downloadLink is string && (data.downloadLink.matches("^https://.*") || data.downloadLink.matches("^http://.*")) &&
+             (!('watchOnlineLink' in data) || (data.watchOnlineLink is string && (data.watchOnlineLink.matches("^https://.*") || data.watchOnlineLink.matches("^http://.*")))) &&
+             (!('telegramLink' in data) || data.telegramLink is string) &&
+             data.authorUid is string && data.authorUid == request.auth.uid &&
+             data.slug is string && data.slug.size() > 0 &&
+             (!('isAdult' in data) || data.isAdult is bool) &&
+             data.authorName is string && data.authorName.size() > 0 && data.authorName.size() < 100 &&
+             (!('authorPhoto' in data) || data.authorPhoto == null || data.authorPhoto is string) &&
+             data.averageRating is number && data.averageRating >= 0 && data.averageRating <= 5 &&
+             data.ratingCount is number && data.ratingCount >= 0 &&
+             (!('downloadCount' in data) || (data.downloadCount is number && data.downloadCount >= 0)) &&
+             (!('tmdbId' in data) || (data.tmdbId is number)) &&
+             (!('posterPath' in data) || (data.posterPath is string)) &&
+             (!('backdropPath' in data) || (data.backdropPath is string)) &&
+             (!('proOnlyUntil' in data) || (data.proOnlyUntil is string)) &&
+             (!('parentalRating' in data) || (data.parentalRating is string)) &&
+             (!('parentalDescription' in data) || (data.parentalDescription is string)) &&
+             (!('parentsGuide' in data) || (data.parentsGuide is map)) &&
+             data.status in ['pending', 'approved'] &&
+             data.createdAt is string;
+    }
+
+    function isValidRating(data) {
+      return data.userId is string && data.userId == request.auth.uid &&
+             data.subtitleId is string && data.subtitleId.size() > 0 &&
+             data.rating is number && data.rating >= 1 && data.rating <= 5;
+    }
+
+    function isValidApplication(data) {
+      return data.userId is string && data.userId == request.auth.uid &&
+             data.userName is string && data.userName.size() > 0 && data.userName.size() < 100 &&
+             data.contactInfo is string && data.contactInfo.size() > 0 && data.contactInfo.size() < 100 &&
+             data.status in ['pending', 'approved', 'rejected'] &&
+             data.message is string && data.message.size() < 1000 &&
+             data.createdAt is string;
+    }
+
+    function isValidWithdrawal(data) {
+      return data.userId is string && data.userId == request.auth.uid &&
+             data.userName is string && data.userName.size() > 0 && data.userName.size() < 100 &&
+             data.amount is number && data.amount > 0 &&
+             data.status in ['pending', 'paid'] &&
+             data.requestedAt is string;
+    }
+
+    function isValidDownload(data) {
+      return data.userId is string && data.userId == request.auth.uid &&
+             data.subtitleId is string && data.subtitleId.size() > 0 &&
+             data.creatorId is string && data.creatorId.size() > 0 &&
+             data.downloadedAt is string;
+    }
+
+    function isValidReport(data) {
+      return data.subtitleId is string && data.subtitleId.size() > 0 &&
+             data.subtitleTitle is string && data.subtitleTitle.size() > 0 &&
+             data.userId is string && data.userId == request.auth.uid &&
+             data.userName is string && data.userName.size() > 0 &&
+             data.reason in ['broken_link', 'inappropriate', 'wrong_content', 'other'] &&
+             data.message is string && data.message.size() < 2000 &&
+             data.status in ['pending', 'resolved'] &&
+             data.createdAt is string;
+    }
+
+    function isValidSetting(settingId, data) {
+      return (settingId == 'ads' &&
+              data.adType in ['adsterra', 'direct', 'none'] &&
+              (!('directImageUrl' in data) || data.directImageUrl is string) &&
+              (!('directLinkUrl' in data) || data.directLinkUrl is string) &&
+              data.updatedAt is string) ||
+             (settingId != 'ads' &&
+              data.enabled is bool &&
+              data.updatedAt is string);
+    }
+
+    function isValidSubtitleRequest(data) {
+      return data.userId is string && data.userId == request.auth.uid &&
+             data.userName is string && data.userName.size() > 0 &&
+             data.isPro is bool &&
+             data.title is string && data.title.size() > 0 && data.title.size() < 100 &&
+             data.type in ['movie', 'series'] &&
+             (!('year' in data) || data.year == null || data.year is number) &&
+             (!('additionalInfo' in data) || data.additionalInfo is string) &&
+             data.status in ['pending', 'in_progress', 'completed', 'rejected'] &&
+             data.createdAt is string;
+    }
+
+    function isValidNotification(data) {
+      return data.userId is string && data.userId.size() > 0 &&
+             data.title is string && data.title.size() > 0 &&
+             data.message is string && data.message.size() > 0 &&
+             data.type in ['system', 'rating', 'approval', 'general', 'comment'] &&
+             data.read is bool &&
+             data.createdAt is string &&
+             (!('link' in data) || data.link is string);
+    }
+
+    function isValidComment(data) {
+      return data.subtitleId is string && data.subtitleId.size() > 0 &&
+             data.userId is string && data.userId == request.auth.uid &&
+             data.userName is string && data.userName.size() > 0 &&
+             (!('userPhoto' in data) || data.userPhoto == null || data.userPhoto is string) &&
+             data.content is string && data.content.size() > 0 && data.content.size() < 2000 &&
+             data.createdAt is string &&
+             (!('parentId' in data) || data.parentId is string) &&
+             (!('likesCount' in data) || data.likesCount is number) &&
+             (!('likedBy' in data) || data.likedBy is list) &&
+             (!('rootUserId' in data) || data.rootUserId is string);
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+    
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidSetting(settingId, request.resource.data);
+    }
+
+    match /users/{userId} {
+      allow read: if true;
+      allow create: if isOwner(userId) && isValidUser(request.resource.data) && 
+                    ((request.resource.data.role == 'user' && 
+                      request.resource.data.walletBalance == 0 &&
+                      request.resource.data.totalUploads == 0 &&
+                      request.resource.data.totalDownloads == 0 &&
+                      request.resource.data.isEligibleForMonetization == false &&
+                      request.resource.data.monetizationStatus == 'locked') || isAdmin());
+      allow update: if (isOwner(userId) && isValidUser(request.resource.data) && 
+                        request.resource.data.role == resource.data.role && 
+                        request.resource.data.walletBalance == resource.data.walletBalance &&
+                        request.resource.data.proExpiry == resource.data.proExpiry &&
+                        request.resource.data.totalUploads == resource.data.totalUploads &&
+                        request.resource.data.totalDownloads == resource.data.totalDownloads &&
+                        request.resource.data.isEligibleForMonetization == resource.data.isEligibleForMonetization) || 
+                       isAdmin() ||
+                       // Allow creators to apply for monetization
+                       (isOwner(userId) && 
+                        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['monetizationStatus']) &&
+                        request.resource.data.monetizationStatus == 'pending_review' &&
+                        resource.data.monetizationStatus == 'locked') ||
+                       // Allow incrementing totalUploads when a subtitle is approved (this would usually be a cloud function)
+                       // Since we don't have cloud functions, we'll allow the admin to do it, or the system to do it via admin client
+                       // Allow incrementing totalDownloads when a subtitle is downloaded
+                       (isAuthenticated() && 
+                        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['totalDownloads']) &&
+                        request.resource.data.totalDownloads == resource.data.get('totalDownloads', 0) + 1) ||
+                       // Allow users to update their own dailyDownloadCount and lastDownloadResetDate
+                       (isOwner(userId) && 
+                        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['dailyDownloadCount', 'lastDownloadResetDate']) &&
+                        isValidUser(request.resource.data)) ||
+                       // Allow users to update their own watchlist and watched lists
+                       (isOwner(userId) && 
+                        request.resource.data.diff(resource.data).affectedKeys().hasAny(['watchlist', 'watched', 'seriesWatchlist']) &&
+                        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['watchlist', 'watched', 'seriesWatchlist']) &&
+                        isValidUser(request.resource.data));
+    }
+
+    match /subtitles/{subtitleId} {
+      allow read: if true;
+      allow create: if isCreator() && isValidSubtitle(request.resource.data) && 
+                    request.resource.data.averageRating == 0 && request.resource.data.ratingCount == 0;
+      allow update: if (isCreator() && request.auth.uid == resource.data.authorUid && isValidSubtitle(request.resource.data) &&
+                        request.resource.data.averageRating == resource.data.averageRating &&
+                        request.resource.data.ratingCount == resource.data.ratingCount &&
+                        (!('downloadCount' in request.resource.data) || request.resource.data.downloadCount == resource.data.get('downloadCount', 0)) &&
+                        request.resource.data.authorUid == resource.data.authorUid) ||
+                       isAdmin() ||
+                       // Allow users to update rating count and average rating securely (in a real app this should be a cloud function, but we'll allow it here with strict checks if needed, or just let users update it if they are authenticated and it's a valid change. Actually, to be safe, only allow rating updates via cloud functions, but since we don't have them, we will allow authenticated users to update ONLY the rating fields).
+                       (isAuthenticated() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['averageRating', 'ratingCount']) &&
+                        request.resource.data.ratingCount == resource.data.ratingCount + 1) ||
+                       // Allow users to increment download count
+                       (isAuthenticated() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['downloadCount']) &&
+                        request.resource.data.downloadCount == resource.data.get('downloadCount', 0) + 1);
+      allow delete: if isAdmin();
+    }
+
+    match /ratings/{ratingId} {
+      allow read: if true;
+      allow create: if isAuthenticated() && isValidRating(request.resource.data);
+      allow update: if isAuthenticated() && isValidRating(request.resource.data) && request.resource.data.userId == resource.data.userId;
+      allow delete: if isAdmin() || (isAuthenticated() && request.auth.uid == resource.data.userId);
+    }
+
+    match /comments/{commentId} {
+      allow read: if true;
+      allow create: if isAuthenticated() && isValidComment(request.resource.data);
+      allow update: if (isAuthenticated() && request.auth.uid == resource.data.userId && isValidComment(request.resource.data)) ||
+                   isAdmin() ||
+                   (isAuthenticated() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likesCount', 'likedBy']));
+      allow delete: if isAdmin() || (isAuthenticated() && request.auth.uid == resource.data.userId) || (isAuthenticated() && 'rootUserId' in resource.data && request.auth.uid == resource.data.rootUserId);
+    }
+
+    match /applications/{applicationId} {
+      allow read: if isOwner(resource.data.userId) || isAdmin();
+      allow create: if isAuthenticated() && isValidApplication(request.resource.data) && request.resource.data.status == 'pending';
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /withdrawals/{withdrawalId} {
+      allow read: if isOwner(resource.data.userId) || isAdmin();
+      allow create: if isCreator() && isValidWithdrawal(request.resource.data) && request.resource.data.status == 'pending';
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /downloads/{downloadId} {
+      allow read: if isOwner(resource.data.userId) || isAdmin();
+      allow create: if isAuthenticated() && 
+                    downloadId == request.auth.uid + '_' + request.resource.data.subtitleId &&
+                    isValidDownload(request.resource.data);
+      allow update: if false;
+      allow delete: if isAdmin();
+    }
+
+    match /reports/{reportId} {
+      allow read: if isAdmin();
+      allow create: if isAuthenticated() && isValidReport(request.resource.data) && request.resource.data.status == 'pending';
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /requests/{requestId} {
+      allow read: if isOwner(resource.data.userId) || isAdmin();
+      allow create: if isAuthenticated() && 
+                    isValidSubtitleRequest(request.resource.data) && 
+                    request.resource.data.status == 'pending' &&
+                    (
+                      isAdmin() || 
+                      (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+                       get(/databases/$(database)/documents/users/$(request.auth.uid)).data.proExpiry != null)
+                    );
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /ad_campaigns/{campaignId} {
+      allow read: if true;
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /notifications/{notificationId} {
+      allow read: if isOwner(resource.data.userId) || isAdmin();
+      allow create: if isAuthenticated() && isValidNotification(request.resource.data);
+      allow update: if isOwner(resource.data.userId) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']) && request.resource.data.read == true;
+      allow delete: if isOwner(resource.data.userId) || isAdmin();
+    }
+  }
+}

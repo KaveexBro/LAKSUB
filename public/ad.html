@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Advertisement</title>
+    <style>
+      body { margin: 0; padding: 0; background: transparent; text-align: center; overflow: hidden; }
+      #container-f5e137937cb2a9763d7aae7c0378ee0b { display: inline-block; margin: 0 auto; width: 100%; min-height: 250px; }
+    </style>
+  </head>
+  <body>
+    <script async="async" data-cfasync="false" src="https://pl30103728.effectivecpmnetwork.com/f5e137937cb2a9763d7aae7c0378ee0b/invoke.js"></script>
+    <div id="container-f5e137937cb2a9763d7aae7c0378ee0b"></div>
+    <script>
+      const observer = new ResizeObserver(entries => {
+        for (let entry of entries) {
+           if (window.parent) {
+             window.parent.postMessage({ 
+               type: 'resize', 
+               height: document.body.scrollHeight, 
+               id: window.name
+             }, '*');
+           }
+        }
+      });
+      observer.observe(document.body);
+      
+      setInterval(() => {
+        if (window.parent) {
+          window.parent.postMessage({ 
+            type: 'resize', 
+            height: document.body.scrollHeight, 
+            id: window.name 
+          }, '*');
+        }
+      }, 2000);
+    </script>
+  </body>
+</html>

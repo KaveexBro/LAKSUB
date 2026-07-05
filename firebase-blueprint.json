@@ -1,0 +1,168 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile containing role, pro status, and wallet balance.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "creator", "user"] },
+        "proExpiry": { "type": "string", "format": "date-time" },
+        "walletBalance": { "type": "number" },
+        "dailyDownloadCount": { "type": "number" },
+        "lastDownloadResetDate": { "type": "string" },
+        "totalUploads": { "type": "number" },
+        "totalDownloads": { "type": "number" },
+        "isEligibleForMonetization": { "type": "boolean" },
+        "monetizationStatus": { "type": "string", "enum": ["locked", "pending_review", "approved"] },
+        "watchlist": { "type": "array", "items": { "type": "string" } },
+        "watched": { "type": "array", "items": { "type": "string" } },
+        "seriesWatchlist": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["uid", "email", "role", "walletBalance", "dailyDownloadCount", "totalUploads", "totalDownloads", "isEligibleForMonetization", "monetizationStatus"]
+    },
+    "Subtitle": {
+      "title": "Subtitle",
+      "description": "A subtitle uploaded by a creator.",
+      "type": "object",
+      "properties": {
+        "movieTitle": { "type": "string" },
+        "releaseYear": { "type": "number" },
+        "language": { "type": "string" },
+        "genre": { "type": "string" },
+        "description": { "type": "string" },
+        "downloadLink": { "type": "string" },
+        "watchOnlineLink": { "type": "string" },
+        "authorUid": { "type": "string" },
+        "authorName": { "type": "string" },
+        "authorPhoto": { "type": "string" },
+        "averageRating": { "type": "number" },
+        "ratingCount": { "type": "number" },
+        "proOnlyUntil": { "type": "string", "format": "date-time" },
+        "parentalRating": { "type": "string" },
+        "parentalDescription": { "type": "string" },
+        "parentsGuide": {
+          "type": "object",
+          "properties": {
+            "sex": { "type": "object", "properties": { "severity": { "type": "string" }, "description": { "type": "string" } } },
+            "violence": { "type": "object", "properties": { "severity": { "type": "string" }, "description": { "type": "string" } } },
+            "profanity": { "type": "object", "properties": { "severity": { "type": "string" }, "description": { "type": "string" } } },
+            "alcohol": { "type": "object", "properties": { "severity": { "type": "string" }, "description": { "type": "string" } } },
+            "frightening": { "type": "object", "properties": { "severity": { "type": "string" }, "description": { "type": "string" } } }
+          }
+        },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["movieTitle", "releaseYear", "language", "genre", "description", "downloadLink", "authorUid", "authorName", "averageRating", "ratingCount", "createdAt"]
+    },
+    "Rating": {
+      "title": "Rating",
+      "description": "A user's rating for a subtitle.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "subtitleId": { "type": "string" },
+        "rating": { "type": "number" }
+      },
+      "required": ["userId", "subtitleId", "rating"]
+    },
+    "Application": {
+      "title": "Application",
+      "description": "Creator application request.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "message": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "userName", "status", "message", "createdAt"]
+    },
+    "Withdrawal": {
+      "title": "Withdrawal",
+      "description": "Creator withdrawal request.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "amount": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "paid"] },
+        "requestedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "userName", "amount", "status", "requestedAt"]
+    },
+    "Settings": {
+      "title": "Settings",
+      "description": "Global application settings.",
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["enabled", "updatedAt"]
+    },
+    "AdSettings": {
+      "title": "AdSettings",
+      "description": "Global ad management settings.",
+      "type": "object",
+      "properties": {
+        "adType": { "type": "string", "enum": ["adsterra", "direct", "none"] },
+        "directImageUrl": { "type": "string" },
+        "directLinkUrl": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["adType", "updatedAt"]
+    },
+    "SubtitleRequest": {
+      "title": "SubtitleRequest",
+      "description": "A request for a subtitle from a Pro member.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "isPro": { "type": "boolean" },
+        "title": { "type": "string" },
+        "type": { "type": "string", "enum": ["movie", "series"] },
+        "year": { "type": "number" },
+        "additionalInfo": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "in_progress", "completed", "rejected"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "userName", "isPro", "title", "type", "status", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Stores user profiles."
+    },
+    "/subtitles/{subtitleId}": {
+      "schema": { "$ref": "#/entities/Subtitle" },
+      "description": "Stores subtitle entries."
+    },
+    "/ratings/{ratingId}": {
+      "schema": { "$ref": "#/entities/Rating" },
+      "description": "Stores user ratings for subtitles."
+    },
+    "/applications/{applicationId}": {
+      "schema": { "$ref": "#/entities/Application" },
+      "description": "Stores creator applications."
+    },
+    "/withdrawals/{withdrawalId}": {
+      "schema": { "$ref": "#/entities/Withdrawal" },
+      "description": "Stores withdrawal requests."
+    },
+    "/settings/{settingId}": {
+      "schema": { "$ref": "#/entities/Settings" },
+      "description": "Stores global application settings."
+    },
+    "/requests/{requestId}": {
+      "schema": { "$ref": "#/entities/SubtitleRequest" },
+      "description": "Stores subtitle requests from Pro members."
+    }
+  }
+}
