@@ -1,3 +1,11 @@
+export interface VideoDownloadOption {
+  id: string;
+  type: 'raw' | 'hardcoded';
+  resolution: '480p' | '720p' | '1080p';
+  sourceName: string; // e.g. "Telegram", "Pixeldrain"
+  url: string;
+}
+
 export interface Subtitle {
   id: string;
   slug?: string;
@@ -12,18 +20,7 @@ export interface Subtitle {
   downloadLink: string;
   telegramLink?: string;
   watchOnlineLink?: string;
-  videoLinks?: {
-    raw?: {
-      p480?: string;
-      p720?: string;
-      p1080?: string;
-    };
-    hardcoded?: {
-      p480?: string;
-      p720?: string;
-      p1080?: string;
-    };
-  };
+  videoOptions?: VideoDownloadOption[];
   authorUid: string;
   authorName: string;
   authorPhoto?: string;

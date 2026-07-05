@@ -76,10 +76,27 @@ export const VideoDownloads: React.FC = () => {
 
   const fullTitle = `${subtitle.movieTitle} ${subtitle.type === 'series' ? `S${subtitle.season?.toString().padStart(2, '0')} E${subtitle.episode?.toString().padStart(2, '0')}` : ''}`.trim();
 
-  const hasVideoLinks = subtitle.videoLinks && (
-    subtitle.videoLinks.raw?.p480 || subtitle.videoLinks.raw?.p720 || subtitle.videoLinks.raw?.p1080 ||
-    subtitle.videoLinks.hardcoded?.p480 || subtitle.videoLinks.hardcoded?.p720 || subtitle.videoLinks.hardcoded?.p1080
-  );
+  const hasVideoLinks = subtitle.videoOptions && subtitle.videoOptions.length > 0;
+  
+  const rawLinks = subtitle.videoOptions?.filter(o => o.type === 'raw') || [];
+  const hardcodedLinks = subtitle.videoOptions?.filter(o => o.type === 'hardcoded') || [];
+
+  const groupByResolution = (links: typeof rawLinks) => {
+    const grouped: Record<string, typeof rawLinks> = {
+      '480p': [],
+      '720p': [],
+      '1080p': []
+    };
+    links.forEach(link => {
+      if (grouped[link.resolution]) {
+        grouped[link.resolution].push(link);
+      }
+    });
+    return grouped;
+  };
+
+  const rawGrouped = groupByResolution(rawLinks);
+  const hcGrouped = groupByResolution(hardcodedLinks);
 
   return (
     <>
@@ -113,63 +130,53 @@ export const VideoDownloads: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
                 
                 {/* Raw Video Links */}
-                {(subtitle.videoLinks?.raw?.p480 || subtitle.videoLinks?.raw?.p720 || subtitle.videoLinks?.raw?.p1080) && (
+                {rawLinks.length > 0 && (
                   <div className="space-y-6">
                     <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
                       <Video className="w-6 h-6 text-blue-400" />
                       <h2 className="text-2xl font-bold">Video (Raw)</h2>
                     </div>
                     
-                    <div className="space-y-4">
-                      {subtitle.videoLinks.raw.p480 && (
-                        <a href={subtitle.videoLinks.raw.p480} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-4 bg-[#2a2a2a] hover:bg-[#333333] rounded-xl border border-white/5 transition-all group">
-                          <span className="font-bold text-lg">480p</span>
-                          <Download className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
-                        </a>
-                      )}
-                      {subtitle.videoLinks.raw.p720 && (
-                        <a href={subtitle.videoLinks.raw.p720} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-4 bg-[#2a2a2a] hover:bg-[#333333] rounded-xl border border-white/5 transition-all group">
-                          <span className="font-bold text-lg">720p</span>
-                          <Download className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
-                        </a>
-                      )}
-                      {subtitle.videoLinks.raw.p1080 && (
-                        <a href={subtitle.videoLinks.raw.p1080} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-4 bg-[#2a2a2a] hover:bg-[#333333] rounded-xl border border-white/5 transition-all group">
-                          <span className="font-bold text-lg">1080p</span>
-                          <Download className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
-                        </a>
-                      )}
+                    <div className="space-y-6">
+                      {['480p', '720p', '1080p'].map(res => (
+                        rawGrouped[res].length > 0 && (
+                          <div key={res} className="space-y-2">
+                            <h3 className="text-lg font-semibold text-gray-400">{res}</h3>
+                            {rawGrouped[res].map(link => (
+                              <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-4 bg-[#2a2a2a] hover:bg-[#333333] rounded-xl border border-white/5 transition-all group">
+                                <span className="font-bold text-lg">{link.sourceName}</span>
+                                <Download className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
+                              </a>
+                            ))}
+                          </div>
+                        )
+                      ))}
                     </div>
                   </div>
                 )}
                 
                 {/* Hardcoded Video Links */}
-                {(subtitle.videoLinks?.hardcoded?.p480 || subtitle.videoLinks?.hardcoded?.p720 || subtitle.videoLinks?.hardcoded?.p1080) && (
+                {hardcodedLinks.length > 0 && (
                   <div className="space-y-6">
                     <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
                       <MonitorPlay className="w-6 h-6 text-green-400" />
                       <h2 className="text-2xl font-bold">Subtitle Hardcoded Video</h2>
                     </div>
                     
-                    <div className="space-y-4">
-                      {subtitle.videoLinks.hardcoded.p480 && (
-                        <a href={subtitle.videoLinks.hardcoded.p480} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-4 bg-[#2a2a2a] hover:bg-[#333333] rounded-xl border border-white/5 transition-all group">
-                          <span className="font-bold text-lg">480p</span>
-                          <Download className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
-                        </a>
-                      )}
-                      {subtitle.videoLinks.hardcoded.p720 && (
-                        <a href={subtitle.videoLinks.hardcoded.p720} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-4 bg-[#2a2a2a] hover:bg-[#333333] rounded-xl border border-white/5 transition-all group">
-                          <span className="font-bold text-lg">720p</span>
-                          <Download className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
-                        </a>
-                      )}
-                      {subtitle.videoLinks.hardcoded.p1080 && (
-                        <a href={subtitle.videoLinks.hardcoded.p1080} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-4 bg-[#2a2a2a] hover:bg-[#333333] rounded-xl border border-white/5 transition-all group">
-                          <span className="font-bold text-lg">1080p</span>
-                          <Download className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
-                        </a>
-                      )}
+                    <div className="space-y-6">
+                      {['480p', '720p', '1080p'].map(res => (
+                        hcGrouped[res].length > 0 && (
+                          <div key={res} className="space-y-2">
+                            <h3 className="text-lg font-semibold text-gray-400">{res}</h3>
+                            {hcGrouped[res].map(link => (
+                              <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-4 bg-[#2a2a2a] hover:bg-[#333333] rounded-xl border border-white/5 transition-all group">
+                                <span className="font-bold text-lg">{link.sourceName}</span>
+                                <Download className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
+                              </a>
+                            ))}
+                          </div>
+                        )
+                      ))}
                     </div>
                   </div>
                 )}

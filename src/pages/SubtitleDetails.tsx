@@ -1225,7 +1225,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                         </button>
                       )}
                     </div>
-                    {(subtitle.videoLinks?.raw?.p480 || subtitle.videoLinks?.raw?.p720 || subtitle.videoLinks?.raw?.p1080 || subtitle.videoLinks?.hardcoded?.p480 || subtitle.videoLinks?.hardcoded?.p720 || subtitle.videoLinks?.hardcoded?.p1080) && (
+                    {(subtitle.videoOptions && subtitle.videoOptions.length > 0) && (
                       <Link href={subtitle.slug ? `/subtitles/${subtitle.slug}/video` : `/subtitle/${subtitle.id}/video`}>
                         <button className="btn-secondary w-full sm:w-auto flex items-center justify-center gap-2 font-bold bg-[#1a1a1a] hover:bg-[#2a2a2a] text-white border-0 py-3 rounded-lg shadow-lg">
                           <Video className="w-5 h-5" /> Download Video

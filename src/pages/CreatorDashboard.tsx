@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
 import { collection, addDoc, query, where, getDocs, orderBy, updateDoc, doc, deleteDoc, getDoc, writeBatch, increment } from 'firebase/firestore';
-import { Subtitle, Withdrawal } from '../types';
-import { Plus, DollarSign, Upload, AlertCircle, CheckCircle2, Edit, Trash2, Download, Search, Film, Tv, ShieldCheck } from 'lucide-react';
+import { Subtitle, Withdrawal, VideoDownloadOption } from '../types';
+import { Plus, DollarSign, Upload, AlertCircle, CheckCircle2, Edit, Trash2, Download, Search, Film, Tv, ShieldCheck, X } from 'lucide-react';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import { EditSubtitleModal } from '../components/EditSubtitleModal';
@@ -36,12 +36,26 @@ export const CreatorDashboard: React.FC = () => {
   const [downloadLink, setDownloadLink] = useState('');
   const [telegramLink, setTelegramLink] = useState('');
   const [watchOnlineLink, setWatchOnlineLink] = useState('');
-  const [videoRaw480p, setVideoRaw480p] = useState('');
-  const [videoRaw720p, setVideoRaw720p] = useState('');
-  const [videoRaw1080p, setVideoRaw1080p] = useState('');
-  const [videoHc480p, setVideoHc480p] = useState('');
-  const [videoHc720p, setVideoHc720p] = useState('');
-  const [videoHc1080p, setVideoHc1080p] = useState('');
+  const [videoOptions, setVideoOptions] = useState<VideoDownloadOption[]>([]);
+
+  const addVideoOption = () => {
+    setVideoOptions([...videoOptions, {
+      id: Date.now().toString(),
+      type: 'raw',
+      resolution: '720p',
+      sourceName: 'Telegram',
+      url: ''
+    }]);
+  };
+
+  const removeVideoOption = (id: string) => {
+    setVideoOptions(videoOptions.filter(o => o.id !== id));
+  };
+
+  const updateVideoOption = (id: string, field: keyof VideoDownloadOption, value: string) => {
+    setVideoOptions(videoOptions.map(o => o.id === id ? { ...o, [field]: value } : o));
+  };
+
   const [isProOnly, setIsProOnly] = useState(false);
   const [proOnlyUntil, setProOnlyUntil] = useState('');
   const [uploading, setUploading] = useState(false);
@@ -198,22 +212,9 @@ export const CreatorDashboard: React.FC = () => {
       if (telegramLink) newSub.telegramLink = telegramLink;
       if (watchOnlineLink) newSub.watchOnlineLink = watchOnlineLink;
       
-      const hasRawVideoLinks = videoRaw480p || videoRaw720p || videoRaw1080p;
-      const hasHcVideoLinks = videoHc480p || videoHc720p || videoHc1080p;
-      if (hasRawVideoLinks || hasHcVideoLinks) {
-        newSub.videoLinks = {};
-        if (hasRawVideoLinks) {
-          newSub.videoLinks.raw = {};
-          if (videoRaw480p) newSub.videoLinks.raw.p480 = videoRaw480p;
-          if (videoRaw720p) newSub.videoLinks.raw.p720 = videoRaw720p;
-          if (videoRaw1080p) newSub.videoLinks.raw.p1080 = videoRaw1080p;
-        }
-        if (hasHcVideoLinks) {
-          newSub.videoLinks.hardcoded = {};
-          if (videoHc480p) newSub.videoLinks.hardcoded.p480 = videoHc480p;
-          if (videoHc720p) newSub.videoLinks.hardcoded.p720 = videoHc720p;
-          if (videoHc1080p) newSub.videoLinks.hardcoded.p1080 = videoHc1080p;
-        }
+      const validVideoOptions = videoOptions.filter(o => o.url.trim() !== '' && o.sourceName.trim() !== '');
+      if (validVideoOptions.length > 0) {
+        newSub.videoOptions = validVideoOptions;
       }
 
       if (userData.photoURL) newSub.authorPhoto = userData.photoURL;
@@ -611,38 +612,74 @@ export const CreatorDashboard: React.FC = () => {
               </div>
 
               <div className="bg-black/20 p-4 rounded-lg border border-gray-700 space-y-4">
-                <h3 className="text-lg font-bold text-white mb-2">Video Download Links (Optional)</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-4">
-                    <h4 className="text-md font-semibold text-gray-300">Raw Video</h4>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1">480p Link</label>
-                      <input type="url" value={videoRaw480p} onChange={e => setVideoRaw480p(e.target.value)} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-white focus:border-white focus:outline-none" placeholder="https://..." />
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-bold text-white">Video Download Links (Optional)</h3>
+                  <button type="button" onClick={addVideoOption} className="btn-secondary text-xs px-3 py-1">
+                    + Add Link
+                  </button>
+                </div>
+                
+                {videoOptions.length === 0 && (
+                  <p className="text-sm text-gray-500">No video download links added.</p>
+                )}
+                
+                <div className="space-y-4">
+                  {videoOptions.map((option, index) => (
+                    <div key={option.id} className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end p-3 bg-black/40 rounded-lg border border-gray-800">
+                      <div className="md:col-span-2">
+                        <label className="block text-xs font-medium text-gray-400 mb-1">Type</label>
+                        <select 
+                          value={option.type} 
+                          onChange={(e) => updateVideoOption(option.id, 'type', e.target.value)}
+                          className="w-full bg-black border border-gray-700 rounded-md px-2 py-2 text-sm text-white focus:border-white focus:outline-none"
+                        >
+                          <option value="raw">Raw</option>
+                          <option value="hardcoded">Hardcoded</option>
+                        </select>
+                      </div>
+                      <div className="md:col-span-2">
+                        <label className="block text-xs font-medium text-gray-400 mb-1">Resolution</label>
+                        <select 
+                          value={option.resolution} 
+                          onChange={(e) => updateVideoOption(option.id, 'resolution', e.target.value)}
+                          className="w-full bg-black border border-gray-700 rounded-md px-2 py-2 text-sm text-white focus:border-white focus:outline-none"
+                        >
+                          <option value="480p">480p</option>
+                          <option value="720p">720p</option>
+                          <option value="1080p">1080p</option>
+                        </select>
+                      </div>
+                      <div className="md:col-span-3">
+                        <label className="block text-xs font-medium text-gray-400 mb-1">Source Name</label>
+                        <input 
+                          type="text" 
+                          value={option.sourceName} 
+                          onChange={(e) => updateVideoOption(option.id, 'sourceName', e.target.value)}
+                          placeholder="e.g. Telegram, Pixeldrain"
+                          className="w-full bg-black border border-gray-700 rounded-md px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
+                        />
+                      </div>
+                      <div className="md:col-span-4">
+                        <label className="block text-xs font-medium text-gray-400 mb-1">URL</label>
+                        <input 
+                          type="url" 
+                          value={option.url} 
+                          onChange={(e) => updateVideoOption(option.id, 'url', e.target.value)}
+                          placeholder="https://..."
+                          className="w-full bg-black border border-gray-700 rounded-md px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
+                        />
+                      </div>
+                      <div className="md:col-span-1 flex justify-end">
+                        <button 
+                          type="button" 
+                          onClick={() => removeVideoOption(option.id)}
+                          className="text-gray-500 hover:text-red-500 p-2"
+                        >
+                          <X className="w-5 h-5" />
+                        </button>
+                      </div>
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1">720p Link</label>
-                      <input type="url" value={videoRaw720p} onChange={e => setVideoRaw720p(e.target.value)} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-white focus:border-white focus:outline-none" placeholder="https://..." />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1">1080p Link</label>
-                      <input type="url" value={videoRaw1080p} onChange={e => setVideoRaw1080p(e.target.value)} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-white focus:border-white focus:outline-none" placeholder="https://..." />
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <h4 className="text-md font-semibold text-gray-300">Hardcoded Video</h4>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1">480p Link</label>
-                      <input type="url" value={videoHc480p} onChange={e => setVideoHc480p(e.target.value)} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-white focus:border-white focus:outline-none" placeholder="https://..." />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1">720p Link</label>
-                      <input type="url" value={videoHc720p} onChange={e => setVideoHc720p(e.target.value)} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-white focus:border-white focus:outline-none" placeholder="https://..." />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1">1080p Link</label>
-                      <input type="url" value={videoHc1080p} onChange={e => setVideoHc1080p(e.target.value)} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-white focus:border-white focus:outline-none" placeholder="https://..." />
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
 
