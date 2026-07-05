@@ -76,10 +76,19 @@ export const VideoDownloads: React.FC = () => {
 
   const fullTitle = `${subtitle.movieTitle} ${subtitle.type === 'series' ? `S${subtitle.season?.toString().padStart(2, '0')} E${subtitle.episode?.toString().padStart(2, '0')}` : ''}`.trim();
 
-  const hasVideoLinks = subtitle.videoOptions && subtitle.videoOptions.length > 0;
-  
   const rawLinks = subtitle.videoOptions?.filter(o => o.type === 'raw') || [];
   const hardcodedLinks = subtitle.videoOptions?.filter(o => o.type === 'hardcoded') || [];
+
+  if (subtitle.videoLinks) {
+    if (subtitle.videoLinks.raw?.p480) rawLinks.push({ id: 'old-r-480', type: 'raw', resolution: '480p', sourceName: 'Direct', url: subtitle.videoLinks.raw.p480 });
+    if (subtitle.videoLinks.raw?.p720) rawLinks.push({ id: 'old-r-720', type: 'raw', resolution: '720p', sourceName: 'Direct', url: subtitle.videoLinks.raw.p720 });
+    if (subtitle.videoLinks.raw?.p1080) rawLinks.push({ id: 'old-r-1080', type: 'raw', resolution: '1080p', sourceName: 'Direct', url: subtitle.videoLinks.raw.p1080 });
+    if (subtitle.videoLinks.hardcoded?.p480) hardcodedLinks.push({ id: 'old-h-480', type: 'hardcoded', resolution: '480p', sourceName: 'Direct', url: subtitle.videoLinks.hardcoded.p480 });
+    if (subtitle.videoLinks.hardcoded?.p720) hardcodedLinks.push({ id: 'old-h-720', type: 'hardcoded', resolution: '720p', sourceName: 'Direct', url: subtitle.videoLinks.hardcoded.p720 });
+    if (subtitle.videoLinks.hardcoded?.p1080) hardcodedLinks.push({ id: 'old-h-1080', type: 'hardcoded', resolution: '1080p', sourceName: 'Direct', url: subtitle.videoLinks.hardcoded.p1080 });
+  }
+
+  const hasVideoLinks = rawLinks.length > 0 || hardcodedLinks.length > 0;
 
   const groupByResolution = (links: typeof rawLinks) => {
     const grouped: Record<string, typeof rawLinks> = {

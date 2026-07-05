@@ -21,6 +21,7 @@ export interface Subtitle {
   telegramLink?: string;
   watchOnlineLink?: string;
   videoOptions?: VideoDownloadOption[];
+  videoLinks?: any;
   authorUid: string;
   authorName: string;
   authorPhoto?: string;

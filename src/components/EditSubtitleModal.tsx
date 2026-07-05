@@ -30,11 +30,22 @@ export const EditSubtitleModal: React.FC<EditSubtitleModalProps> = ({ subtitle, 
   const [downloadLink, setDownloadLink] = useState(subtitle.downloadLink);
   const [telegramLink, setTelegramLink] = useState(subtitle.telegramLink || '');
   const [watchOnlineLink, setWatchOnlineLink] = useState(subtitle.watchOnlineLink || '');
-  const [videoOptions, setVideoOptions] = useState<VideoDownloadOption[]>(subtitle.videoOptions || []);
+  const [videoOptions, setVideoOptions] = useState<VideoDownloadOption[]>(() => {
+    const options = [...(subtitle.videoOptions || [])];
+    if (options.length === 0 && subtitle.videoLinks) {
+      if (subtitle.videoLinks.raw?.p480) options.push({ id: 'old-r-480', type: 'raw', resolution: '480p', sourceName: 'Direct', url: subtitle.videoLinks.raw.p480 });
+      if (subtitle.videoLinks.raw?.p720) options.push({ id: 'old-r-720', type: 'raw', resolution: '720p', sourceName: 'Direct', url: subtitle.videoLinks.raw.p720 });
+      if (subtitle.videoLinks.raw?.p1080) options.push({ id: 'old-r-1080', type: 'raw', resolution: '1080p', sourceName: 'Direct', url: subtitle.videoLinks.raw.p1080 });
+      if (subtitle.videoLinks.hardcoded?.p480) options.push({ id: 'old-h-480', type: 'hardcoded', resolution: '480p', sourceName: 'Direct', url: subtitle.videoLinks.hardcoded.p480 });
+      if (subtitle.videoLinks.hardcoded?.p720) options.push({ id: 'old-h-720', type: 'hardcoded', resolution: '720p', sourceName: 'Direct', url: subtitle.videoLinks.hardcoded.p720 });
+      if (subtitle.videoLinks.hardcoded?.p1080) options.push({ id: 'old-h-1080', type: 'hardcoded', resolution: '1080p', sourceName: 'Direct', url: subtitle.videoLinks.hardcoded.p1080 });
+    }
+    return options;
+  });
 
   const addVideoOption = () => {
     setVideoOptions([...videoOptions, {
-      id: Date.now().toString(),
+      id: Date.now().toString() + Math.random().toString(),
       type: 'raw',
       resolution: '720p',
       sourceName: 'Telegram',
@@ -367,7 +378,7 @@ export const EditSubtitleModal: React.FC<EditSubtitleModalProps> = ({ subtitle, 
             <div>
               <label className="block text-sm font-medium text-gray-400 mb-1">Download Link</label>
               <div className="flex gap-2">
-                <input type="url" required value={downloadLink} onChange={e => setDownloadLink(e.target.value)} className="flex-1 bg-black border border-gray-700 rounded-md px-4 py-2 text-white focus:border-white focus:outline-none" />
+                <input type="text" required value={downloadLink} onChange={e => setDownloadLink(e.target.value)} className="flex-1 bg-black border border-gray-700 rounded-md px-4 py-2 text-white focus:border-white focus:outline-none" />
                 <button 
                   type="button"
                   onClick={() => {
@@ -388,12 +399,12 @@ export const EditSubtitleModal: React.FC<EditSubtitleModalProps> = ({ subtitle, 
 
             <div>
               <label className="block text-sm font-medium text-gray-400 mb-1">Telegram Movie/Series Link (Optional)</label>
-              <input type="url" value={telegramLink} onChange={e => setTelegramLink(e.target.value)} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-white focus:border-white focus:outline-none" placeholder="https://t.me/..." />
+              <input type="text" value={telegramLink} onChange={e => setTelegramLink(e.target.value)} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-white focus:border-white focus:outline-none" placeholder="https://t.me/..." />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-400 mb-1">Watch Online Link (Optional)</label>
-              <input type="url" value={watchOnlineLink} onChange={e => setWatchOnlineLink(e.target.value)} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-white focus:border-white focus:outline-none" placeholder="https://..." />
+              <input type="text" value={watchOnlineLink} onChange={e => setWatchOnlineLink(e.target.value)} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-white focus:border-white focus:outline-none" placeholder="https://..." />
             </div>
 
             <div className="bg-black/20 p-4 rounded-lg border border-gray-700 space-y-4">
@@ -447,7 +458,7 @@ export const EditSubtitleModal: React.FC<EditSubtitleModalProps> = ({ subtitle, 
                     <div className="md:col-span-4">
                       <label className="block text-xs font-medium text-gray-400 mb-1">URL</label>
                       <input 
-                        type="url" 
+                        type="text" 
                         value={option.url} 
                         onChange={(e) => updateVideoOption(option.id, 'url', e.target.value)}
                         placeholder="https://..."

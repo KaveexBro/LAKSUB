@@ -40,7 +40,7 @@ export const CreatorDashboard: React.FC = () => {
 
   const addVideoOption = () => {
     setVideoOptions([...videoOptions, {
-      id: Date.now().toString(),
+      id: Date.now().toString() + Math.random().toString(),
       type: 'raw',
       resolution: '720p',
       sourceName: 'Telegram',
@@ -279,6 +279,7 @@ export const CreatorDashboard: React.FC = () => {
       setSelectedTmdbId(null);
       setPosterPath('');
       setBackdropPath('');
+      setVideoOptions([]);
     } catch (err: any) {
       console.error("Upload error:", err);
       try {
@@ -598,17 +599,17 @@ export const CreatorDashboard: React.FC = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-1">Download Link (Google Drive, Mega, etc.)</label>
-                <input type="url" required value={downloadLink} onChange={e => setDownloadLink(e.target.value)} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-white focus:border-white focus:outline-none" placeholder="https://..." />
+                <input type="text" required value={downloadLink} onChange={e => setDownloadLink(e.target.value)} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-white focus:border-white focus:outline-none" placeholder="https://..." />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-1">Telegram Movie/Series Link (Optional)</label>
-                <input type="url" value={telegramLink} onChange={e => setTelegramLink(e.target.value)} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-white focus:border-white focus:outline-none" placeholder="https://t.me/..." />
+                <input type="text" value={telegramLink} onChange={e => setTelegramLink(e.target.value)} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-white focus:border-white focus:outline-none" placeholder="https://t.me/..." />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-1">Watch Online Link (Optional)</label>
-                <input type="url" value={watchOnlineLink} onChange={e => setWatchOnlineLink(e.target.value)} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-white focus:border-white focus:outline-none" placeholder="https://..." />
+                <input type="text" value={watchOnlineLink} onChange={e => setWatchOnlineLink(e.target.value)} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-white focus:border-white focus:outline-none" placeholder="https://..." />
               </div>
 
               <div className="bg-black/20 p-4 rounded-lg border border-gray-700 space-y-4">
@@ -662,7 +663,7 @@ export const CreatorDashboard: React.FC = () => {
                       <div className="md:col-span-4">
                         <label className="block text-xs font-medium text-gray-400 mb-1">URL</label>
                         <input 
-                          type="url" 
+                          type="text" 
                           value={option.url} 
                           onChange={(e) => updateVideoOption(option.id, 'url', e.target.value)}
                           placeholder="https://..."
