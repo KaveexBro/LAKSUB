@@ -39,7 +39,7 @@ export const AdZone: React.FC<AdZoneProps> = ({ zoneName }) => {
         const snapshot = await getDocs(q);
         const activeAds = snapshot.docs
           .map(doc => ({ id: doc.id, ...doc.data() } as AdCampaign))
-          .filter(ad => ad.isActive && ad.zone === zoneName);
+          .filter(ad => ad.isActive && (ad.zones?.includes(zoneName) || ad.zone === zoneName));
 
         setAds(activeAds);
       } catch (error) {

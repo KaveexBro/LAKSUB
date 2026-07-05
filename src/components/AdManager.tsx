@@ -12,7 +12,7 @@ export const AdManager: React.FC = () => {
   const [currentAd, setCurrentAd] = useState<Partial<AdCampaign>>({
     campaignName: '',
     type: 'direct',
-    zone: 'home-top',
+    zones: ['home-top'],
     imageUrl: '',
     targetUrl: '',
     isActive: true,
@@ -37,8 +37,8 @@ export const AdManager: React.FC = () => {
   }, []);
 
   const handleSave = async () => {
-    if (!currentAd.campaignName || !currentAd.zone) {
-      alert("Campaign Name and Zone are required.");
+    if (!currentAd.campaignName || (!currentAd.zones || currentAd.zones.length === 0)) {
+      alert("Campaign Name and at least one Zone are required.");
       return;
     }
 
@@ -60,7 +60,7 @@ export const AdManager: React.FC = () => {
       setCurrentAd({
         campaignName: '',
         type: 'direct',
-        zone: 'home-top',
+        zones: ['home-top'],
         imageUrl: '',
         targetUrl: '',
         isActive: true,
@@ -104,7 +104,7 @@ export const AdManager: React.FC = () => {
             setCurrentAd({
               campaignName: '',
               type: 'direct',
-              zone: 'home-top',
+              zones: ['home-top'],
               imageUrl: '',
               targetUrl: '',
               isActive: true,
@@ -135,11 +135,21 @@ export const AdManager: React.FC = () => {
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">Zone</label>
+              <label className="block text-sm font-medium text-gray-400 mb-1">Zones (Hold Ctrl/Cmd to select multiple)</label>
               <select 
-                value={currentAd.zone} 
-                onChange={e => setCurrentAd({...currentAd, zone: e.target.value})}
-                className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-white focus:border-white focus:outline-none"
+                multiple
+                value={currentAd.zones || []} 
+                onChange={e => {
+                  const options = e.target.options;
+                  const selected = [];
+                  for (let i = 0; i < options.length; i++) {
+                    if (options[i].selected) {
+                      selected.push(options[i].value);
+                    }
+                  }
+                  setCurrentAd({...currentAd, zones: selected});
+                }}
+                className="w-full h-48 bg-black border border-gray-700 rounded-md px-4 py-2 text-white focus:border-white focus:outline-none"
               >
                 <option value="home-top">Home - Top</option>
                 <option value="home-middle">Home - Middle</option>
@@ -325,7 +335,7 @@ export const AdManager: React.FC = () => {
                 </div>
                 
                 <div className="flex items-center gap-2 text-xs text-gray-400 mb-4">
-                  <Tag className="w-3 h-3" /> Zone: <span className="text-white font-mono bg-white/10 px-1.5 rounded">{ad.zone}</span>
+                  <Tag className="w-3 h-3" /> Zone: <span className="text-white font-mono bg-white/10 px-1.5 rounded">{ad.zones?.join(', ') || ad.zone}</span>
                 </div>
                 
                 <div className="mt-auto flex justify-end gap-2 pt-4 border-t border-gray-800">

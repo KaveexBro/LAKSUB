@@ -129,7 +129,8 @@ export interface AdCampaign {
   campaignName: string;
   type: 'direct' | 'adsterra';
   format?: 'native' | '160x600' | '160x300' | '320x50' | '728x90' | '300x250' | '468x60';
-  zone: string;
+  zone?: string;
+  zones?: string[];
   imageUrl?: string;
   targetUrl?: string;
   isActive: boolean;
