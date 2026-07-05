@@ -12,6 +12,18 @@ export interface Subtitle {
   downloadLink: string;
   telegramLink?: string;
   watchOnlineLink?: string;
+  videoLinks?: {
+    raw?: {
+      p480?: string;
+      p720?: string;
+      p1080?: string;
+    };
+    hardcoded?: {
+      p480?: string;
+      p720?: string;
+      p1080?: string;
+    };
+  };
   authorUid: string;
   authorName: string;
   authorPhoto?: string;

@@ -12,6 +12,7 @@ import { Footer } from './components/Footer';
 import { Home } from './pages/Home';
 import { SubtitleDetails } from './pages/SubtitleDetails';
 import { SeriesDetails } from './pages/SeriesDetails';
+import { VideoDownloads } from './pages/VideoDownloads';
 import { Explore } from './pages/Explore';
 import { TopSubtitlers } from './pages/TopSubtitlers';
 import { CreatorDashboard } from './pages/CreatorDashboard';
@@ -84,7 +85,9 @@ export default function App() {
               <Switch>
                 <Route path="/" component={Home} />
                 <Route path="/subtitle/:id" component={SubtitleDetails} />
+                <Route path="/subtitle/:id/video" component={VideoDownloads} />
                 <Route path="/subtitles/:slug" component={SubtitleDetails} />
+                <Route path="/subtitles/:slug/video" component={VideoDownloads} />
                 <Route path="/movies/:slug" component={SubtitleDetails} />
                 <Route path="/tv-series/:slug" component={SubtitleDetails} />
                 <Route path="/series/:slug" component={SeriesDetails} />

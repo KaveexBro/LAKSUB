@@ -30,6 +30,12 @@ export const EditSubtitleModal: React.FC<EditSubtitleModalProps> = ({ subtitle, 
   const [downloadLink, setDownloadLink] = useState(subtitle.downloadLink);
   const [telegramLink, setTelegramLink] = useState(subtitle.telegramLink || '');
   const [watchOnlineLink, setWatchOnlineLink] = useState(subtitle.watchOnlineLink || '');
+  const [videoRaw480p, setVideoRaw480p] = useState(subtitle.videoLinks?.raw?.p480 || '');
+  const [videoRaw720p, setVideoRaw720p] = useState(subtitle.videoLinks?.raw?.p720 || '');
+  const [videoRaw1080p, setVideoRaw1080p] = useState(subtitle.videoLinks?.raw?.p1080 || '');
+  const [videoHc480p, setVideoHc480p] = useState(subtitle.videoLinks?.hardcoded?.p480 || '');
+  const [videoHc720p, setVideoHc720p] = useState(subtitle.videoLinks?.hardcoded?.p720 || '');
+  const [videoHc1080p, setVideoHc1080p] = useState(subtitle.videoLinks?.hardcoded?.p1080 || '');
   const [tmdbId, setTmdbId] = useState<number | ''>(subtitle.tmdbId || '');
   const [posterPath, setPosterPath] = useState(subtitle.posterPath || '');
   const [backdropPath, setBackdropPath] = useState(subtitle.backdropPath || '');
@@ -120,6 +126,18 @@ export const EditSubtitleModal: React.FC<EditSubtitleModalProps> = ({ subtitle, 
         downloadLink,
         telegramLink: telegramLink === '' ? deleteField() : telegramLink,
         watchOnlineLink: watchOnlineLink === '' ? deleteField() : watchOnlineLink,
+        videoLinks: (videoRaw480p || videoRaw720p || videoRaw1080p || videoHc480p || videoHc720p || videoHc1080p) ? {
+          raw: (videoRaw480p || videoRaw720p || videoRaw1080p) ? {
+            ...(videoRaw480p && { p480: videoRaw480p }),
+            ...(videoRaw720p && { p720: videoRaw720p }),
+            ...(videoRaw1080p && { p1080: videoRaw1080p })
+          } : deleteField(),
+          hardcoded: (videoHc480p || videoHc720p || videoHc1080p) ? {
+            ...(videoHc480p && { p480: videoHc480p }),
+            ...(videoHc720p && { p720: videoHc720p }),
+            ...(videoHc1080p && { p1080: videoHc1080p })
+          } : deleteField()
+        } : deleteField(),
         tmdbId: tmdbId === '' ? deleteField() : tmdbId,
         posterPath: posterPath === '' ? deleteField() : posterPath,
         backdropPath: backdropPath === '' ? deleteField() : backdropPath,
@@ -373,6 +391,42 @@ export const EditSubtitleModal: React.FC<EditSubtitleModalProps> = ({ subtitle, 
             <div>
               <label className="block text-sm font-medium text-gray-400 mb-1">Watch Online Link (Optional)</label>
               <input type="url" value={watchOnlineLink} onChange={e => setWatchOnlineLink(e.target.value)} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-white focus:border-white focus:outline-none" placeholder="https://..." />
+            </div>
+
+            <div className="bg-black/20 p-4 rounded-lg border border-gray-700 space-y-4">
+              <h3 className="text-lg font-bold text-white mb-2">Video Download Links (Optional)</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-4">
+                  <h4 className="text-md font-semibold text-gray-300">Raw Video</h4>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-400 mb-1">480p Link</label>
+                    <input type="url" value={videoRaw480p} onChange={e => setVideoRaw480p(e.target.value)} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-white focus:border-white focus:outline-none" placeholder="https://..." />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-400 mb-1">720p Link</label>
+                    <input type="url" value={videoRaw720p} onChange={e => setVideoRaw720p(e.target.value)} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-white focus:border-white focus:outline-none" placeholder="https://..." />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-400 mb-1">1080p Link</label>
+                    <input type="url" value={videoRaw1080p} onChange={e => setVideoRaw1080p(e.target.value)} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-white focus:border-white focus:outline-none" placeholder="https://..." />
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <h4 className="text-md font-semibold text-gray-300">Hardcoded Video</h4>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-400 mb-1">480p Link</label>
+                    <input type="url" value={videoHc480p} onChange={e => setVideoHc480p(e.target.value)} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-white focus:border-white focus:outline-none" placeholder="https://..." />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-400 mb-1">720p Link</label>
+                    <input type="url" value={videoHc720p} onChange={e => setVideoHc720p(e.target.value)} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-white focus:border-white focus:outline-none" placeholder="https://..." />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-400 mb-1">1080p Link</label>
+                    <input type="url" value={videoHc1080p} onChange={e => setVideoHc1080p(e.target.value)} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-white focus:border-white focus:outline-none" placeholder="https://..." />
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div>

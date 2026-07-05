@@ -5,7 +5,7 @@ import { db } from '../firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { Subtitle, Rating } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
-import { Download, Star, Clock, AlertCircle, Crown, Users, Calendar, Film, Play, Info, ThumbsUp, MessageSquare, Share2, Flag, CheckCircle2, ArrowRight, ChevronRight, Heart, Award, ShieldCheck, Zap, X, ArrowLeft, Copy, Send, Bookmark, CheckCircle } from 'lucide-react';
+import { Download, Star, Clock, AlertCircle, Crown, Users, Calendar, Film, Play, Info, ThumbsUp, MessageSquare, Share2, Flag, CheckCircle2, ArrowRight, ChevronRight, Heart, Award, ShieldCheck, Zap, X, ArrowLeft, Copy, Send, Bookmark, CheckCircle, Video } from 'lucide-react';
 import DOMPurify from 'dompurify';
 import { Helmet } from 'react-helmet-async';
 import { getTMDBDetails, getTMDBImageUrl, getTMDBEpisodeDetails } from '../services/tmdbService';
@@ -1207,21 +1207,30 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                     </p>
                   </div>
                 ) : isPro || canDownload || (!isPreparing && !startTimer) ? (
-                  <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-4">
-                    <button 
-                      onClick={handleDownload} 
-                      disabled={downloading}
-                      className="btn-primary w-full sm:w-auto"
-                    >
-                      <Download className="w-5 h-5" /> {downloading ? 'Preparing...' : 'Download Subtitle'}
-                    </button>
-                    {subtitle.watchOnlineLink && (
+                  <div className="flex flex-col w-full sm:w-auto gap-4 mt-6">
+                    <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-4">
                       <button 
-                        onClick={() => setShowWatchOnlineModal(true)}
-                        className="btn-white w-full sm:w-auto"
+                        onClick={handleDownload} 
+                        disabled={downloading}
+                        className="btn-primary w-full sm:w-auto"
                       >
-                        <Play className="w-5 h-5" /> Watch Online
+                        <Download className="w-5 h-5" /> {downloading ? 'Preparing...' : 'Download Subtitle'}
                       </button>
+                      {subtitle.watchOnlineLink && (
+                        <button 
+                          onClick={() => setShowWatchOnlineModal(true)}
+                          className="btn-white w-full sm:w-auto"
+                        >
+                          <Play className="w-5 h-5" /> Watch Online
+                        </button>
+                      )}
+                    </div>
+                    {(subtitle.videoLinks?.raw?.p480 || subtitle.videoLinks?.raw?.p720 || subtitle.videoLinks?.raw?.p1080 || subtitle.videoLinks?.hardcoded?.p480 || subtitle.videoLinks?.hardcoded?.p720 || subtitle.videoLinks?.hardcoded?.p1080) && (
+                      <Link href={subtitle.slug ? `/subtitles/${subtitle.slug}/video` : `/subtitle/${subtitle.id}/video`}>
+                        <button className="btn-secondary w-full sm:w-auto flex items-center justify-center gap-2 font-bold bg-[#1a1a1a] hover:bg-[#2a2a2a] text-white border-0 py-3 rounded-lg shadow-lg">
+                          <Video className="w-5 h-5" /> Download Video
+                        </button>
+                      </Link>
                     )}
                   </div>
                 ) : isPreparing ? (
