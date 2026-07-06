@@ -4,6 +4,7 @@ import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firesto
 import { db } from '../firebase';
 import { Subtitle } from '../types';
 import { Helmet } from 'react-helmet-async';
+import { AdZone } from '../components/AdZone';
 import { Download, ArrowLeft, Video, MonitorPlay } from 'lucide-react';
 import { motion } from 'motion/react';
 
@@ -129,6 +130,7 @@ export const VideoDownloads: React.FC = () => {
             className="bg-netflix-surface border border-white/10 rounded-2xl p-6 md:p-10 shadow-xl"
           >
             <div className="text-center mb-10">
+              <AdZone zoneName="video-downloads-top" />
               <h1 className="text-3xl md:text-4xl font-bold mb-4">Download Video</h1>
               <p className="text-xl text-gray-300 font-medium">
                 {fullTitle} ({subtitle.releaseYear})
@@ -176,6 +178,7 @@ export const VideoDownloads: React.FC = () => {
                 )}
                 
                 {/* Hardcoded Video Links */}
+                <AdZone zoneName="video-downloads-middle" />
                 {hardcodedLinks.length > 0 && (
                   <div className="space-y-6">
                     <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
@@ -220,6 +223,9 @@ export const VideoDownloads: React.FC = () => {
               </div>
             )}
           </motion.div>
+          <div className="mt-8">
+            <AdZone zoneName="video-downloads-bottom" />
+          </div>
         </main>
       </div>
     </>

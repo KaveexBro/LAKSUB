@@ -18,6 +18,7 @@ import {
 import { Helmet } from 'react-helmet-async';
 import { CreatorBadge } from '../components/CreatorBadge';
 import { getTMDBImageUrl } from '../services/tmdbService';
+import { AdZone } from '../components/AdZone';
 
 export const PublicProfile: React.FC = () => {
   const [, params] = useRoute<{ uid: string }>('/user/:uid');
@@ -226,6 +227,9 @@ export const PublicProfile: React.FC = () => {
             </div>
           )}
         </div>
+      </div>
+      <div className="max-w-7xl mx-auto px-4 mt-8 pb-12">
+        <AdZone zoneName="public-profile-bottom" />
       </div>
     </div>
   );

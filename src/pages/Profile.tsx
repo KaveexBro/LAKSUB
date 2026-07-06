@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'wouter';
 import { Helmet } from 'react-helmet-async';
+import { AdZone } from '../components/AdZone';
 import { CreatorBadge } from '../components/CreatorBadge';
 
 export const Profile: React.FC = () => {
@@ -541,6 +542,9 @@ export const Profile: React.FC = () => {
             </AnimatePresence>
           )}
         </div>
+      </div>
+      <div className="max-w-7xl mx-auto px-4 mt-8 pb-12">
+        <AdZone zoneName="profile-bottom" />
       </div>
     </div>
   );

@@ -181,8 +181,15 @@ export const AdManager: React.FC = () => {
                 <option value="faq-bottom">FAQ - Bottom</option>
                 <option value="top-subtitlers-top">Top Subtitlers - Top</option>
                 <option value="top-subtitlers-bottom">Top Subtitlers - Bottom</option>
-                <option value="global-sidebar">Global - Sidebar</option>
+                                <option value="global-header">Global - Header</option>
                 <option value="global-footer">Global - Footer</option>
+                <option value="video-downloads-top">Video Downloads - Top</option>
+                <option value="video-downloads-middle">Video Downloads - Middle</option>
+                <option value="video-downloads-bottom">Video Downloads - Bottom</option>
+                <option value="public-profile-top">Public Profile - Top</option>
+                                <option value="public-profile-bottom">Public Profile - Bottom</option>
+                <option value="profile-top">Profile - Top</option>
+                <option value="profile-bottom">Profile - Bottom</option>
               </select>
             </div>
           </div>

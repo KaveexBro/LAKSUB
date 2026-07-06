@@ -82,6 +82,11 @@ export default function App() {
             <ScrollToTop />
             <div className="min-h-screen bg-netflix-bg text-white font-sans selection:bg-netflix-red selection:text-white">
               {!isStandalonePage && <Navbar />}
+              {!isStandalonePage && (
+                <div className="max-w-7xl mx-auto px-4 w-full pt-24 pb-4">
+                  <AdZone zoneName="global-header" />
+                </div>
+              )}
               <Switch>
                 <Route path="/" component={Home} />
                 <Route path="/subtitle/:id" component={SubtitleDetails} />
