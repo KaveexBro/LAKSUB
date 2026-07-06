@@ -147,6 +147,48 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
   const slugLink = encodeURIComponent(title);
   const canonicalUrl = `https://laksub.com/series/${slugLink}`;
 
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "TVSeries",
+    "name": title,
+    "description": seoDescription,
+    "url": canonicalUrl,
+    "image": backdropUrl,
+    "inLanguage": "si",
+    "isAccessibleForFree": true,
+    "numberOfEpisodes": subtitles.length,
+    "author": {
+      "@type": "Organization",
+      "name": "LakSub",
+      "url": "https://laksub.com"
+    }
+  };
+
+  const breadcrumbData = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://laksub.com/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "TV Series",
+        "item": "https://laksub.com/series"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": title,
+        "item": canonicalUrl
+      }
+    ]
+  };
+
   return (
     <article className="min-h-screen bg-netflix-bg text-white pb-20">
       <Helmet>
@@ -160,6 +202,13 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="video.tv_show" />
         <meta property="og:image" content={backdropUrl || undefined} />
+        
+        <script type="application/ld+json">
+          {JSON.stringify(structuredData)}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify(breadcrumbData)}
+        </script>
       </Helmet>
       {/* Hero Section */}
       <div className="relative min-h-[70vh] md:h-[80vh] w-full overflow-hidden flex flex-col">

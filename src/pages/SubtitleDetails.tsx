@@ -730,10 +730,14 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
         <meta name="twitter:title" content={seoTitle} />
         <meta name="twitter:description" content={seoDescription} />
         <meta name="twitter:image" content={posterUrl || undefined} />
-      </Helmet>
 
-      <SchemaInjector schemaData={structuredData} type="video" />
-      <SchemaInjector schemaData={breadcrumbData} type="breadcrumb" />
+        <script type="application/ld+json">
+          {JSON.stringify(structuredData)}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify(breadcrumbData)}
+        </script>
+      </Helmet>
 
       {/* Hero Backdrop */}
       <div className="relative h-[60vh] w-full overflow-hidden">

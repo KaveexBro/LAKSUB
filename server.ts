@@ -306,12 +306,34 @@ async function startServer() {
             
           const url = `https://laksub.com${req.originalUrl}`;
 
+          
+          const structuredData = {
+            "@context": "https://schema.org",
+            "@type": isSeriesRoute ? "TVSeries" : "Movie",
+            "name": isSeriesRoute ? movieTitle : fullTitle,
+            "description": seoDescription,
+            "url": url,
+            "image": posterUrl,
+            "inLanguage": "si",
+            "isAccessibleForFree": true,
+            "author": {
+              "@type": "Organization",
+              "name": "LakSub",
+              "url": "https://laksub.com"
+            }
+          };
+          
+          if (!isSeriesRoute && releaseYear) {
+             structuredData["dateCreated"] = releaseYear.toString();
+          }
+
           seoData = {
             title: seoTitle,
             description: seoDescription,
             keywords: keywords,
             image: posterUrl,
-            url: url
+            url: url,
+            structuredData: structuredData
           };
         }
       }
@@ -352,6 +374,11 @@ async function startServer() {
           } else {
              html = html.replace('</head>', `<meta name="twitter:image" content="${seoData.image}" />\n</head>`);
           }
+      }
+      
+      // Inject Structured Data (Movie or TVSeries)
+      if (seoData.structuredData) {
+          html = html.replace('</head>', `<script type="application/ld+json">${JSON.stringify(seoData.structuredData)}</script>\n</head>`);
       }
       
       res.status(200).set({ 'Content-Type': 'text/html' }).send(html);
