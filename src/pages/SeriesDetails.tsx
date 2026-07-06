@@ -263,7 +263,7 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
         </div>
       </div>
 
-      <div className="px-4 pb-4">
+      <div className="w-full px-4 md:px-12 mx-auto pb-4">
         <AdZone zoneName="series-details-top" />
       </div>
 
@@ -406,7 +406,7 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
                       })
                     )}
                     
-                    <AdZone zoneName="series-details" />
+                    <div className="w-full px-4 md:px-6 mx-auto"><AdZone zoneName="series-details" /></div>
                   </div>
                 )}
               </motion.div>

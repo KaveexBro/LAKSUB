@@ -969,7 +969,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
               </div>
             )}
 
-            <AdZone zoneName="subtitle-details-top" />
+            <div className="w-full mx-auto"><AdZone zoneName="subtitle-details-top" /></div>
 
             <div className="mb-10">
               <div 
@@ -1050,7 +1050,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
               </div>
             </div>
             
-            <AdZone zoneName="subtitle-details-middle" />
+            <div className="w-full mx-auto"><AdZone zoneName="subtitle-details-middle" /></div>
 
             {/* Cast Section - Only for movies */}
             {subtitle.type === 'movie' && tmdbData?.credits?.cast && tmdbData.credits.cast.length > 0 && (
@@ -1190,7 +1190,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                 </div>
               )}
 
-              <AdZone zoneName="subtitle-details" />
+              <div className="w-full mx-auto"><AdZone zoneName="subtitle-details" /></div>
 
               <div className="flex flex-col sm:flex-row flex-wrap gap-6 items-center relative z-10">
                 {!user ? (

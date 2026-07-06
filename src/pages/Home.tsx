@@ -322,17 +322,17 @@ export const Home: React.FC = () => {
 
           {/* Content Rows */}
           <div className="mt-4 md:-mt-32 relative z-30 pb-20">
-            <AdZone zoneName="home-top" />
+            <div className="w-full px-4 md:px-12 mx-auto"><AdZone zoneName="home-top" /></div>
             {renderTop10()}
-            <AdZone zoneName="home-row-1" />
+            <div className="w-full px-4 md:px-12 mx-auto"><AdZone zoneName="home-row-1" /></div>
             {renderRow("Latest Releases", latestReleases)}
-            <AdZone zoneName="home-row-2" />
+            <div className="w-full px-4 md:px-12 mx-auto"><AdZone zoneName="home-row-2" /></div>
             {renderRow("Trending Now", trendingNow)}
-            <AdZone zoneName="home-row-3" />
+            <div className="w-full px-4 md:px-12 mx-auto"><AdZone zoneName="home-row-3" /></div>
             {renderRow("Action Movies", actionMovies)}
-            <AdZone zoneName="home-row-4" />
+            <div className="w-full px-4 md:px-12 mx-auto"><AdZone zoneName="home-row-4" /></div>
             {renderRow("TV Series", tvSeries)}
-            <AdZone zoneName="home-bottom" />
+            <div className="w-full px-4 md:px-12 mx-auto"><AdZone zoneName="home-bottom" /></div>
           </div>
         </motion.div>
       </AnimatePresence>
