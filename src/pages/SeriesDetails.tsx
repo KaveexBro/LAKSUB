@@ -410,6 +410,9 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
                   </div>
                 )}
               </motion.div>
+              <div className="mt-4 px-6">
+                <AdZone zoneName="series-details-middle" />
+              </div>
             </AnimatePresence>
           </div>
         </div>

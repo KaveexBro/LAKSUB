@@ -322,12 +322,15 @@ export const Home: React.FC = () => {
 
           {/* Content Rows */}
           <div className="mt-4 md:-mt-32 relative z-30 pb-20">
-            {renderTop10()}
             <AdZone zoneName="home-top" />
+            {renderTop10()}
+            <AdZone zoneName="home-row-1" />
             {renderRow("Latest Releases", latestReleases)}
+            <AdZone zoneName="home-row-2" />
             {renderRow("Trending Now", trendingNow)}
-            <AdZone zoneName="home-middle" />
+            <AdZone zoneName="home-row-3" />
             {renderRow("Action Movies", actionMovies)}
+            <AdZone zoneName="home-row-4" />
             {renderRow("TV Series", tvSeries)}
             <AdZone zoneName="home-bottom" />
           </div>

@@ -1021,7 +1021,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                             className="prose prose-invert max-w-none w-full break-words prose-p:mb-4 last:prose-p:mb-0 prose-a:text-blue-400 hover:prose-a:underline [&_a]:break-all text-lg md:text-xl text-gray-200 font-sinhala-text leading-relaxed"
                             dangerouslySetInnerHTML={{ __html: chunk }} 
                           />
-                          {index < chunks.length - 1 && index < 3 && (
+                          {index < chunks.length - 1 && index < 4 && (
                             <div className="my-2">
                               <AdZone zoneName={`subtitle-details-content-${index + 1}`} />
                             </div>

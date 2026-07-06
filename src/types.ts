@@ -136,6 +136,7 @@ export interface AdCampaign {
   isActive: boolean;
   createdAt: string;
   displayFrequency?: number;
+  deviceTargeting?: 'all' | 'desktop' | 'mobile';
 }
 
 export interface SubtitleRequest {

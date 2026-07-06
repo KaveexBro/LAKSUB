@@ -16,7 +16,8 @@ export const AdManager: React.FC = () => {
     imageUrl: '',
     targetUrl: '',
     isActive: true,
-    displayFrequency: 1
+    displayFrequency: 1,
+    deviceTargeting: 'all'
   });
 
   const fetchAds = async () => {
@@ -64,8 +65,9 @@ export const AdManager: React.FC = () => {
         imageUrl: '',
         targetUrl: '',
         isActive: true,
-        displayFrequency: 1
-      });
+        displayFrequency: 1,
+    deviceTargeting: 'all'
+  });
       fetchAds();
     } catch (error) {
       console.error("Error saving ad:", error);
@@ -108,8 +110,9 @@ export const AdManager: React.FC = () => {
               imageUrl: '',
               targetUrl: '',
               isActive: true,
-              displayFrequency: 1
-            });
+              displayFrequency: 1,
+    deviceTargeting: 'all'
+  });
             setIsEditing(true);
           }}
           className="bg-netflix-red text-white px-4 py-2 rounded-md font-bold hover:bg-red-700 transition-colors flex items-center gap-2"
@@ -151,20 +154,26 @@ export const AdManager: React.FC = () => {
                 }}
                 className="w-full h-48 bg-black border border-gray-700 rounded-md px-4 py-2 text-white focus:border-white focus:outline-none"
               >
-                <option value="home-top">Home - Top</option>
-                <option value="home-middle">Home - Middle</option>
+                                <option value="home-top">Home - Top</option>
+                <option value="home-row-1">Home - After Top 10</option>
+                <option value="home-row-2">Home - After Latest Releases</option>
+                <option value="home-row-3">Home - After Trending</option>
+                <option value="home-row-4">Home - After Action</option>
                 <option value="home-bottom">Home - Bottom</option>
                 <option value="explore-top">Explore - Top</option>
-                <option value="explore-middle">Explore - Middle</option>
+                <option value="explore-middle-1">Explore - Middle 1</option>
+                <option value="explore-middle-2">Explore - Middle 2</option>
                 <option value="explore-bottom">Explore - Bottom</option>
                 <option value="subtitle-details-top">Subtitle Details - Top</option>
                 <option value="subtitle-details-content-1">Subtitle Details - Content 1</option>
                 <option value="subtitle-details-content-2">Subtitle Details - Content 2</option>
                 <option value="subtitle-details-content-3">Subtitle Details - Content 3</option>
+                <option value="subtitle-details-content-4">Subtitle Details - Content 4</option>
                 <option value="subtitle-details-middle">Subtitle Details - Middle</option>
                 <option value="subtitle-details">Subtitle Details (Download Area)</option>
                 <option value="subtitle-details-bottom">Subtitle Details - Bottom</option>
                 <option value="series-details-top">Series Details - Top</option>
+                <option value="series-details-middle">Series Details - Middle</option>
                 <option value="series-details">Series Details (Episodes)</option>
                 <option value="series-details-bottom">Series Details - Bottom</option>
                 <option value="download-popup">Download Pop-up</option>
@@ -176,6 +185,19 @@ export const AdManager: React.FC = () => {
                 <option value="global-footer">Global - Footer</option>
               </select>
             </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-1">Device Targeting</label>
+            <select
+              value={currentAd.deviceTargeting || 'all'}
+              onChange={e => setCurrentAd({...currentAd, deviceTargeting: e.target.value as 'all' | 'desktop' | 'mobile'})}
+              className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-white focus:border-white focus:outline-none"
+            >
+              <option value="all">All Devices</option>
+              <option value="desktop">Desktop Only</option>
+              <option value="mobile">Mobile Only</option>
+            </select>
           </div>
 
           <div>
@@ -334,8 +356,16 @@ export const AdManager: React.FC = () => {
                   </button>
                 </div>
                 
-                <div className="flex items-center gap-2 text-xs text-gray-400 mb-4">
-                  <Tag className="w-3 h-3" /> Zone: <span className="text-white font-mono bg-white/10 px-1.5 rounded">{ad.zones?.join(', ') || ad.zone}</span>
+                <div className="flex flex-col gap-2 text-xs text-gray-400 mb-4">
+                  <div className="flex items-center gap-2">
+                    <Tag className="w-3 h-3" /> Zone: <span className="text-white font-mono bg-white/10 px-1.5 rounded truncate">{ad.zones?.join(', ') || ad.zone}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-400">Device:</span> 
+                    <span className="text-white font-mono bg-white/10 px-1.5 rounded uppercase text-[10px]">
+                      {ad.deviceTargeting || 'all'}
+                    </span>
+                  </div>
                 </div>
                 
                 <div className="mt-auto flex justify-end gap-2 pt-4 border-t border-gray-800">

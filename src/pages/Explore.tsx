@@ -350,9 +350,14 @@ export const Explore: React.FC<{ initialType?: 'movie' | 'series' | 'all', initi
                     </div>
                   </div>
                 </Link>
-                {index === 11 && (
+                {index === 7 && (
                   <div className="col-span-full my-4">
-                    <AdZone zoneName="explore-middle" />
+                    <AdZone zoneName="explore-middle-1" />
+                  </div>
+                )}
+                {index === 15 && (
+                  <div className="col-span-full my-4">
+                    <AdZone zoneName="explore-middle-2" />
                   </div>
                 )}
               </React.Fragment>
