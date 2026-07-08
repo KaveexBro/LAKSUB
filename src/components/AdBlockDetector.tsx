@@ -57,9 +57,14 @@ export const AdBlockDetector: React.FC<{ children: React.ReactNode }> = ({ child
 
     const checkFetch = async (url: string) => {
       try {
-        await fetch(url, { method: 'HEAD', mode: 'no-cors', cache: 'no-store' });
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
+        await fetch(url, { method: 'HEAD', mode: 'no-cors', cache: 'no-store', signal: controller.signal });
+        clearTimeout(timeoutId);
         return false;
       } catch (e) {
+        // If it throws an error (including AbortError), it might be blocked or just slow.
+        // We consider it blocked to be safe, but at least we don't hang forever.
         return true;
       }
     };
