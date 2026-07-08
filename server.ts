@@ -9,7 +9,7 @@ async function startServer() {
 
   
 
-  const PORT = 3000;
+  const PORT = process.env.PORT || 3000;
 
   app.get('/sitemap.xml', async (req, res, next) => {
     try {
