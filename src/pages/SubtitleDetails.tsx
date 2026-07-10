@@ -427,42 +427,45 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
     // Logic to track download for monetization and eligibility
     if (subtitle?.authorUid) {
       try {
-        const batch = writeBatch(db);
-        const downloadRef = doc(collection(db, 'downloads'));
+        const downloadId = `${user.uid}_${subtitle.id}`;
+        const downloadRef = doc(db, 'downloads', downloadId);
+        const downloadSnap = await getDoc(downloadRef);
         
-        // Record every download
-        batch.set(downloadRef, {
-          userId: user.uid,
-          subtitleId: subtitle.id,
-          creatorId: subtitle.authorUid,
-          downloadedAt: new Date().toISOString(),
-          isProDownload: isPro, // Track if it was a Pro user for Revenue Pool
-          adPaidStatus: 'unpaid',
-          proPaidStatus: 'unpaid'
-        });
-        
-        // Increment totalDownloads for the creator (for eligibility and profile stats)
-        const creatorRef = doc(db, 'users', subtitle.authorUid);
-        batch.update(creatorRef, {
-          totalDownloads: increment(1)
-        });
-        
-        await batch.commit();
+        // Only count if this is the first time this user is downloading this subtitle
+        if (!downloadSnap.exists()) {
+          const batch = writeBatch(db);
+          
+          // Record the download
+          batch.set(downloadRef, {
+            userId: user.uid,
+            subtitleId: subtitle.id,
+            creatorId: subtitle.authorUid,
+            downloadedAt: new Date().toISOString(),
+            isProDownload: isPro, // Track if it was a Pro user for Revenue Pool
+            adPaidStatus: 'unpaid',
+            proPaidStatus: 'unpaid'
+          });
+          
+          // Increment totalDownloads for the creator (for eligibility and profile stats)
+          const creatorRef = doc(db, 'users', subtitle.authorUid);
+          batch.update(creatorRef, {
+            totalDownloads: increment(1)
+          });
+          // Increment download count for the subtitle itself
+          const subtitleRef = doc(db, 'subtitles', subtitle.id);
+          batch.update(subtitleRef, {
+            downloadCount: increment(1)
+          });
+
+          
+          await batch.commit();
+        }
       } catch (err) {
         console.error("Error tracking download:", err);
       }
     }
 
-    // Increment download count for the subtitle
-    try {
-      if (subtitle) {
-        await updateDoc(doc(db, 'subtitles', subtitle.id), {
-          downloadCount: increment(1)
-        });
-      }
-    } catch (err) {
-      console.error("Error updating subtitle download count:", err);
-    }
+    
 
     setDownloading(false);
     if (!isPro && subtitle?.downloadLink && smartlinkEnabled) {
