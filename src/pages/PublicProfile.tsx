@@ -163,6 +163,12 @@ export const PublicProfile: React.FC = () => {
                 <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Total Uploads</p>
                 <p className="text-xl font-black font-mono">{uploads.length}</p>
               </div>
+              <div className="bg-white/5 px-4 py-2 rounded-xl border border-white/5">
+                <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Total Downloads</p>
+                <p className="text-xl font-black font-mono">
+                  {uploads.reduce((sum, sub) => sum + (sub.downloadCount || 0), 0)}
+                </p>
+              </div>
               {creatorAvgRating > 0 && (
                 <div className="bg-white/5 px-4 py-2 rounded-xl border border-white/5">
                   <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Avg. Rating</p>

@@ -862,7 +862,13 @@ export const CreatorDashboard: React.FC = () => {
         )}
 
         {activeTab === 'wallet' && userData && (
-          <CreatorWallet userData={userData} onUpdate={() => {}} />
+          <CreatorWallet 
+            userData={{
+              ...userData,
+              totalDownloads: subtitles.reduce((sum, sub) => sum + (sub.downloadCount || 0), 0)
+            }} 
+            onUpdate={() => {}} 
+          />
         )}
       </div>
 
