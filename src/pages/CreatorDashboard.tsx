@@ -865,7 +865,7 @@ export const CreatorDashboard: React.FC = () => {
           <CreatorWallet 
             userData={{
               ...userData,
-              totalDownloads: subtitles.reduce((sum, sub) => sum + (sub.downloadCount || 0), 0)
+              totalDownloads: userData.totalDownloads
             }} 
             onUpdate={() => {}} 
           />
