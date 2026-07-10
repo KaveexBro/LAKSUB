@@ -427,33 +427,27 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
     // Logic to track download for monetization and eligibility
     if (subtitle?.authorUid) {
       try {
-        const downloadId = `${user.uid}_${subtitle.id}`;
-        const downloadRef = doc(db, 'downloads', downloadId);
-        const downloadSnap = await getDoc(downloadRef);
+        const batch = writeBatch(db);
+        const downloadRef = doc(collection(db, 'downloads'));
         
-        // Only count if this is the first time this user is downloading this subtitle
-        if (!downloadSnap.exists()) {
-          const batch = writeBatch(db);
-          
-          // Record the download
-          batch.set(downloadRef, {
-            userId: user.uid,
-            subtitleId: subtitle.id,
-            creatorId: subtitle.authorUid,
-            downloadedAt: new Date().toISOString(),
-            isProDownload: isPro, // Track if it was a Pro user for Revenue Pool
-            adPaidStatus: 'unpaid',
-            proPaidStatus: 'unpaid'
-          });
-          
-          // Increment totalDownloads for the creator (for eligibility)
-          const creatorRef = doc(db, 'users', subtitle.authorUid);
-          batch.update(creatorRef, {
-            totalDownloads: increment(1)
-          });
-          
-          await batch.commit();
-        }
+        // Record every download
+        batch.set(downloadRef, {
+          userId: user.uid,
+          subtitleId: subtitle.id,
+          creatorId: subtitle.authorUid,
+          downloadedAt: new Date().toISOString(),
+          isProDownload: isPro, // Track if it was a Pro user for Revenue Pool
+          adPaidStatus: 'unpaid',
+          proPaidStatus: 'unpaid'
+        });
+        
+        // Increment totalDownloads for the creator (for eligibility and profile stats)
+        const creatorRef = doc(db, 'users', subtitle.authorUid);
+        batch.update(creatorRef, {
+          totalDownloads: increment(1)
+        });
+        
+        await batch.commit();
       } catch (err) {
         console.error("Error tracking download:", err);
       }
