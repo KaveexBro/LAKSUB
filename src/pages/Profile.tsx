@@ -193,7 +193,7 @@ export const Profile: React.FC = () => {
                     <Crown className="w-3 h-3" /> Pro Expiry
                   </p>
                   <p className="text-xl font-black font-mono text-yellow-500">
-                    {new Date(userData.proExpiry).toLocaleDateString()}
+                    {userData.proExpiry ? new Date(userData.proExpiry).toLocaleDateString() : ''}
                   </p>
                 </div>
               )}
@@ -209,7 +209,7 @@ export const Profile: React.FC = () => {
               </div>
               <div className="bg-white/5 px-4 py-2 rounded-xl border border-white/5">
                 <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Balance</p>
-                <p className="text-xl font-black font-mono text-green-500">${userData.walletBalance?.toFixed(2) || '0.00'}</p>
+                <p className="text-xl font-black font-mono text-green-500">${typeof userData.walletBalance === 'number' ? userData.walletBalance.toFixed(2) : '0.00'}</p>
               </div>
             </div>
           </div>
@@ -345,7 +345,7 @@ export const Profile: React.FC = () => {
                             <div>
                               <h3 className="font-black text-lg uppercase tracking-tighter group-hover:text-netflix-red transition-colors">{record.subtitleTitle}</h3>
                               <p className="text-sm text-gray-500 font-medium flex items-center gap-2">
-                                <Clock className="w-3 h-3" /> {new Date(record.downloadedAt).toLocaleDateString()} at {new Date(record.downloadedAt).toLocaleTimeString()}
+                                <Clock className="w-3 h-3" /> {record.downloadedAt ? new Date(record.downloadedAt).toLocaleDateString() : ''} at {record.downloadedAt ? new Date(record.downloadedAt).toLocaleTimeString() : ''}
                               </p>
                             </div>
                           </div>
