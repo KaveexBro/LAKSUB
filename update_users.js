@@ -20,9 +20,11 @@ async function fix() {
   for (const userDoc of usersSnap.docs) {
     const data = userDoc.data();
     const actualSum = creatorSubs[userDoc.id] || 0;
-    console.log(`User ${data.displayName}: totalDownloads=${data.totalDownloads}, sumOfSubtitles=${actualSum}`);
     
-    // If there is a discrepancy, let's see!
+    if (data.totalDownloads !== actualSum) {
+      console.log(`Updating ${data.displayName} from ${data.totalDownloads} to ${actualSum}`);
+      // await updateDoc(doc(db, 'users', userDoc.id), { totalDownloads: actualSum });
+    }
   }
 
   process.exit(0);

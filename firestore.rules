@@ -201,6 +201,9 @@ service cloud.firestore {
                         resource.data.monetizationStatus == 'locked') ||
                        // Allow incrementing totalUploads when a subtitle is approved (this would usually be a cloud function)
                        // Since we don't have cloud functions, we'll allow the admin to do it, or the system to do it via admin client
+                       // Allow users to sync their totalDownloads and totalUploads
+                       (isOwner(userId) && 
+                        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['totalDownloads', 'totalUploads'])) ||
                        // Allow incrementing totalDownloads when a subtitle is downloaded
                        (isAuthenticated() && 
                         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['totalDownloads']) &&
@@ -269,7 +272,7 @@ service cloud.firestore {
       allow read: if isOwner(resource.data.userId) || isAdmin();
       allow create: if isAuthenticated() && 
                     downloadId == request.auth.uid + '_' + request.resource.data.subtitleId &&
-                    isValidDownload(request.resource.data);
+                    isValidDownload(request.resource.data)
                     && getAfter(/databases/$(database)/documents/users/$(request.resource.data.creatorId)).data.get("totalDownloads", 0) == get(/databases/$(database)/documents/users/$(request.resource.data.creatorId)).data.get("totalDownloads", 0) + 1
                     && getAfter(/databases/$(database)/documents/subtitles/$(request.resource.data.subtitleId)).data.get("downloadCount", 0) == get(/databases/$(database)/documents/subtitles/$(request.resource.data.subtitleId)).data.get("downloadCount", 0) + 1;
       allow update: if false;

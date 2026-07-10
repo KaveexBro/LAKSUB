@@ -65,6 +65,24 @@ export const Profile: React.FC = () => {
         const uploadsData = uploadsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Subtitle));
         setUploads(uploadsData);
 
+        const calculatedDownloads = uploadsData.reduce((sum, sub) => sum + (sub.downloadCount || 0), 0);
+        const approvedCount = uploadsData.filter(s => s.status === 'approved').length;
+        
+        // Sync totalUploads and totalDownloads if mismatched
+        if (userData && ((userData.totalUploads || 0) !== approvedCount || (userData.totalDownloads || 0) !== calculatedDownloads)) {
+           try {
+             await updateDoc(doc(db, 'users', user.uid), {
+               totalUploads: approvedCount,
+               totalDownloads: calculatedDownloads
+             });
+             // Update local state to reflect the change immediately
+             userData.totalUploads = approvedCount;
+             userData.totalDownloads = calculatedDownloads;
+           } catch (e) {
+             console.error("Error syncing stats:", e);
+           }
+        }
+
         // Fetch Download History
         const historyQuery = query(
           collection(db, 'downloads'),

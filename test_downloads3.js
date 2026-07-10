@@ -1,0 +1,38 @@
+import { initializeApp } from 'firebase/app';
+import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import fs from 'fs';
+
+const firebaseConfig = JSON.parse(fs.readFileSync('firebase-applet-config.json', 'utf8'));
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app, "ai-studio-1e8cd04c-3326-4b18-88c9-f52e3a9d3db1"); // Pass db name
+
+async function check() {
+  const usersSnap = await getDocs(collection(db, 'users'));
+  const subsSnap = await getDocs(collection(db, 'subtitles'));
+  
+  const creatorSubs = {};
+  subsSnap.docs.forEach(doc => {
+    const data = doc.data();
+    if (!creatorSubs[data.authorUid]) creatorSubs[data.authorUid] = 0;
+    creatorSubs[data.authorUid] += (data.downloadCount || 0);
+  });
+  
+  const creatorActual = {};
+  const actualDownloadsSnap = await getDocs(collection(db, 'downloads'));
+  actualDownloadsSnap.docs.forEach(doc => {
+     const data = doc.data();
+     if (!creatorActual[data.creatorId]) creatorActual[data.creatorId] = 0;
+     creatorActual[data.creatorId]++;
+  });
+  
+  usersSnap.docs.forEach(doc => {
+    const data = doc.data();
+    console.log(`User ${data.displayName} (${doc.id}):`);
+    console.log(`  userData.totalDownloads = ${data.totalDownloads}`);
+    console.log(`  sum of subtitle.downloadCount = ${creatorSubs[doc.id] || 0}`);
+    console.log(`  count of actual downloads in DB = ${creatorActual[doc.id] || 0}`);
+  });
+
+  process.exit(0);
+}
+check();

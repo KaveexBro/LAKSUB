@@ -103,11 +103,13 @@ export const CreatorDashboard: React.FC = () => {
         const fetchedSubtitles = subsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Subtitle));
         setSubtitles(fetchedSubtitles);
 
-        // Sync totalUploads if it's out of sync
+        // Sync totalUploads and totalDownloads if it's out of sync
         const approvedCount = fetchedSubtitles.filter(s => s.status === 'approved').length;
-        if (userData && (userData.totalUploads || 0) !== approvedCount) {
+        const calculatedDownloads = fetchedSubtitles.reduce((sum, sub) => sum + (sub.downloadCount || 0), 0);
+        if (userData && ((userData.totalUploads || 0) !== approvedCount || (userData.totalDownloads || 0) !== calculatedDownloads)) {
           await updateDoc(doc(db, 'users', user.uid), {
-            totalUploads: approvedCount
+            totalUploads: approvedCount,
+            totalDownloads: calculatedDownloads
           });
         }
 
