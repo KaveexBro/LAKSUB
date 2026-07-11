@@ -83,8 +83,8 @@ export default function App() {
             <div className="min-h-screen bg-netflix-bg text-white font-sans selection:bg-netflix-red selection:text-white">
               {!isStandalonePage && <Navbar />}
               {!isStandalonePage && (
-                <div className="max-w-7xl mx-auto px-4 md:px-12 w-full pt-24 pb-4">
-                  <AdZone zoneName="global-header" />
+                <div className="max-w-7xl mx-auto px-4 md:px-12 w-full relative z-40">
+                  <AdZone zoneName="global-header" className="pt-24 pb-4" />
                 </div>
               )}
               <Switch>

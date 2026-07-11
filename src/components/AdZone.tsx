@@ -6,9 +6,10 @@ import { useAuth } from '../contexts/AuthContext';
 
 interface AdZoneProps {
   zoneName: string;
+  className?: string;
 }
 
-export const AdZone: React.FC<AdZoneProps> = ({ zoneName }) => {
+export const AdZone: React.FC<AdZoneProps> = ({ zoneName, className = '' }) => {
   const [ads, setAds] = useState<AdCampaign[]>([]);
   const [loading, setLoading] = useState(true);
   const [iframeHeights, setIframeHeights] = useState<Record<string, number>>({});
@@ -67,7 +68,7 @@ export const AdZone: React.FC<AdZoneProps> = ({ zoneName }) => {
   if (adsToDisplay.length === 0) return null;
 
   return (
-    <div className="w-full my-4 md:my-6 lg:my-8 flex flex-col gap-4 md:gap-6 lg:gap-8 items-center justify-center">
+    <div className={`w-full my-4 md:my-6 lg:my-8 flex flex-col gap-4 md:gap-6 lg:gap-8 items-center justify-center ${className}`}>
       {adsToDisplay.map(ad => {
         const getAdsterraConfig = () => {
           if (ad.type === 'direct') return null;
