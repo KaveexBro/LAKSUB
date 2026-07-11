@@ -241,7 +241,7 @@ export const Profile: React.FC = () => {
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-white/10 mb-8 overflow-x-auto hide-scrollbar">
+        <div className="flex border-b border-white/10 mb-8 overflow-x-auto scrollbar-hide">
           <button 
             onClick={() => setActiveTab('uploads')}
             className={`px-6 py-3 text-sm font-black uppercase tracking-widest transition-all relative ${activeTab === 'uploads' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}

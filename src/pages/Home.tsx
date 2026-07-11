@@ -116,7 +116,7 @@ export const Home: React.FC = () => {
         <h2 className="text-xl md:text-2xl font-black mb-4 text-white px-4 md:px-12 flex items-center gap-2 uppercase tracking-tighter">
           Top 10 in Sri Lanka Today
         </h2>
-        <div className="flex gap-4 overflow-x-auto pb-8 pt-2 px-4 md:px-12 hide-scrollbar snap-x">
+        <div className="flex gap-4 overflow-x-auto pb-8 pt-2 px-4 md:px-12 scrollbar-hide snap-x">
           {top10.map((sub, index) => (
             <Link key={sub.id} href={sub.slug ? `/subtitles/${sub.slug}` : `/subtitles/${sub.id}`}>
               <motion.div 
@@ -167,7 +167,7 @@ export const Home: React.FC = () => {
     return (
       <section className="mb-12 relative z-30">
         <h2 className="text-xl md:text-2xl font-black mb-4 text-white px-4 md:px-12 uppercase tracking-tighter">{title}</h2>
-        <div className="flex gap-4 overflow-x-auto pb-8 pt-4 px-4 md:px-12 hide-scrollbar snap-x">
+        <div className="flex gap-4 overflow-x-auto pb-8 pt-4 px-4 md:px-12 scrollbar-hide snap-x">
           {groupedContent.map((sub) => (
             <Link 
               key={sub.id} 
@@ -297,13 +297,13 @@ export const Home: React.FC = () => {
 
                   <div className="flex flex-wrap items-center gap-3 md:gap-4">
                     <Link href={featured.slug ? `/subtitles/${featured.slug}` : `/subtitles/${featured.id}`}>
-                      <button className="btn-white text-xs md:text-sm pl-4 pr-5 py-2.5 md:py-3 rounded-[4px] md:rounded-md mt-0">
+                      <button className="btn-white">
                         <Play className="w-5 h-5 md:w-6 md:h-6 fill-current" /> 
                         <span>Download</span>
                       </button>
                     </Link>
                     <Link href={featured.type === 'series' ? `/series/${encodeURIComponent(featured.movieTitle)}` : (featured.slug ? `/subtitles/${featured.slug}` : `/subtitles/${featured.id}`)}>
-                      <button className="btn-secondary text-xs md:text-sm pl-4 pr-5 py-2.5 md:py-3 rounded-[4px] md:rounded-md mt-0 bg-gray-500/30 font-bold border-0 hover:bg-gray-500/50">
+                      <button className="btn-secondary bg-gray-500/30 border-0 hover:bg-gray-500/50">
                         <Info className="w-5 h-5 md:w-6 md:h-6" /> 
                         <span>More Info</span>
                       </button>
