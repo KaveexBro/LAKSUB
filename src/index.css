@@ -11,6 +11,16 @@
   
   --font-sans: "Inter", "Abhaya Libre", ui-sans-serif, system-ui, sans-serif;
   --font-sinhala: "Abhaya Libre", serif;
+
+  /* Consistent Spacing Scale */
+  --spacing-component-xs: 0.25rem;
+  --spacing-component-sm: 0.5rem;
+  --spacing-component-md: 1rem;
+  --spacing-component-lg: 1.5rem;
+  --spacing-component-xl: 2rem;
+  --spacing-layout-sm: 2rem;
+  --spacing-layout-md: 4rem;
+  --spacing-layout-lg: 6rem;
 }
 
 body {
@@ -110,18 +120,42 @@ button.bg-netflix-red {
 
 /* Standardized Premium Buttons */
 .btn {
-  @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg font-bold text-sm transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed outline-none select-none;
+  @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-bold text-xs md:text-sm transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed outline-none select-none;
 }
 
 .btn-primary {
-  @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg font-bold text-sm transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed outline-none select-none bg-netflix-red text-white shadow-lg hover:bg-netflix-red-dark hover:shadow-xl hover:-translate-y-0.5 border border-transparent;
+  @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-bold text-xs md:text-sm transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed outline-none select-none bg-netflix-red text-white shadow-lg hover:bg-netflix-red-dark hover:shadow-xl hover:-translate-y-0.5 border border-transparent;
 }
 
 .btn-secondary {
-  @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg font-bold text-sm transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed outline-none select-none bg-white/10 text-white shadow-lg hover:bg-white/20 hover:shadow-xl hover:-translate-y-0.5 border border-white/10;
+  @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-bold text-xs md:text-sm transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed outline-none select-none bg-white/10 text-white shadow-lg hover:bg-white/20 hover:shadow-xl hover:-translate-y-0.5 border border-white/10;
 }
 
 .btn-white {
-  @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg font-bold text-sm transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed outline-none select-none bg-white text-black shadow-lg hover:bg-gray-200 hover:shadow-xl hover:-translate-y-0.5 border border-transparent;
+  @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-bold text-xs md:text-sm transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed outline-none select-none bg-white text-black shadow-lg hover:bg-gray-200 hover:shadow-xl hover:-translate-y-0.5 border border-transparent;
 }
 
+
+/* Global Interactive Element Accessibility & Focus Management */
+@layer base {
+  a, button, input, textarea, select, [tabindex]:not([tabindex="-1"]) {
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-netflix-red focus-visible:ring-offset-2 focus-visible:ring-offset-netflix-bg;
+  }
+}
+
+/* Global Mobile Layout Strategy */
+@media (max-width: 639px) {
+  body {
+    @apply text-sm;
+  }
+  
+  h1 { @apply text-2xl; }
+  h2 { @apply text-xl; }
+  h3 { @apply text-lg; }
+
+  /* Reduce padding on major containers to prevent overflow on mobile */
+  .px-12 { @apply px-4; }
+  .px-8 { @apply px-4; }
+  .p-8 { @apply p-4; }
+  .gap-8 { @apply gap-4; }
+}
