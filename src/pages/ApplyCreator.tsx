@@ -54,7 +54,7 @@ export const ApplyCreator: React.FC = () => {
       <div className="min-h-screen bg-netflix-bg text-white flex flex-col items-center justify-center px-4">
         <h1 className="text-3xl md:text-5xl font-bold mb-6 text-center">Join LakSub Creators</h1>
         <p className="text-gray-400 mb-8 text-center max-w-md">Sign in to apply as a creator and start monetizing your subtitle translations.</p>
-        <button onClick={signIn} className="btn-primary px-8 py-3">
+        <button onClick={signIn} className="btn-primary px-6 py-2.5">
           Sign In to Apply
         </button>
       </div>
@@ -68,7 +68,7 @@ export const ApplyCreator: React.FC = () => {
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center">You're Already a Creator!</h1>
         <p className="text-gray-400 mb-8 text-center max-w-md">Head over to your dashboard to start uploading and earning.</p>
         <Link href="/dashboard">
-          <button className="btn-primary px-8 py-3">
+          <button className="btn-primary px-6 py-2.5">
             Go to Dashboard
           </button>
         </Link>
@@ -93,7 +93,7 @@ export const ApplyCreator: React.FC = () => {
               <h2 className="text-2xl font-bold mb-4">Application Submitted!</h2>
               <p className="text-gray-400 mb-8">Our team will review your application and get back to you soon. Thank you for your interest in joining LakSub.</p>
               <Link href="/">
-                <button className="btn-white px-8 py-3">
+                <button className="btn-white px-6 py-2.5">
                   Return Home
                 </button>
               </Link>
@@ -134,7 +134,7 @@ export const ApplyCreator: React.FC = () => {
                 </ul>
               </div>
 
-              <button type="submit" disabled={loading} className="w-full bg-netflix-red text-white py-4 rounded-md font-bold text-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex justify-center items-center gap-2">
+              <button type="submit" disabled={loading} className="w-full bg-netflix-red text-white py-3 rounded-md font-bold text-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex justify-center items-center gap-2">
                 {loading ? 'Submitting...' : <><Send className="w-5 h-5" /> Submit Application</>}
               </button>
             </form>

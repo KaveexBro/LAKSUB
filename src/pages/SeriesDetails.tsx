@@ -282,21 +282,21 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
                     href={`https://www.youtube.com/watch?v=${trailer.key}`} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="bg-white text-black px-6 md:px-8 py-3 md:py-4 rounded-md font-black text-sm md:text-lg hover:bg-netflix-red hover:text-white transition-all transform active:scale-95 flex items-center justify-center gap-2 md:gap-3 shadow-2xl"
+                    className="bg-white text-black px-5 py-2.5 rounded-md font-bold text-sm md:text-base hover:bg-netflix-red hover:text-white transition-all transform active:scale-95 flex items-center justify-center gap-2 md:gap-3 shadow-2xl"
                   >
                     <Play className="w-5 h-5 md:w-6 md:h-6 fill-current" /> WATCH TRAILER
                   </a>
                 )}
                 <button 
                   onClick={() => document.getElementById('episodes')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="bg-gray-500/30 backdrop-blur-md text-white px-6 md:px-8 py-3 md:py-4 rounded-md font-black text-sm md:text-lg hover:bg-gray-500/50 transition-all transform active:scale-95 flex items-center justify-center gap-2 md:gap-3 border border-white/10"
+                  className="bg-gray-500/30 backdrop-blur-md text-white px-5 py-2.5 rounded-md font-bold text-sm md:text-base hover:bg-gray-500/50 transition-all transform active:scale-95 flex items-center justify-center gap-2 md:gap-3 border border-white/10"
                 >
                   <Info className="w-5 h-5 md:w-6 md:h-6" /> EPISODES
                 </button>
                 {user && (
                   <button 
                     onClick={toggleSeriesWatchlist}
-                    className={`px-6 md:px-8 py-3 md:py-4 rounded-md font-black text-sm md:text-lg transition-all transform active:scale-95 flex items-center justify-center gap-2 md:gap-3 border ${
+                    className={`px-5 py-2.5 rounded-md font-bold text-sm md:text-base transition-all transform active:scale-95 flex items-center justify-center gap-2 md:gap-3 border ${
                       isSeriesWatchlisted 
                         ? 'bg-netflix-red text-white border-netflix-red' 
                         : 'bg-white/10 text-white border-white/10 hover:bg-white/20'
@@ -321,7 +321,7 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
         <div className="bg-netflix-surface/60 backdrop-blur-2xl rounded-2xl md:rounded-3xl border border-white/10 overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
           
           {/* Season Selector */}
-          <div className="px-4 md:px-8 py-4 md:py-6 border-b border-white/5 bg-black/40 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="px-4 md:px-6 py-3 md:py-4 border-b border-white/5 bg-black/40 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="relative w-full md:w-auto">
               <button
                 onClick={() => setIsSeasonDropdownOpen(!isSeasonDropdownOpen)}
@@ -354,7 +354,7 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
                               setSelectedSeason(s);
                               setIsSeasonDropdownOpen(false);
                             }}
-                            className={`w-full text-left px-6 py-4 text-sm font-bold transition-colors flex items-center justify-between group ${
+                            className={`w-full text-left px-5 py-3 text-sm font-bold transition-colors flex items-center justify-between group ${
                               selectedSeason === s 
                                 ? 'bg-netflix-red text-white' 
                                 : 'text-gray-300 hover:bg-white/10 hover:text-white'
@@ -370,7 +370,7 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
                               setSelectedSeason(0);
                               setIsSeasonDropdownOpen(false);
                             }}
-                            className={`w-full text-left px-6 py-4 text-sm font-bold transition-colors flex items-center justify-between group ${
+                            className={`w-full text-left px-5 py-3 text-sm font-bold transition-colors flex items-center justify-between group ${
                               selectedSeason === 0 
                                 ? 'bg-netflix-red text-white' 
                                 : 'text-gray-300 hover:bg-white/10 hover:text-white'

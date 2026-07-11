@@ -201,7 +201,7 @@ export const AdBlockDetector: React.FC<{ children: React.ReactNode }> = ({ child
 
           <button
             onClick={() => window.location.reload()}
-            className="w-full bg-netflix-red text-white py-4 rounded-xl font-black uppercase tracking-widest hover:bg-red-700 transition-all flex items-center justify-center gap-2 group shadow-lg shadow-netflix-red/20"
+            className="w-full bg-netflix-red text-white py-3 rounded-xl font-black uppercase tracking-widest hover:bg-red-700 transition-all flex items-center justify-center gap-2 group shadow-lg shadow-netflix-red/20"
           >
             <RefreshCw className="w-5 h-5 group-hover:rotate-180 transition-transform duration-500" />
             I've Disabled It, Refresh

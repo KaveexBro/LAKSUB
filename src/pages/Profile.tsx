@@ -244,35 +244,35 @@ export const Profile: React.FC = () => {
         <div className="flex border-b border-white/10 mb-8 overflow-x-auto hide-scrollbar">
           <button 
             onClick={() => setActiveTab('uploads')}
-            className={`px-8 py-4 text-sm font-black uppercase tracking-widest transition-all relative ${activeTab === 'uploads' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+            className={`px-6 py-3 text-sm font-black uppercase tracking-widest transition-all relative ${activeTab === 'uploads' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
           >
             <span className="flex items-center gap-2"><Upload className="w-4 h-4" /> Uploads</span>
             {activeTab === 'uploads' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-1 bg-netflix-red" />}
           </button>
           <button 
             onClick={() => setActiveTab('history')}
-            className={`px-8 py-4 text-sm font-black uppercase tracking-widest transition-all relative ${activeTab === 'history' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+            className={`px-6 py-3 text-sm font-black uppercase tracking-widest transition-all relative ${activeTab === 'history' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
           >
             <span className="flex items-center gap-2"><History className="w-4 h-4" /> History</span>
             {activeTab === 'history' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-1 bg-netflix-red" />}
           </button>
           <button 
             onClick={() => setActiveTab('watchlist')}
-            className={`px-8 py-4 text-sm font-black uppercase tracking-widest transition-all relative ${activeTab === 'watchlist' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+            className={`px-6 py-3 text-sm font-black uppercase tracking-widest transition-all relative ${activeTab === 'watchlist' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
           >
             <span className="flex items-center gap-2"><Bookmark className="w-4 h-4" /> Watchlist</span>
             {activeTab === 'watchlist' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-1 bg-netflix-red" />}
           </button>
           <button 
             onClick={() => setActiveTab('watched')}
-            className={`px-8 py-4 text-sm font-black uppercase tracking-widest transition-all relative ${activeTab === 'watched' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+            className={`px-6 py-3 text-sm font-black uppercase tracking-widest transition-all relative ${activeTab === 'watched' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
           >
             <span className="flex items-center gap-2"><CheckCircle className="w-4 h-4" /> Watched</span>
             {activeTab === 'watched' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-1 bg-netflix-red" />}
           </button>
           <button 
             onClick={() => setActiveTab('settings')}
-            className={`px-8 py-4 text-sm font-black uppercase tracking-widest transition-all relative ${activeTab === 'settings' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+            className={`px-6 py-3 text-sm font-black uppercase tracking-widest transition-all relative ${activeTab === 'settings' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
           >
             <span className="flex items-center gap-2"><Settings className="w-4 h-4" /> Settings</span>
             {activeTab === 'settings' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-1 bg-netflix-red" />}
@@ -551,7 +551,7 @@ export const Profile: React.FC = () => {
                       <button 
                         type="submit"
                         disabled={updating}
-                        className="w-full bg-netflix-red text-white py-4 rounded-xl font-black uppercase tracking-widest hover:bg-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl"
+                        className="w-full bg-netflix-red text-white py-3 rounded-xl font-black uppercase tracking-widest hover:bg-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl"
                       >
                         {updating ? 'Updating...' : 'Save Changes'}
                       </button>

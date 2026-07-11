@@ -24,7 +24,7 @@ export const NotFound: React.FC = () => {
           Sorry, we can't find that page. You'll find lots to explore on the home page.
         </p>
         <Link href="/">
-          <button className="bg-white text-black px-8 py-3 rounded-md font-bold text-lg hover:bg-gray-200 transition-colors">
+          <button className="bg-white text-black px-6 py-2.5 rounded-md font-bold text-lg hover:bg-gray-200 transition-colors">
             Netflix Home
           </button>
         </Link>

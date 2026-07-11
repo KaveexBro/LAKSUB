@@ -1678,7 +1678,7 @@ export const AdminDashboard: React.FC = () => {
                   <button 
                     onClick={() => setShowAdConfirm(true)}
                     disabled={!adRevenueAmount || isNaN(Number(adRevenueAmount)) || Number(adRevenueAmount) <= 0 || distributingAd}
-                    className="bg-gradient-to-r from-netflix-red to-red-700 hover:from-red-600 hover:to-red-800 text-white px-8 py-3 rounded-lg font-bold transition-all shadow-lg shadow-red-900/30 hover:shadow-red-900/50 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                    className="bg-gradient-to-r from-netflix-red to-red-700 hover:from-red-600 hover:to-red-800 text-white px-6 py-2.5 rounded-lg font-bold transition-all shadow-lg shadow-red-900/30 hover:shadow-red-900/50 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                   >
                     Distribute Ad Revenue
                   </button>
@@ -1706,7 +1706,7 @@ export const AdminDashboard: React.FC = () => {
                   <button 
                     onClick={() => setShowProConfirm(true)}
                     disabled={!proPoolAmount || isNaN(Number(proPoolAmount)) || Number(proPoolAmount) <= 0 || distributingPro}
-                    className="bg-gradient-to-r from-netflix-red to-red-700 hover:from-red-600 hover:to-red-800 text-white px-8 py-3 rounded-lg font-bold transition-all shadow-lg shadow-red-900/30 hover:shadow-red-900/50 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                    className="bg-gradient-to-r from-netflix-red to-red-700 hover:from-red-600 hover:to-red-800 text-white px-6 py-2.5 rounded-lg font-bold transition-all shadow-lg shadow-red-900/30 hover:shadow-red-900/50 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                   >
                     Distribute Pro Revenue
                   </button>
@@ -1739,7 +1739,7 @@ export const AdminDashboard: React.FC = () => {
                     <button 
                       onClick={handleSendBroadcast}
                       disabled={!broadcastTitle.trim() || !broadcastMessage.trim() || sendingBroadcast}
-                      className="bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700 text-white px-8 py-3 rounded-lg font-bold transition-all shadow-lg shadow-blue-900/30 hover:shadow-blue-900/50 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap flex items-center gap-2"
+                      className="bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700 text-white px-6 py-2.5 rounded-lg font-bold transition-all shadow-lg shadow-blue-900/30 hover:shadow-blue-900/50 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap flex items-center gap-2"
                     >
                       {sendingBroadcast ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : null}
                       Send Broadcast

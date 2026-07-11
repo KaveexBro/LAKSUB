@@ -1292,7 +1292,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                   <div className="flex flex-wrap gap-4 mt-8 w-full border-t border-white/5 pt-8">
                     <button 
                       onClick={toggleWatchlist}
-                      className={`flex items-center gap-2 px-6 py-3 rounded-lg font-black text-sm uppercase tracking-widest transition-all border ${
+                      className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-bold text-sm uppercase tracking-widest transition-all border ${
                         isWatchlisted 
                           ? 'bg-netflix-red text-white border-netflix-red' 
                           : 'bg-white/5 text-white border-white/10 hover:bg-white/10'
@@ -1304,7 +1304,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
 
                     <button 
                       onClick={toggleWatched}
-                      className={`flex items-center gap-2 px-6 py-3 rounded-lg font-black text-sm uppercase tracking-widest transition-all border ${
+                      className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-bold text-sm uppercase tracking-widest transition-all border ${
                         isWatched 
                           ? 'bg-green-600 text-white border-green-600' 
                           : 'bg-white/5 text-white border-white/10 hover:bg-white/10'
@@ -1317,7 +1317,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                     {subtitle.type === 'series' && (
                       <button 
                         onClick={toggleSeriesWatchlist}
-                        className={`flex items-center gap-2 px-6 py-3 rounded-lg font-black text-sm uppercase tracking-widest transition-all border ${
+                        className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-bold text-sm uppercase tracking-widest transition-all border ${
                           isSeriesWatchlisted 
                             ? 'bg-blue-600 text-white border-blue-600' 
                             : 'bg-white/5 text-white border-white/10 hover:bg-white/10'

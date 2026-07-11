@@ -233,7 +233,7 @@ export const RequestSubtitle: React.FC = () => {
                 <button 
                   type="submit"
                   disabled={!isPro || loading}
-                  className="w-full bg-netflix-red text-white py-4 rounded-xl font-black uppercase tracking-widest hover:bg-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl flex items-center justify-center gap-3 group"
+                  className="w-full bg-netflix-red text-white py-3 rounded-xl font-black uppercase tracking-widest hover:bg-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl flex items-center justify-center gap-3 group"
                 >
                   {loading ? (
                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />

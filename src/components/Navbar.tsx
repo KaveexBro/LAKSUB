@@ -44,7 +44,7 @@ export const Navbar: React.FC = () => {
   }, []);
 
   return (
-    <nav className="fixed top-0 w-full z-[100] bg-gradient-to-b from-black/90 to-transparent px-4 md:px-12 py-4 flex items-center justify-between transition-all duration-300">
+    <nav className="fixed top-0 w-full z-[100] bg-gradient-to-b from-black/90 to-transparent px-4 md:px-12 py-3 flex items-center justify-between transition-all duration-300">
       <div className="flex items-center gap-4 md:gap-8">
         <button 
           className="md:hidden text-white p-1"
@@ -231,7 +231,7 @@ export const Navbar: React.FC = () => {
                   <Link 
                     href="/upgrade" 
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="block w-full text-center bg-netflix-red text-white py-4 rounded-xl font-black uppercase tracking-widest text-sm"
+                    className="block w-full text-center bg-netflix-red text-white py-3 rounded-xl font-black uppercase tracking-widest text-sm"
                   >
                     Upgrade to Pro
                   </Link>

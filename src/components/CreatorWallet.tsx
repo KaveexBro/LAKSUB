@@ -144,7 +144,7 @@ export const CreatorWallet: React.FC<CreatorWalletProps> = ({ userData, onUpdate
               <button 
                 onClick={handleApply}
                 disabled={!canApply || applying}
-                className={`w-full md:w-auto px-8 py-4 rounded-md font-bold text-lg transition-all flex items-center justify-center gap-3 shadow-lg ${
+                className={`w-full md:w-auto px-6 py-3 rounded-md font-bold text-base transition-all flex items-center justify-center gap-3 shadow-lg ${
                   canApply 
                     ? 'bg-netflix-red text-white hover:bg-red-700 hover:scale-105' 
                     : 'bg-gray-800 text-gray-500 cursor-not-allowed'
@@ -268,7 +268,7 @@ export const CreatorWallet: React.FC<CreatorWalletProps> = ({ userData, onUpdate
                   value={withdrawAmount || ''}
                   onChange={(e) => setWithdrawAmount(Number(e.target.value))}
                   placeholder="Minimum 1,000"
-                  className="w-full bg-black border border-gray-700 rounded-md px-4 py-4 text-xl font-bold focus:border-netflix-red focus:outline-none transition-colors"
+                  className="w-full bg-black border border-gray-700 rounded-md px-4 py-3 text-xl font-bold focus:border-netflix-red focus:outline-none transition-colors"
                 />
                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-bold">LKR</span>
               </div>
@@ -285,7 +285,7 @@ export const CreatorWallet: React.FC<CreatorWalletProps> = ({ userData, onUpdate
             <button 
               type="submit"
               disabled={withdrawing || userData.walletBalance < 1000}
-              className="w-full bg-netflix-red text-white py-4 rounded-md font-bold text-lg hover:bg-red-700 transition-all hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+              className="w-full bg-netflix-red text-white py-3 rounded-md font-bold text-lg hover:bg-red-700 transition-all hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
             >
               {withdrawing ? 'Processing...' : 'Withdraw Funds'}
             </button>
