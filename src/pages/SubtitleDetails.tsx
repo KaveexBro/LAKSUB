@@ -720,6 +720,248 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
     ]
   };
 
+  const renderDownloadCard = () => (
+    <div className="bg-[#121212] p-8 rounded-xl border border-gray-800 shadow-xl relative isolate transform-gpu w-full">
+      <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row justify-between gap-6 mb-8 items-start sm:items-center lg:items-start xl:items-center">
+        <Link href={`/user/${subtitle.authorUid}`}>
+          <div className="flex items-center gap-4 cursor-pointer group">
+            <div className="w-14 h-14 rounded-full bg-gray-700 overflow-hidden border-2 border-netflix-red transition-transform group-hover:scale-110 transform-gpu backface-hidden">
+              {authorPhoto ? (
+                <img src={authorPhoto || undefined} alt={authorName} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-gray-400 font-bold text-xl">
+                  {(authorName || 'A').charAt(0).toUpperCase()}
+                </div>
+              )}
+            </div>
+            <div>
+              <p className="text-sm text-gray-400">Translated by</p>
+              <div className="flex items-center gap-2">
+                <p className="font-bold text-white text-lg group-hover:text-netflix-red transition-colors">{authorName}</p>
+                {authorUploadCount > 0 && <CreatorBadge uploadCount={authorUploadCount} />}
+              </div>
+            </div>
+          </div>
+        </Link>
+
+        <div className="flex flex-col items-start sm:items-end lg:items-start xl:items-end w-full sm:w-auto lg:w-full xl:w-auto">
+          <p className="text-sm text-gray-400 mb-2">Rate this subtitle</p>
+          <div className="flex gap-1">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <Star 
+                key={star} 
+                className={`w-7 h-7 cursor-pointer transition-all hover:scale-110 ${star <= (showCommentInput ? selectedRating : userRating) ? 'fill-yellow-500 text-yellow-500' : 'text-gray-600 hover:text-yellow-500'}`}
+                onClick={() => handleRate(star)}
+              />
+            ))}
+          </div>
+          
+          <AnimatePresence>
+            {showCommentInput && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="w-full mt-4 space-y-3"
+              >
+                <textarea
+                  value={commentInput}
+                  onChange={(e) => setCommentInput(e.target.value)}
+                  placeholder="Write a comment (optional)..."
+                  className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-netflix-red transition-colors font-medium h-24 resize-none text-sm"
+                />
+                <div className="flex justify-end gap-3">
+                  <button 
+                    onClick={() => setShowCommentInput(false)}
+                    className="px-4 py-2 text-xs font-black uppercase tracking-widest text-gray-500 hover:text-white transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    onClick={submitRating}
+                    disabled={isRatingLoading}
+                    className="bg-netflix-red text-white px-6 py-2 rounded-lg text-xs font-black uppercase tracking-widest hover:bg-red-700 transition-all disabled:opacity-50"
+                  >
+                    {isRatingLoading ? 'Submitting...' : 'Submit'}
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <div className="flex flex-col items-start sm:items-end lg:items-start xl:items-end mt-1">
+            <span className="text-xs text-gray-500">{subtitle.ratingCount} community ratings</span>
+            <span className="text-xs text-netflix-red font-bold mt-1 flex items-center gap-1">
+              <Download className="w-3 h-3" /> {subtitle.downloadCount || 0} Total Downloads
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {error && (
+        <div className="bg-red-900/50 border border-red-500 text-red-200 p-4 rounded-md mb-6 flex items-start gap-3 text-sm">
+          <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-red-400" />
+          <p>{error}</p>
+        </div>
+      )}
+
+      <div className="w-full mx-auto mb-6"><AdZone zoneName="subtitle-details" /></div>
+
+      <div className="flex flex-col sm:flex-row lg:flex-col gap-4 items-stretch sm:items-center lg:items-stretch relative z-10">
+        {!user ? (
+          <button onClick={signIn} className="btn-primary w-full sm:w-auto lg:w-full">
+            Sign in to Download
+          </button>
+        ) : isProOnly && !isPro ? (
+          <div className="flex flex-col gap-4 w-full sm:w-auto lg:w-full">
+            <Link href="/upgrade" className="btn w-full bg-gradient-to-r from-yellow-500 to-yellow-600 text-black shadow-lg hover:from-yellow-400 hover:to-yellow-500 hover:shadow-xl hover:-translate-y-0.5">
+              <Crown className="w-5 h-5" /> Upgrade to Pro
+            </Link>
+            <p className="text-xs text-gray-500 font-bold text-center sm:text-left lg:text-center">
+              Available for Free users on: {new Date(subtitle.proOnlyUntil!).toLocaleString()}
+            </p>
+          </div>
+        ) : isPro || canDownload || (!isPreparing && !startTimer) ? (
+          <div className="flex flex-col w-full sm:w-auto lg:w-full gap-4">
+            <div className="flex flex-col sm:flex-row lg:flex-col w-full gap-4">
+              <button 
+                onClick={handleDownload} 
+                disabled={downloading}
+                className="btn-primary w-full sm:w-auto lg:w-full"
+              >
+                <Download className="w-5 h-5" /> {downloading ? 'Preparing...' : 'Download Subtitle'}
+              </button>
+              {subtitle.watchOnlineLink && (
+                <button 
+                  onClick={() => setShowWatchOnlineModal(true)}
+                  className="btn-white w-full sm:w-auto lg:w-full"
+                >
+                  <Play className="w-5 h-5" /> Watch Online
+                </button>
+              )}
+            </div>
+            {((subtitle.videoOptions && subtitle.videoOptions.length > 0) || (subtitle.videoLinks?.raw?.p480 || subtitle.videoLinks?.raw?.p720 || subtitle.videoLinks?.raw?.p1080 || subtitle.videoLinks?.hardcoded?.p480 || subtitle.videoLinks?.hardcoded?.p720 || subtitle.videoLinks?.hardcoded?.p1080)) && (
+              <Link href={subtitle.slug ? `/subtitles/${subtitle.slug}/video` : `/subtitle/${subtitle.id}/video`} className="w-full">
+                <button className="btn-secondary w-full flex items-center justify-center gap-2 font-bold bg-[#1a1a1a] hover:bg-[#2a2a2a] text-white border-0 py-3 rounded-lg shadow-lg">
+                  <Video className="w-5 h-5" /> Download Video
+                </button>
+              </Link>
+            )}
+          </div>
+        ) : isPreparing ? (
+          <div className="w-full max-w-2xl mx-auto aspect-video rounded-2xl border border-white/10 shadow-2xl relative overflow-hidden bg-black">
+            <VastPlayer 
+              vastUrl="https://scrawnyslice.com/d.mLFsz/d/GhNpvAZZGeUJ/RetmA9buuZhUbl/k/PuT/c/xNMUDsESx/N/D/UltoNXzdE-wOMZTxE/0/OiQN"
+              onFinished={() => setCountdown(0)}
+              onSkip={() => setCountdown(0)}
+            />
+          </div>
+        ) : (
+          <button disabled className="btn-secondary w-full sm:w-auto lg:w-full">
+            <Clock className="w-5 h-5" /> Wait {countdown}s
+          </button>
+        )}
+
+        <button 
+          onClick={handleShare}
+          className="btn-secondary w-full sm:w-auto lg:w-full"
+        >
+          <Share2 className="w-5 h-5" /> Share
+        </button>
+
+        {subtitle.telegramLink && (
+          <a
+            id="telegram-download"
+            href={canDownloadTelegram || isPro ? subtitle.telegramLink : "#telegram-download"}
+            target={canDownloadTelegram || isPro ? "_blank" : undefined}
+            rel="noopener noreferrer"
+            onClick={(e) => {
+              if (!canDownloadTelegram && !isPro) {
+                handleTelegramDownload(e);
+              } else {
+                handleTelegramDownload(e);
+              }
+            }}
+            style={{ pointerEvents: telegramCountdown !== null && telegramCountdown > 0 ? 'none' : 'auto' }}
+            className={`btn w-full sm:w-auto lg:w-full bg-[#0088cc] text-white shadow-lg border border-[#0088cc] hover:bg-[#0077b3] hover:shadow-xl hover:-translate-y-0.5 relative overflow-hidden ${telegramCountdown !== null && telegramCountdown > 0 ? 'opacity-50' : ''}`}
+          >
+            {isPro && (
+              <span className="absolute top-1 right-1 bg-yellow-500 text-black text-[8px] font-black px-1.5 py-0.5 rounded-sm flex items-center gap-1 uppercase tracking-tighter shadow-md">
+                <Crown className="w-2 h-2" /> Pro
+              </span>
+            )}
+            <Send className="w-5 h-5" /> 
+            {telegramCountdown !== null && telegramCountdown > 0 
+              ? `Wait ${telegramCountdown}s...` 
+              : canDownloadTelegram || isPro 
+                ? 'Open Telegram Link' 
+                : 'Download Movie/Series'}
+          </a>
+        )}
+      </div>
+
+      <div className="flex flex-col w-full">
+        {user && subtitle && (
+          <div className="flex flex-wrap gap-4 mt-8 w-full border-t border-white/5 pt-8">
+            <button 
+              onClick={toggleWatchlist}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-bold text-sm uppercase tracking-widest transition-all border w-full sm:w-auto lg:w-full ${
+                isWatchlisted 
+                  ? 'bg-netflix-red text-white border-netflix-red' 
+                  : 'bg-white/5 text-white border-white/10 hover:bg-white/10'
+              }`}
+            >
+              <Bookmark className={`w-5 h-5 ${isWatchlisted ? 'fill-current' : ''}`} />
+              {isWatchlisted ? 'In Watchlist' : 'Add to Watchlist'}
+            </button>
+
+            <button 
+              onClick={toggleWatched}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-bold text-sm uppercase tracking-widest transition-all border w-full sm:w-auto lg:w-full ${
+                isWatched 
+                  ? 'bg-green-600 text-white border-green-600' 
+                  : 'bg-white/5 text-white border-white/10 hover:bg-white/10'
+              }`}
+            >
+              <CheckCircle className={`w-5 h-5 ${isWatched ? 'fill-current' : ''}`} />
+              {isWatched ? 'Watched' : 'Mark as Watched'}
+            </button>
+
+            {subtitle.type === 'series' && (
+              <button 
+                onClick={toggleSeriesWatchlist}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-bold text-sm uppercase tracking-widest transition-all border w-full sm:w-auto lg:w-full ${
+                  isSeriesWatchlisted 
+                    ? 'bg-blue-600 text-white border-blue-600' 
+                    : 'bg-white/5 text-white border-white/10 hover:bg-white/10'
+                }`}
+              >
+                <Film className={`w-5 h-5 ${isSeriesWatchlisted ? 'fill-current' : ''}`} />
+                {isSeriesWatchlisted ? 'Series in Watchlist' : 'Watchlist Series'}
+              </button>
+            )}
+          </div>
+        )}
+        
+        {!isPro && user && monetizationEnabled && (
+          <div className="text-[10px] font-black uppercase tracking-widest text-gray-500 mt-4 text-center sm:text-left lg:text-center leading-relaxed">
+            <p className="mb-1">Free users: 15s wait • 10 downloads/day</p>
+            <Link href="/upgrade" className="text-netflix-red hover:underline">Upgrade to Pro for instant access</Link>
+          </div>
+        )}
+
+        <div className="mt-8 flex justify-center sm:justify-start lg:justify-center w-full">
+          <button 
+            onClick={() => setIsReportModalOpen(true)}
+            className="flex items-center gap-2 text-gray-500 hover:text-netflix-red transition-colors text-xs font-black uppercase tracking-widest group"
+          >
+            <Flag className="w-4 h-4 group-hover:animate-bounce" /> Report this subtitle
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <article className="min-h-screen bg-netflix-bg text-white pb-12">
       <Helmet>
@@ -768,11 +1010,11 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
         />
       </div>
       
-      <div className="max-w-6xl mx-auto px-4 md:px-12 -mt-40 relative z-20">
-        <div className="flex flex-col md:flex-row gap-8 md:gap-12">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 xl:px-12 -mt-40 relative z-20">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 xl:gap-12">
           
-            {/* Poster */}
-            <div className="w-full md:w-1/3 lg:w-1/4 flex-shrink-0">
+            {/* Poster & Sidebar Info */}
+            <div className="lg:col-span-4 xl:col-span-3 flex flex-col gap-6">
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -841,10 +1083,15 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                 )}
               </motion.div>
             )}
+
+            {/* Actions / Download Card - Desktop Only */}
+            <div className="hidden lg:block w-full">
+              {renderDownloadCard()}
+            </div>
           </div>
 
-          {/* Details */}
-          <div className="flex-1 flex flex-col gap-8">
+          {/* Details & Main Content */}
+          <div className="lg:col-span-8 xl:col-span-9 flex flex-col gap-8">
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -1118,245 +1365,9 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
               </div>
             )}
 
-            <div className="bg-[#121212] p-8 rounded-xl border border-gray-800 shadow-xl relative isolate transform-gpu w-full">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
-                <Link href={`/user/${subtitle.authorUid}`}>
-                  <div className="flex items-center gap-4 cursor-pointer group">
-                    <div className="w-14 h-14 rounded-full bg-gray-700 overflow-hidden border-2 border-netflix-red transition-transform group-hover:scale-110 transform-gpu backface-hidden">
-                      {authorPhoto ? (
-                        <img src={authorPhoto || undefined} alt={authorName} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-400 font-bold text-xl">
-                          {(authorName || 'A').charAt(0).toUpperCase()}
-                        </div>
-                      )}
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-400">Translated by</p>
-                      <div className="flex items-center gap-2">
-                        <p className="font-bold text-white text-lg group-hover:text-netflix-red transition-colors">{authorName}</p>
-                        {authorUploadCount > 0 && <CreatorBadge uploadCount={authorUploadCount} />}
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-
-                <div className="flex flex-col items-end">
-                  <p className="text-sm text-gray-400 mb-2">Rate this subtitle</p>
-                  <div className="flex gap-1">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star 
-                        key={star} 
-                        className={`w-7 h-7 cursor-pointer transition-all hover:scale-110 ${star <= (showCommentInput ? selectedRating : userRating) ? 'fill-yellow-500 text-yellow-500' : 'text-gray-600 hover:text-yellow-500'}`}
-                        onClick={() => handleRate(star)}
-                      />
-                    ))}
-                  </div>
-                  
-                  <AnimatePresence>
-                    {showCommentInput && (
-                      <motion.div 
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="w-full mt-4 space-y-3"
-                      >
-                        <textarea
-                          value={commentInput}
-                          onChange={(e) => setCommentInput(e.target.value)}
-                          placeholder="Write a comment (optional)..."
-                          className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-netflix-red transition-colors font-medium h-24 resize-none text-sm"
-                        />
-                        <div className="flex justify-end gap-3">
-                          <button 
-                            onClick={() => setShowCommentInput(false)}
-                            className="px-4 py-2 text-xs font-black uppercase tracking-widest text-gray-500 hover:text-white transition-colors"
-                          >
-                            Cancel
-                          </button>
-                          <button 
-                            onClick={submitRating}
-                            disabled={isRatingLoading}
-                            className="bg-netflix-red text-white px-6 py-2 rounded-lg text-xs font-black uppercase tracking-widest hover:bg-red-700 transition-all disabled:opacity-50"
-                          >
-                            {isRatingLoading ? 'Submitting...' : 'Submit'}
-                          </button>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
-                  <div className="flex flex-col items-end mt-1">
-                    <span className="text-xs text-gray-500">{subtitle.ratingCount} community ratings</span>
-                    <span className="text-xs text-netflix-red font-bold mt-1 flex items-center gap-1">
-                      <Download className="w-3 h-3" /> {subtitle.downloadCount || 0} Total Downloads
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {error && (
-                <div className="bg-red-900/50 border border-red-500 text-red-200 p-4 rounded-md mb-6 flex items-start gap-3 text-sm">
-                  <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-red-400" />
-                  <p>{error}</p>
-                </div>
-              )}
-
-              <div className="w-full mx-auto"><AdZone zoneName="subtitle-details" /></div>
-
-              <div className="flex flex-col sm:flex-row flex-wrap gap-6 items-center relative z-10">
-                {!user ? (
-                  <button onClick={signIn} className="btn-primary w-full sm:w-auto">
-                    Sign in to Download
-                  </button>
-                ) : isProOnly && !isPro ? (
-                  <div className="flex flex-col gap-4 w-full sm:w-auto">
-                    <Link href="/upgrade" className="btn w-full bg-gradient-to-r from-yellow-500 to-yellow-600 text-black shadow-lg hover:from-yellow-400 hover:to-yellow-500 hover:shadow-xl hover:-translate-y-0.5">
-                      <Crown className="w-5 h-5" /> Upgrade to Pro
-                    </Link>
-                    <p className="text-xs text-gray-500 font-bold text-center sm:text-left">
-                      Available for Free users on: {new Date(subtitle.proOnlyUntil!).toLocaleString()}
-                    </p>
-                  </div>
-                ) : isPro || canDownload || (!isPreparing && !startTimer) ? (
-                  <div className="flex flex-col w-full sm:w-auto gap-4 mt-6">
-                    <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-4">
-                      <button 
-                        onClick={handleDownload} 
-                        disabled={downloading}
-                        className="btn-primary w-full sm:w-auto"
-                      >
-                        <Download className="w-5 h-5" /> {downloading ? 'Preparing...' : 'Download Subtitle'}
-                      </button>
-                      {subtitle.watchOnlineLink && (
-                        <button 
-                          onClick={() => setShowWatchOnlineModal(true)}
-                          className="btn-white w-full sm:w-auto"
-                        >
-                          <Play className="w-5 h-5" /> Watch Online
-                        </button>
-                      )}
-                    </div>
-                    {((subtitle.videoOptions && subtitle.videoOptions.length > 0) || (subtitle.videoLinks?.raw?.p480 || subtitle.videoLinks?.raw?.p720 || subtitle.videoLinks?.raw?.p1080 || subtitle.videoLinks?.hardcoded?.p480 || subtitle.videoLinks?.hardcoded?.p720 || subtitle.videoLinks?.hardcoded?.p1080)) && (
-                      <Link href={subtitle.slug ? `/subtitles/${subtitle.slug}/video` : `/subtitle/${subtitle.id}/video`}>
-                        <button className="btn-secondary w-full sm:w-auto flex items-center justify-center gap-2 font-bold bg-[#1a1a1a] hover:bg-[#2a2a2a] text-white border-0 py-3 rounded-lg shadow-lg">
-                          <Video className="w-5 h-5" /> Download Video
-                        </button>
-                      </Link>
-                    )}
-                  </div>
-                ) : isPreparing ? (
-                  <div className="w-full max-w-2xl mx-auto aspect-video rounded-2xl border border-white/10 shadow-2xl relative overflow-hidden bg-black">
-                    <VastPlayer 
-                      vastUrl="https://scrawnyslice.com/d.mLFsz/d/GhNpvAZZGeUJ/RetmA9buuZhUbl/k/PuT/c/xNMUDsESx/N/D/UltoNXzdE-wOMZTxE/0/OiQN"
-                      onFinished={() => setCountdown(0)}
-                      onSkip={() => setCountdown(0)}
-                    />
-                  </div>
-                ) : (
-                  <button disabled className="btn-secondary w-full sm:w-auto">
-                    <Clock className="w-5 h-5" /> Wait {countdown}s
-                  </button>
-                )}
-
-                <button 
-                  onClick={handleShare}
-                  className="btn-secondary w-full sm:w-auto"
-                >
-                  <Share2 className="w-5 h-5" /> Share
-                </button>
-
-                {subtitle.telegramLink && (
-                  <a
-                    id="telegram-download"
-                    href={canDownloadTelegram || isPro ? subtitle.telegramLink : "#telegram-download"}
-                    target={canDownloadTelegram || isPro ? "_blank" : undefined}
-                    rel="noopener noreferrer"
-                    onClick={(e) => {
-                      if (!canDownloadTelegram && !isPro) {
-                        // Let the event bubble so Monetag can intercept it
-                        handleTelegramDownload(e);
-                      } else {
-                        handleTelegramDownload(e);
-                      }
-                    }}
-                    style={{ pointerEvents: telegramCountdown !== null && telegramCountdown > 0 ? 'none' : 'auto' }}
-                    className={`btn w-full sm:w-auto bg-[#0088cc] text-white shadow-lg border border-[#0088cc] hover:bg-[#0077b3] hover:shadow-xl hover:-translate-y-0.5 relative overflow-hidden ${telegramCountdown !== null && telegramCountdown > 0 ? 'opacity-50' : ''}`}
-                  >
-                    {isPro && (
-                      <span className="absolute top-1 right-1 bg-yellow-500 text-black text-[8px] font-black px-1.5 py-0.5 rounded-sm flex items-center gap-1 uppercase tracking-tighter shadow-md">
-                        <Crown className="w-2 h-2" /> Pro
-                      </span>
-                    )}
-                    <Send className="w-5 h-5" /> 
-                    {telegramCountdown !== null && telegramCountdown > 0 
-                      ? `Wait ${telegramCountdown}s...` 
-                      : canDownloadTelegram || isPro 
-                        ? 'Open Telegram Link' 
-                        : 'Download Movie/Series'}
-                  </a>
-                )}
-              </div>
-
-              <div className="flex flex-col w-full">
-                {user && subtitle && (
-                  <div className="flex flex-wrap gap-4 mt-8 w-full border-t border-white/5 pt-8">
-                    <button 
-                      onClick={toggleWatchlist}
-                      className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-bold text-sm uppercase tracking-widest transition-all border ${
-                        isWatchlisted 
-                          ? 'bg-netflix-red text-white border-netflix-red' 
-                          : 'bg-white/5 text-white border-white/10 hover:bg-white/10'
-                      }`}
-                    >
-                      <Bookmark className={`w-5 h-5 ${isWatchlisted ? 'fill-current' : ''}`} />
-                      {isWatchlisted ? 'In Watchlist' : 'Add to Watchlist'}
-                    </button>
-
-                    <button 
-                      onClick={toggleWatched}
-                      className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-bold text-sm uppercase tracking-widest transition-all border ${
-                        isWatched 
-                          ? 'bg-green-600 text-white border-green-600' 
-                          : 'bg-white/5 text-white border-white/10 hover:bg-white/10'
-                      }`}
-                    >
-                      <CheckCircle className={`w-5 h-5 ${isWatched ? 'fill-current' : ''}`} />
-                      {isWatched ? 'Watched' : 'Mark as Watched'}
-                    </button>
-
-                    {subtitle.type === 'series' && (
-                      <button 
-                        onClick={toggleSeriesWatchlist}
-                        className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-bold text-sm uppercase tracking-widest transition-all border ${
-                          isSeriesWatchlisted 
-                            ? 'bg-blue-600 text-white border-blue-600' 
-                            : 'bg-white/5 text-white border-white/10 hover:bg-white/10'
-                        }`}
-                      >
-                        <Film className={`w-5 h-5 ${isSeriesWatchlisted ? 'fill-current' : ''}`} />
-                        {isSeriesWatchlisted ? 'Series in Watchlist' : 'Watchlist Series'}
-                      </button>
-                    )}
-                  </div>
-                )}
-                
-                {!isPro && user && monetizationEnabled && (
-                  <div className="text-[10px] font-black uppercase tracking-widest text-gray-500 mt-4 text-center sm:text-left leading-relaxed">
-                    <p className="mb-1">Free users: 15s wait • 10 downloads/day</p>
-                    <Link href="/upgrade" className="text-netflix-red hover:underline">Upgrade to Pro for instant access</Link>
-                  </div>
-                )}
-
-                <div className="mt-8 flex justify-center sm:justify-start">
-                  <button 
-                    onClick={() => setIsReportModalOpen(true)}
-                    className="flex items-center gap-2 text-gray-500 hover:text-netflix-red transition-colors text-xs font-black uppercase tracking-widest group"
-                  >
-                    <Flag className="w-4 h-4 group-hover:animate-bounce" /> Report this subtitle
-                  </button>
-                </div>
-              </div>
+            {/* Actions / Download Card - Mobile/Tablet Only */}
+            <div className="block lg:hidden w-full">
+              {renderDownloadCard()}
             </div>
           </div>
         </div>
