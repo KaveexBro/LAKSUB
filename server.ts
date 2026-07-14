@@ -398,7 +398,7 @@ async function startServer() {
   } else {
     // Serve static files from 'dist'
     const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath, { index: false })); // index: false forces fallback to *
+    app.use(express.static(distPath)); // Removed index: false so prerendered folders are served properly
     
     app.get('*', (req, res) => {
       res.sendFile(path.join(distPath, 'index.html'));
