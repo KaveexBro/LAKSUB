@@ -1,13 +1,32 @@
+import 'dotenv/config';
 import express from 'express';
 import path from 'path';
 import fs from 'fs';
 import { createServer as createViteServer } from 'vite';
+import ImageKit from 'imagekit';
 import firebaseConfig from './firebase-applet-config.json' assert { type: 'json' };
+
+const imagekit = new ImageKit({
+  publicKey: process.env.IMAGEKIT_PUBLIC_KEY || '',
+  privateKey: process.env.IMAGEKIT_PRIVATE_KEY || '',
+  urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT || '',
+});
 
 async function startServer() {
   const app = express();
 
-  
+  app.get('/api/imagekit/auth', (req, res) => {
+    try {
+      const result = imagekit.getAuthenticationParameters();
+      res.json({
+        ...result,
+        publicKey: process.env.IMAGEKIT_PUBLIC_KEY || ''
+      });
+    } catch (error) {
+      console.error('Error generating ImageKit auth parameters:', error);
+      res.status(500).json({ error: 'Failed to generate auth parameters' });
+    }
+  });
 
   const PORT = process.env.PORT || 3000;
 

@@ -40,6 +40,54 @@ export const Profile: React.FC = () => {
   const [photoURL, setPhotoURL] = useState('');
   const [bio, setBio] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+
+  const handleFileUpload = async (file: File) => {
+    if (!user) return;
+    setUploading(true);
+    setUploadError('');
+    try {
+      const authRes = await fetch('/api/imagekit/auth');
+      if (!authRes.ok) {
+        throw new Error('Could not fetch ImageKit upload credentials. Ensure ImageKit env variables are configured.');
+      }
+      const authData = await authRes.json();
+      const { token, expire, signature, publicKey } = authData;
+
+      if (!publicKey) {
+        throw new Error('ImageKit public key is not configured on the server. Please check your .env file.');
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('fileName', `profile_${user.uid}_${Date.now()}.${file.name.split('.').pop()}`);
+      formData.append('publicKey', publicKey);
+      formData.append('signature', signature);
+      formData.append('token', token);
+      formData.append('expire', expire.toString());
+
+      const response = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`Upload failed: ${errText || response.statusText}`);
+      }
+
+      const uploadResult = await response.json();
+      setPhotoURL(uploadResult.url);
+      setSuccessMessage('Photo uploaded successfully to ImageKit!');
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (err: any) {
+      console.error('ImageKit upload error:', err);
+      setUploadError(err.message || 'Failed to upload photo');
+    } finally {
+      setUploading(false);
+    }
+  };
 
   useEffect(() => {
     if (userData) {
@@ -524,15 +572,71 @@ export const Profile: React.FC = () => {
                       />
                     </div>
 
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Profile Photo URL</label>
-                      <input 
-                        type="url" 
-                        value={photoURL}
-                        onChange={(e) => setPhotoURL(e.target.value)}
-                        className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-netflix-red transition-colors font-medium"
-                        placeholder="https://example.com/photo.jpg"
-                      />
+                    <div className="space-y-4">
+                      <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1 block">Profile Photo (ImageKit.io Upload)</label>
+                      
+                      <div className="flex flex-col md:flex-row items-center gap-6 p-5 rounded-2xl bg-black/40 border border-white/10">
+                        {/* Preview */}
+                        <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-netflix-red flex-shrink-0 bg-gray-800 flex items-center justify-center shadow-lg">
+                          {photoURL ? (
+                            <img src={photoURL} alt="Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                          ) : (
+                            <User className="w-10 h-10 text-gray-600" />
+                          )}
+                        </div>
+
+                        {/* Drag & Drop Zone */}
+                        <div 
+                          className={`flex-1 w-full border-2 border-dashed rounded-xl p-5 flex flex-col items-center justify-center cursor-pointer transition-colors relative ${uploading ? 'border-netflix-red bg-netflix-red/5' : 'border-white/10 hover:border-netflix-red/50 bg-black/20'}`}
+                          onDragOver={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                          onDrop={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                              handleFileUpload(e.dataTransfer.files[0]);
+                            }
+                          }}
+                          onClick={() => document.getElementById('profile-file-input')?.click()}
+                        >
+                          <input 
+                            id="profile-file-input"
+                            type="file" 
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                              if (e.target.files && e.target.files[0]) {
+                                handleFileUpload(e.target.files[0]);
+                              }
+                            }}
+                          />
+                          <Upload className={`w-6 h-6 mb-2 ${uploading ? 'text-netflix-red animate-bounce' : 'text-gray-500'}`} />
+                          <p className="text-xs font-bold text-gray-300 text-center">
+                            {uploading ? 'Uploading to ImageKit...' : 'Drag & drop your photo, or click to upload'}
+                          </p>
+                          <p className="text-[10px] text-gray-500 mt-1">Supports PNG, JPG, JPEG, GIF up to 5MB</p>
+                        </div>
+                      </div>
+
+                      {uploadError && (
+                        <div className="text-xs text-red-500 font-bold bg-red-500/10 border border-red-500/20 p-3 rounded-xl flex flex-col gap-1">
+                          <p>⚠️ ImageKit Upload Failed</p>
+                          <p className="font-normal text-gray-400">{uploadError}</p>
+                        </div>
+                      )}
+
+                      <div className="space-y-2 pt-2">
+                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Or paste a custom Photo URL</label>
+                        <input 
+                          type="url" 
+                          value={photoURL}
+                          onChange={(e) => setPhotoURL(e.target.value)}
+                          className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-netflix-red transition-colors font-medium text-sm"
+                          placeholder="https://example.com/photo.jpg"
+                        />
+                      </div>
                     </div>
 
                     <div className="space-y-2">

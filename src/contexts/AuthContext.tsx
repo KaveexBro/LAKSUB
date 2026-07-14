@@ -129,15 +129,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         bio
       });
 
+      const updates: { ref: any; data: any }[] = [];
+
       // Update denormalized data in subtitles
       const subtitlesQuery = query(collection(db, 'subtitles'), where('authorUid', '==', user.uid));
       const subtitlesSnap = await getDocs(subtitlesQuery);
-      
-      const batch = writeBatch(db);
       subtitlesSnap.docs.forEach((subDoc) => {
-        batch.update(subDoc.ref, { 
-          authorName: displayName,
-          authorPhoto: photoURL 
+        updates.push({
+          ref: subDoc.ref,
+          data: {
+            authorName: displayName,
+            authorPhoto: photoURL
+          }
         });
       });
 
@@ -145,9 +148,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const ratingsQuery = query(collection(db, 'ratings'), where('userId', '==', user.uid));
       const ratingsSnap = await getDocs(ratingsQuery);
       ratingsSnap.docs.forEach((ratingDoc) => {
-        batch.update(ratingDoc.ref, { 
-          userName: displayName,
-          userPhoto: photoURL
+        updates.push({
+          ref: ratingDoc.ref,
+          data: {
+            userName: displayName,
+            userPhoto: photoURL
+          }
         });
       });
 
@@ -155,31 +161,65 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const applicationsQuery = query(collection(db, 'applications'), where('userId', '==', user.uid));
       const applicationsSnap = await getDocs(applicationsQuery);
       applicationsSnap.docs.forEach((appDoc) => {
-        batch.update(appDoc.ref, { userName: displayName });
+        updates.push({
+          ref: appDoc.ref,
+          data: { userName: displayName }
+        });
       });
 
       // Update denormalized data in withdrawals
       const withdrawalsQuery = query(collection(db, 'withdrawals'), where('userId', '==', user.uid));
       const withdrawalsSnap = await getDocs(withdrawalsQuery);
       withdrawalsSnap.docs.forEach((withDoc) => {
-        batch.update(withDoc.ref, { userName: displayName });
+        updates.push({
+          ref: withDoc.ref,
+          data: { userName: displayName }
+        });
       });
 
       // Update denormalized data in reports
       const reportsQuery = query(collection(db, 'reports'), where('userId', '==', user.uid));
       const reportsSnap = await getDocs(reportsQuery);
       reportsSnap.docs.forEach((reportDoc) => {
-        batch.update(reportDoc.ref, { userName: displayName });
+        updates.push({
+          ref: reportDoc.ref,
+          data: { userName: displayName }
+        });
       });
 
       // Update denormalized data in subtitle_requests
       const requestsQuery = query(collection(db, 'subtitle_requests'), where('userId', '==', user.uid));
       const requestsSnap = await getDocs(requestsQuery);
       requestsSnap.docs.forEach((reqDoc) => {
-        batch.update(reqDoc.ref, { userName: displayName });
+        updates.push({
+          ref: reqDoc.ref,
+          data: { userName: displayName }
+        });
       });
 
-      await batch.commit();
+      // Update denormalized data in comments
+      const commentsQuery = query(collection(db, 'comments'), where('userId', '==', user.uid));
+      const commentsSnap = await getDocs(commentsQuery);
+      commentsSnap.docs.forEach((commentDoc) => {
+        updates.push({
+          ref: commentDoc.ref,
+          data: {
+            userName: displayName,
+            userPhoto: photoURL
+          }
+        });
+      });
+
+      // Commit updates in chunks of 400 to safely avoid the 500 limit
+      const chunkSize = 400;
+      for (let i = 0; i < updates.length; i += chunkSize) {
+        const chunk = updates.slice(i, i + chunkSize);
+        const chunkBatch = writeBatch(db);
+        chunk.forEach(({ ref, data }) => {
+          chunkBatch.update(ref, data);
+        });
+        await chunkBatch.commit();
+      }
     } catch (error) {
       console.error("Error updating profile:", error);
       throw error;
