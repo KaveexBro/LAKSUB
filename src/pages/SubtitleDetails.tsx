@@ -68,6 +68,8 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
   const [vastVideoEnabled, setVastVideoEnabled] = useState(true);
   const [showVastPlayer, setShowVastPlayer] = useState(false);
   const [authorUploadCount, setAuthorUploadCount] = useState<number>(0);
+  const [authorPhoto, setAuthorPhoto] = useState<string>('');
+  const [authorName, setAuthorName] = useState<string>('');
 
   useEffect(() => {
     const fetchGlobalAds = async () => {
@@ -218,13 +220,22 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
           }
 
           setSubtitle(subData);
+          setAuthorPhoto(subData.authorPhoto || '');
+          setAuthorName(subData.authorName || '');
 
-          // Fetch Author's Upload Count
+          // Fetch Author's Upload Count and dynamic profile info
           if (subData.authorUid) {
             try {
               const authorDoc = await getDoc(doc(db, 'users', subData.authorUid));
               if (authorDoc.exists()) {
-                setAuthorUploadCount(authorDoc.data().totalUploads || 0);
+                const authorData = authorDoc.data();
+                setAuthorUploadCount(authorData.totalUploads || 0);
+                if (authorData.photoURL) {
+                  setAuthorPhoto(authorData.photoURL);
+                }
+                if (authorData.displayName) {
+                  setAuthorName(authorData.displayName);
+                }
               }
             } catch (err) {
               console.error("Error fetching author data:", err);
@@ -1112,18 +1123,18 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                 <Link href={`/user/${subtitle.authorUid}`}>
                   <div className="flex items-center gap-4 cursor-pointer group">
                     <div className="w-14 h-14 rounded-full bg-gray-700 overflow-hidden border-2 border-netflix-red transition-transform group-hover:scale-110 transform-gpu backface-hidden">
-                      {subtitle.authorPhoto ? (
-                        <img src={subtitle.authorPhoto || undefined} alt={subtitle.authorName} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                      {authorPhoto ? (
+                        <img src={authorPhoto || undefined} alt={authorName} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-gray-400 font-bold text-xl">
-                          {(subtitle.authorName || 'A').charAt(0).toUpperCase()}
+                          {(authorName || 'A').charAt(0).toUpperCase()}
                         </div>
                       )}
                     </div>
                     <div>
                       <p className="text-sm text-gray-400">Translated by</p>
                       <div className="flex items-center gap-2">
-                        <p className="font-bold text-white text-lg group-hover:text-netflix-red transition-colors">{subtitle.authorName}</p>
+                        <p className="font-bold text-white text-lg group-hover:text-netflix-red transition-colors">{authorName}</p>
                         {authorUploadCount > 0 && <CreatorBadge uploadCount={authorUploadCount} />}
                       </div>
                     </div>
