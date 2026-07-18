@@ -1,5 +1,9 @@
 {
+  "cleanUrls": true,
   "rewrites": [
+    { "source": "/subtitles/:slug", "destination": "/api/seo?type=subtitle&slug=$slug" },
+    { "source": "/series/:slug", "destination": "/api/seo?type=series&slug=$slug" },
+    { "source": "/subtitle/:id", "destination": "/api/seo?type=subtitle-id&id=$id" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

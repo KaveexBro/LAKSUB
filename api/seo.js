@@ -1,83 +1,61 @@
-import fs from 'fs';
-import path from 'path';
-
-let firebaseConfig = {};
-try {
-  const configPath = path.join(process.cwd(), 'firebase-applet-config.json');
-  if (fs.existsSync(configPath)) {
-    firebaseConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-  }
-} catch (e) {
-  // If config file is missing, try to parse from ENV or use safe defaults
-  console.warn("firebase-applet-config.json not found, falling back to environment variables or defaults if available.");
-}
-
 export default async function handler(req, res) {
   try {
-    const urlPath = req.url.split('?')[0]; 
-    const segments = urlPath.split('/').filter(Boolean);
-    const type = segments[0]; 
-    let identifier = segments[1];
-
-    if (!identifier) {
-      return fallback(res);
+    const protocol = req.headers['x-forwarded-proto'] || 'https';
+    const host = req.headers['x-forwarded-host'] || req.headers.host;
+    
+    // Parse query params safely
+    let urlObj;
+    try {
+      urlObj = new URL(req.url, `${protocol}://${host}`);
+    } catch (e) {
+      // Fallback if req.url is just a path
+      urlObj = new URL(`https://example.com${req.url}`);
     }
+    
+    const type = req.query?.type || urlObj.searchParams.get('type');
+    const slug = req.query?.slug || urlObj.searchParams.get('slug');
+    const id = req.query?.id || urlObj.searchParams.get('id');
+
+    // Fetch the base index.html
+    const baseUrl = `${protocol}://${host}`;
+    const htmlResponse = await fetch(`${baseUrl}/index.html`);
+    let html = await htmlResponse.text();
 
     let isSeriesRoute = type === 'series';
-    
-    // Use env vars or config
-    const projectId = firebaseConfig.projectId || process.env.VITE_FIREBASE_PROJECT_ID || 'gen-lang-client-0744080809';
-    const databaseId = firebaseConfig.firestoreDatabaseId || process.env.VITE_FIREBASE_DATABASE_ID || '(default)';
-    
+    let isId = type === 'subtitle-id';
+    let identifier = isId ? id : slug;
+
+    if (!identifier) {
+      res.setHeader('Content-Type', 'text/html');
+      return res.status(200).send(html);
+    }
+
+    const projectId = "gen-lang-client-0744080809";
+    const databaseId = "ai-studio-1e8cd04c-3326-4b18-88c9-f52e3a9d3db1";
     let apiUrl = '';
     let fetchOptions = {};
 
-    let slug = '';
-    let id = '';
-
-    if (type === 'subtitle' && identifier) {
-      id = identifier;
-    } else {
-      slug = identifier;
-    }
-
-    if (id) {
-      apiUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${databaseId}/documents/subtitles/${id}`;
+    if (isId) {
+      apiUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${databaseId}/documents/subtitles/${identifier}`;
       fetchOptions = { method: 'GET' };
     } else {
       apiUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${databaseId}/documents:runQuery`;
       
       let filters = [];
       filters.push({
-        fieldFilter: {
-          field: { fieldPath: "status" },
-          op: "EQUAL",
-          value: { stringValue: "approved" }
-        }
+        fieldFilter: { field: { fieldPath: "status" }, op: "EQUAL", value: { stringValue: "approved" } }
       });
 
       if (!isSeriesRoute) {
         filters.push({
-          fieldFilter: {
-            field: { fieldPath: "slug" },
-            op: "EQUAL",
-            value: { stringValue: slug }
-          }
+          fieldFilter: { field: { fieldPath: "slug" }, op: "EQUAL", value: { stringValue: identifier } }
         });
       } else {
-         filters.push({
-          fieldFilter: {
-            field: { fieldPath: "movieTitle" },
-            op: "EQUAL",
-            value: { stringValue: decodeURIComponent(slug) }
-          }
+        filters.push({
+          fieldFilter: { field: { fieldPath: "movieTitle" }, op: "EQUAL", value: { stringValue: decodeURIComponent(identifier) } }
         });
         filters.push({
-          fieldFilter: {
-            field: { fieldPath: "type" },
-            op: "EQUAL",
-            value: { stringValue: "series" }
-          }
+          fieldFilter: { field: { fieldPath: "type" }, op: "EQUAL", value: { stringValue: "series" } }
         });
       }
 
@@ -87,145 +65,126 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           structuredQuery: {
             from: [{ collectionId: "subtitles" }],
-            where: {
-              compositeFilter: {
-                op: "AND",
-                filters: filters
-              }
-            },
+            where: { compositeFilter: { op: "AND", filters: filters } },
             limit: 1
           }
         })
       };
     }
 
-    let seoData = null;
-    const response = await fetch(apiUrl, fetchOptions);
-    if (response.ok) {
-      const data = await response.json();
-      
-      let docData = null;
-      if (id && !slug) {
-        docData = data.fields;
-      } else if (data && data.length > 0 && data[0].document) {
-        docData = data[0].document.fields;
-      }
-
-      if (docData) {
-        const movieTitle = docData.movieTitle?.stringValue || '';
-        const subtitleType = docData.type?.stringValue || 'movie';
-        const releaseYear = docData.releaseYear?.integerValue || '';
-        let fullTitle = movieTitle;
-        
-        if (!isSeriesRoute && subtitleType === 'series' && docData.season && docData.episode) {
-          fullTitle = `${movieTitle} S${docData.season.integerValue.toString().padStart(2, '0')}E${docData.episode.integerValue.toString().padStart(2, '0')}`;
-        }
-
-        const seoTitle = isSeriesRoute 
-          ? `${movieTitle} Sinhala Subtitles | ${movieTitle} Sinhala Sub | LAKSUB`
-          : `${fullTitle} Sinhala Subtitles | ${movieTitle} Sinhala Sub | LAKSUB`;
-        
-        let plainDesc = (docData.description?.stringValue || '').replace(/<[^>]*>?/gm, '').substring(0, 160);
-        if (!plainDesc) {
-          plainDesc = `Download high-quality Sinhala subtitles for ${fullTitle} (${releaseYear}). Latest ${subtitleType === 'movie' ? 'movie' : 'TV series'} Sinhala sub available at LakSub.`;
-        }
-        
-        const seoDescription = isSeriesRoute
-          ? `Download high-quality Sinhala subtitles (Sinhala sub) for ${movieTitle}. Latest seasons and episodes available. Join Sri Lanka's largest subtitle community.`
-          : `Download high-quality Sinhala subtitles (Sinhala sub) for ${fullTitle} (${releaseYear}). ${plainDesc}`;
-
-        const keywords = isSeriesRoute
-          ? `${movieTitle} Sinhala subtitles, ${movieTitle} Sinhala sub, ${movieTitle} Sinhala subtitle, download ${movieTitle} Sinhala sub, tv series subtitles, Sinhala sub, LAKSUB`
-          : `${fullTitle} Sinhala Subtitles, ${movieTitle} Sinhala Sub, ${fullTitle} Sinhala Subtitle, download ${movieTitle} Sinhala Subtitles, Sinhala subtitles, Sinhala sub, LAKSUB`;
-        
-        const posterUrl = docData.posterPath?.stringValue 
-          ? `https://image.tmdb.org/t/p/w500${docData.posterPath.stringValue}`
-          : 'https://laksub.com/logo.png';
-          
-        const url = `https://laksub.com${req.url}`;
-
-        seoData = {
-          title: seoTitle,
-          description: seoDescription,
-          keywords: keywords,
-          image: posterUrl,
-          url: url
-        };
-      }
-    }
-
-    if (!seoData) {
-      return fallback(res);
-    }
-
-    // Determine the template path based on environment
-    const isVercel = process.env.VERCEL || process.env.NOW_REGION;
-    let templatePath = path.join(process.cwd(), 'dist', 'index.html');
-    
-    // In some serverless cases, we might need a direct fallback if dist/index.html doesn't exist
-    if (!fs.existsSync(templatePath)) {
-        // Ultimate fallback if no file exists
-        return res.status(200)
-                  .setHeader('Content-Type', 'text/html')
-                  .setHeader('Cache-Control', 'public, max-age=60, s-maxage=60')
-                  .send(`<!DOCTYPE html><html lang="si"><head><title>${seoData.title}</title><meta name="description" content="${seoData.description}"/><meta http-equiv="refresh" content="0; url=/"></head><body>Loading...</body></html>`);
-    }
-
-    let html = fs.readFileSync(templatePath, 'utf8');
-
-    html = html.replace(/<title>.*?<\/title>/, `<title>${seoData.title}</title>`);
-    html = html.replace(/<meta name="description" content="[^"]*" \/>/, `<meta name="description" content="${seoData.description}" />`);
-    html = html.replace(/<meta name="keywords" content="[^"]*" \/>/, `<meta name="keywords" content="${seoData.keywords}" />`);
-    html = html.replace(/<meta property="og:title" content="[^"]*" \/>/, `<meta property="og:title" content="${seoData.title}" />`);
-    html = html.replace(/<meta property="og:description" content="[^"]*" \/>/, `<meta property="og:description" content="${seoData.description}" />`);
-    html = html.replace(/<meta property="og:url" content="[^"]*" \/>/, `<meta property="og:url" content="${seoData.url}" />`);
-    
-    // Inject correct canonical URL
-    if (html.includes('<link rel="canonical"')) {
-        html = html.replace(/<link rel="canonical" href="[^"]*" ?\/>/, `<link rel="canonical" href="${seoData.url}" />`);
-    } else {
-        html = html.replace('</head>', `<link rel="canonical" href="${seoData.url}" />\n</head>`);
-    }
-    
-    if (seoData.image) {
-        if (html.includes('<meta property="og:image"')) {
-            html = html.replace(/<meta property="og:image" content="[^"]*" \/>/, `<meta property="og:image" content="${seoData.image}" />`);
-        } else {
-            html = html.replace('</head>', `<meta property="og:image" content="${seoData.image}" />\n</head>`);
-        }
-        if (html.includes('<meta property="twitter:image"')) {
-            html = html.replace(/<meta property="twitter:image" content="[^"]*" \/>/, `<meta name="twitter:image" content="${seoData.image}" />`);
-        } else {
-            html = html.replace('</head>', `<meta name="twitter:image" content="${seoData.image}" />\n</head>`);
-        }
-    }
-    
-    res.setHeader('Content-Type', 'text/html');
-    res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=86400');
-    return res.status(200).send(html);
-    
-  } catch (error) {
-    console.error('Error in SEO function:', error);
-    return fallback(res);
-  }
-};
-
-function fallback(res) {
-  try {
-    let templatePath = path.join(process.cwd(), 'dist', 'index.html');
-    if (fs.existsSync(templatePath)) {
-      const html = fs.readFileSync(templatePath, 'utf8');
+    const firestoreResponse = await fetch(apiUrl, fetchOptions);
+    if (!firestoreResponse.ok) {
       res.setHeader('Content-Type', 'text/html');
-      res.setHeader('Cache-Control', 'public, max-age=60, s-maxage=60'); 
       return res.status(200).send(html);
     }
-    
-    // If we can't find the bundled index.html, fall back to a basic HTML response that redirects to home.
-    return res.status(200)
-              .setHeader('Content-Type', 'text/html')
-              .setHeader('Cache-Control', 'public, max-age=60, s-maxage=60')
-              .send(`<!DOCTYPE html><html lang="si"><head><meta http-equiv="refresh" content="0; url=/"></head><body>Loading...</body></html>`);
-  } catch (err) {
-    return res.status(500).send('Internal Server Error');
+
+    const data = await firestoreResponse.json();
+    let docData = null;
+    if (isId) {
+      docData = data.fields;
+    } else if (data && data.length > 0 && data[0].document) {
+      docData = data[0].document.fields;
+    }
+
+    if (docData) {
+      const movieTitle = docData.movieTitle?.stringValue || '';
+      const subtitleType = docData.type?.stringValue || 'movie';
+      const releaseYear = docData.releaseYear?.integerValue || '';
+      let fullTitle = movieTitle;
+      
+      if (!isSeriesRoute && subtitleType === 'series' && docData.season && docData.episode) {
+        fullTitle = `${movieTitle} S${docData.season.integerValue.toString().padStart(2, '0')}E${docData.episode.integerValue.toString().padStart(2, '0')}`;
+      }
+
+      const seoTitle = isSeriesRoute 
+        ? `${movieTitle} Sinhala Subtitles | ${movieTitle} Sinhala Sub | LAKSUB`
+        : `${fullTitle} Sinhala Subtitles | ${movieTitle} Sinhala Sub | LAKSUB`;
+      
+      let plainDesc = (docData.description?.stringValue || '').replace(/<[^>]*>?/gm, '').substring(0, 160);
+      if (!plainDesc) {
+        plainDesc = `Download high-quality Sinhala subtitles for ${fullTitle} (${releaseYear}). Latest ${subtitleType === 'movie' ? 'movie' : 'TV series'} Sinhala sub available at LakSub.`;
+      }
+      
+      const seoDescription = isSeriesRoute
+        ? `Download high-quality Sinhala subtitles (Sinhala sub) for ${movieTitle}. Latest seasons and episodes available. Join Sri Lanka's largest subtitle community.`
+        : `Download high-quality Sinhala subtitles (Sinhala sub) for ${fullTitle} (${releaseYear}). ${plainDesc}`;
+
+      const keywords = isSeriesRoute
+        ? `${movieTitle} Sinhala subtitles, ${movieTitle} Sinhala sub, ${movieTitle} Sinhala subtitle, download ${movieTitle} Sinhala sub, tv series subtitles, Sinhala sub, LAKSUB`
+        : `${fullTitle} Sinhala Subtitles, ${movieTitle} Sinhala Sub, ${fullTitle} Sinhala Subtitle, download ${movieTitle} Sinhala Subtitles, Sinhala subtitles, Sinhala sub, LAKSUB`;
+      
+      const posterUrl = docData.posterPath?.stringValue 
+        ? `https://image.tmdb.org/t/p/w500${docData.posterPath.stringValue}`
+        : 'https://laksub.com/logo.png';
+        
+      const originalPath = isId 
+        ? `/subtitle/${identifier}`
+        : (isSeriesRoute ? `/series/${identifier}` : `/subtitles/${identifier}`);
+        
+      const url = `https://laksub.com${originalPath}`;
+
+      const structuredData = {
+        "@context": "https://schema.org",
+        "@type": isSeriesRoute ? "TVSeries" : "Movie",
+        "name": isSeriesRoute ? movieTitle : fullTitle,
+        "description": seoDescription,
+        "url": url,
+        "image": posterUrl,
+        "inLanguage": "si",
+        "isAccessibleForFree": true,
+        "author": { "@type": "Organization", "name": "LakSub", "url": "https://laksub.com" }
+      };
+      
+      if (!isSeriesRoute && releaseYear) {
+         structuredData["dateCreated"] = releaseYear.toString();
+      }
+
+      // Inject SEO
+      html = html.replace(/<title>.*?<\/title>/, `<title>${seoTitle}</title>`);
+      html = html.replace(/<meta name="description" content="[^"]*" \/>/, `<meta name="description" content="${seoDescription}" />`);
+      html = html.replace(/<meta name="keywords" content="[^"]*" \/>/, `<meta name="keywords" content="${keywords}" />`);
+      
+      const injectTag = (tag) => {
+        if (html.includes('</head>')) {
+          html = html.replace('</head>', `${tag}\n</head>`);
+        }
+      };
+
+      // Remove existing og: tags to avoid duplicates
+      html = html.replace(/<meta property="og:[^>]+>/g, '');
+      html = html.replace(/<meta property="twitter:[^>]+>/g, '');
+
+      injectTag(`<meta property="og:title" content="${seoTitle}" />`);
+      injectTag(`<meta property="og:description" content="${seoDescription}" />`);
+      injectTag(`<meta property="og:url" content="${url}" />`);
+      injectTag(`<meta property="og:image" content="${posterUrl}" />`);
+      injectTag(`<meta property="og:type" content="website" />`);
+      
+      injectTag(`<meta name="twitter:card" content="summary_large_image" />`);
+      injectTag(`<meta name="twitter:title" content="${seoTitle}" />`);
+      injectTag(`<meta name="twitter:description" content="${seoDescription}" />`);
+      injectTag(`<meta name="twitter:image" content="${posterUrl}" />`);
+      
+      injectTag(`<script type="application/ld+json">${JSON.stringify(structuredData)}</script>`);
+      
+      // We do not need a visual static HTML injection since the screenshot issue was actually
+      // caused by the rewrite rule returning the standard index.html (which just has default title/desc)
+      // Googlebot parses Open Graph and structured data and renders the page normally.
+      // However, to ensure something shows up in the screenshot while it loads:
+      const loadingStateHtml = `
+        <div id="seo-static-loading" style="position: absolute; top: 0; left: 0; width: 100%; height: 100vh; background-color: #141414; z-index: -100; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+          <img src="${posterUrl}" alt="${fullTitle}" style="width: 200px; border-radius: 8px; margin-bottom: 20px; opacity: 0.5;" />
+          <h1 style="color: white; font-family: sans-serif;">${seoTitle}</h1>
+        </div>
+      `;
+      html = html.replace('<div id="root"></div>', `<div id="root"></div>${loadingStateHtml}`);
+    }
+
+    res.setHeader('Content-Type', 'text/html');
+    res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate');
+    res.status(200).send(html);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error generating SEO page');
   }
 }
