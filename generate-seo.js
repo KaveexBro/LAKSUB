@@ -69,6 +69,12 @@ async function generatePrerender() {
       if (seoData.structuredData) {
           modified = modified.replace('</head>', `<script type="application/ld+json">${JSON.stringify(seoData.structuredData)}</script>\n</head>`);
       }
+      
+      // Inject static content for Googlebot and initial load
+      if (seoData.staticContent) {
+          modified = modified.replace('<div id="root"></div>', `<div id="root">${seoData.staticContent}</div>`);
+      }
+      
       return modified;
     };
 
@@ -118,7 +124,25 @@ async function generatePrerender() {
         "author": { "@type": "Organization", "name": "LakSub", "url": "https://laksub.com" }
       };
 
-      const seoData = { title: seoTitle, description: seoDescription, keywords, image: posterUrl, url, structuredData };
+      const fullDescription = docData.description?.stringValue || '';
+      const staticContent = `
+        <div style="background-color: #141414; color: #ffffff; min-height: 100vh; font-family: sans-serif; padding: 2rem;">
+          <div style="max-width: 1200px; margin: 0 auto; display: flex; gap: 2rem; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 300px; max-width: 400px;">
+              <img src="${posterUrl}" alt="${fullTitle}" style="width: 100%; border-radius: 0.5rem; display: block;" />
+            </div>
+            <div style="flex: 2; min-width: 300px;">
+              <h1 style="font-size: 2.5rem; font-weight: bold; margin-bottom: 1rem; margin-top: 0;">${fullTitle} Sinhala Subtitles</h1>
+              <p style="font-size: 1.125rem; color: #9ca3af; margin-bottom: 2rem;">${seoDescription}</p>
+              <div style="color: #d1d5db; line-height: 1.6;">
+                ${fullDescription}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const seoData = { title: seoTitle, description: seoDescription, keywords, image: posterUrl, url, structuredData, staticContent };
       
       const finalHtml = injectSEO(baseHtml, seoData);
       
@@ -148,7 +172,21 @@ async function generatePrerender() {
         "author": { "@type": "Organization", "name": "LakSub", "url": "https://laksub.com" }
       };
 
-      const seoData = { title: seoTitle, description: seoDescription, keywords, image: posterUrl, url, structuredData };
+      const staticContent = `
+        <div style="background-color: #141414; color: #ffffff; min-height: 100vh; font-family: sans-serif; padding: 2rem;">
+          <div style="max-width: 1200px; margin: 0 auto; display: flex; gap: 2rem; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 300px; max-width: 400px;">
+              <img src="${posterUrl}" alt="${movieTitle}" style="width: 100%; border-radius: 0.5rem; display: block;" />
+            </div>
+            <div style="flex: 2; min-width: 300px;">
+              <h1 style="font-size: 2.5rem; font-weight: bold; margin-bottom: 1rem; margin-top: 0;">${movieTitle} Sinhala Subtitles</h1>
+              <p style="font-size: 1.125rem; color: #9ca3af; margin-bottom: 2rem;">${seoDescription}</p>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const seoData = { title: seoTitle, description: seoDescription, keywords, image: posterUrl, url, structuredData, staticContent };
       const finalHtml = injectSEO(baseHtml, seoData);
       
       const dir = path.join(process.cwd(), 'dist', 'series', movieTitle);
