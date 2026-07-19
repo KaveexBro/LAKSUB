@@ -20,7 +20,8 @@
         "monetizationStatus": { "type": "string", "enum": ["locked", "pending_review", "approved"] },
         "watchlist": { "type": "array", "items": { "type": "string" } },
         "watched": { "type": "array", "items": { "type": "string" } },
-        "seriesWatchlist": { "type": "array", "items": { "type": "string" } }
+        "seriesWatchlist": { "type": "array", "items": { "type": "string" } },
+        "lastActiveAt": { "type": "string" }
       },
       "required": ["uid", "email", "role", "walletBalance", "dailyDownloadCount", "totalUploads", "totalDownloads", "isEligibleForMonetization", "monetizationStatus"]
     },

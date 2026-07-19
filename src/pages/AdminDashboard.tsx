@@ -8,7 +8,7 @@ import {
   CheckCircle, XCircle, DollarSign, Crown, Users, FileText, Edit, Trash2, 
   Search, Filter, ChevronDown, ChevronUp, ArrowUpDown, Trash, Check,
   ChevronRight, MoreVertical, CheckSquare, Square, Flag, AlertTriangle, ExternalLink,
-  MessageSquare, Clock, CheckCircle2, Film, Tv, Plus
+  MessageSquare, Clock, CheckCircle2, Film, Tv, Plus, Activity
 } from 'lucide-react';
 import { EditSubtitleModal } from '../components/EditSubtitleModal';
 import { AdManager } from '../components/AdManager';
@@ -53,6 +53,74 @@ export const AdminDashboard: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const [expandedSeries, setExpandedSeries] = useState<string[]>([]);
+
+  // Users Table Filter & Search State
+  const [userSearchTerm, setUserSearchTerm] = useState('');
+  const [userRoleFilter, setUserRoleFilter] = useState<'all' | 'admin' | 'creator' | 'user'>('all');
+  const [userProFilter, setUserProFilter] = useState<'all' | 'pro' | 'free'>('all');
+
+  const filteredUsers = useMemo(() => {
+    return users.filter(u => {
+      const matchesSearch = 
+        (u.displayName || '').toLowerCase().includes(userSearchTerm.toLowerCase()) ||
+        (u.email || '').toLowerCase().includes(userSearchTerm.toLowerCase());
+      
+      const matchesRole = userRoleFilter === 'all' || u.role === userRoleFilter;
+      
+      const isPro = u.proExpiry ? new Date(u.proExpiry) > new Date() : false;
+      const matchesPro = 
+        userProFilter === 'all' || 
+        (userProFilter === 'pro' && isPro) || 
+        (userProFilter === 'free' && !isPro);
+        
+      return matchesSearch && matchesRole && matchesPro;
+    });
+  }, [users, userSearchTerm, userRoleFilter, userProFilter]);
+
+  const formatLastActive = (isoString?: string) => {
+    if (!isoString) return <span className="text-gray-600 font-medium">Never</span>;
+    const dateObj = new Date(isoString);
+    const diffMs = new Date().getTime() - dateObj.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    
+    if (diffMins < 1) {
+      return (
+        <span className="text-green-500 font-medium flex items-center gap-1.5">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+          </span>
+          Just now
+        </span>
+      );
+    }
+    if (diffMins < 5) {
+      return (
+        <span className="text-green-500 font-medium flex items-center gap-1.5">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+          </span>
+          Online
+        </span>
+      );
+    }
+    if (diffMins < 60) {
+      return <span className="text-gray-300 font-medium">{diffMins}m ago</span>;
+    }
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) {
+      return <span className="text-gray-300 font-medium">{diffHours}h ago</span>;
+    }
+    const diffDays = Math.floor(diffHours / 24);
+    if (diffDays === 1) {
+      return <span className="text-gray-400 font-medium">Yesterday</span>;
+    }
+    if (diffDays < 7) {
+      return <span className="text-gray-400 font-medium">{diffDays}d ago</span>;
+    }
+    return <span className="text-gray-500 font-medium">{dateObj.toLocaleDateString()}</span>;
+  };
 
   // Distribution State
   const [adRevenueAmount, setAdRevenueAmount] = useState<string>('');
@@ -981,61 +1049,173 @@ export const AdminDashboard: React.FC = () => {
         )}
 
         {activeTab === 'users' && (
-          <div className="bg-netflix-surface p-6 rounded-lg border border-gray-800">
-            <h2 className="text-xl font-bold mb-6 flex items-center gap-2"><Crown className="w-5 h-5" /> Manage Users & Pro Status</h2>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
-                <thead>
-                  <tr className="text-gray-500 border-b border-gray-800">
-                    <th className="pb-3 font-medium">Name</th>
-                    <th className="pb-3 font-medium">Email</th>
-                    <th className="pb-3 font-medium">Role</th>
-                    <th className="pb-3 font-medium">Age Verified</th>
-                    <th className="pb-3 font-medium">Pro Status</th>
-                    <th className="pb-3 font-medium">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {users.map(u => {
-                    const isPro = u.proExpiry ? new Date(u.proExpiry) > new Date() : false;
-                    return (
-                      <tr key={u.uid} className="border-b border-gray-800/50">
-                        <td className="py-4 font-medium">
-                          <Link href={`/user/${u.uid}`} className="hover:text-netflix-red transition-colors">{u.displayName}</Link>
-                        </td>
-                        <td className="py-4 text-gray-400">{u.email}</td>                        <td className="py-4">
-                          <span className={`px-2 py-1 rounded-sm text-xs font-bold uppercase tracking-wider ${u.role === 'admin' ? 'bg-red-900/50 text-red-400' : u.role === 'creator' ? 'bg-blue-900/50 text-blue-400' : 'bg-gray-800 text-gray-300'}`}>
-                            {u.role}
-                          </span>
-                        </td>
-                        <td className="py-4">
-                          {u.isAdultVerified ? (
-                            <span className="text-green-500 font-bold text-xs uppercase tracking-wider flex items-center gap-1">
-                              <CheckCircle className="w-3 h-3" /> 18+ Verified
+          <div className="space-y-6">
+            {/* User Statistics Grid */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="bg-netflix-surface border border-gray-800 p-4 rounded-lg flex items-center justify-between">
+                <div>
+                  <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Total Registered</p>
+                  <p className="text-2xl font-black mt-1 text-white">{users.length}</p>
+                </div>
+                <div className="p-2.5 bg-netflix-red/10 border border-netflix-red/20 rounded-md text-netflix-red">
+                  <Users className="w-5 h-5" />
+                </div>
+              </div>
+
+              <div className="bg-netflix-surface border border-gray-800 p-4 rounded-lg flex items-center justify-between">
+                <div>
+                  <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Online Now</p>
+                  <p className="text-2xl font-black mt-1 text-green-500 flex items-center gap-2">
+                    {users.filter(u => u.lastActiveAt && (new Date().getTime() - new Date(u.lastActiveAt).getTime()) < 5 * 60 * 1000).length}
+                    <span className="relative flex h-3 w-3">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                    </span>
+                  </p>
+                </div>
+                <div className="p-2.5 bg-green-500/10 border border-green-500/20 rounded-md text-green-500">
+                  <Activity className="w-5 h-5" />
+                </div>
+              </div>
+
+              <div className="bg-netflix-surface border border-gray-800 p-4 rounded-lg flex items-center justify-between">
+                <div>
+                  <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Active Today</p>
+                  <p className="text-2xl font-black mt-1 text-white">
+                    {users.filter(u => u.lastActiveAt && (new Date().getTime() - new Date(u.lastActiveAt).getTime()) < 24 * 60 * 60 * 1000).length}
+                  </p>
+                </div>
+                <div className="p-2.5 bg-blue-500/10 border border-blue-500/20 rounded-md text-blue-400">
+                  <Clock className="w-5 h-5" />
+                </div>
+              </div>
+
+              <div className="bg-netflix-surface border border-gray-800 p-4 rounded-lg flex items-center justify-between">
+                <div>
+                  <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Active This Week</p>
+                  <p className="text-2xl font-black mt-1 text-white">
+                    {users.filter(u => u.lastActiveAt && (new Date().getTime() - new Date(u.lastActiveAt).getTime()) < 7 * 24 * 60 * 60 * 1000).length}
+                  </p>
+                </div>
+                <div className="p-2.5 bg-purple-500/10 border border-purple-500/20 rounded-md text-purple-400">
+                  <CheckCircle2 className="w-5 h-5" />
+                </div>
+              </div>
+            </div>
+
+            {/* Manage Users and Search / Filters */}
+            <div className="bg-netflix-surface p-6 rounded-lg border border-gray-800">
+              <h2 className="text-xl font-bold mb-6 flex items-center gap-2"><Crown className="w-5 h-5" /> Manage Users & Pro Status</h2>
+              
+              {/* Search & Filter Bar */}
+              <div className="bg-black/40 p-4 rounded-md border border-gray-800/80 flex flex-col md:flex-row gap-4 items-center justify-between mb-6">
+                <div className="relative w-full md:w-96">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                  <input 
+                    type="text" 
+                    placeholder="Search user name or email..." 
+                    value={userSearchTerm}
+                    onChange={(e) => setUserSearchTerm(e.target.value)}
+                    className="w-full bg-black border border-gray-700 rounded-md pl-10 pr-4 py-2 text-sm focus:border-netflix-red focus:outline-none transition-colors"
+                  />
+                </div>
+                <div className="flex flex-wrap gap-4 w-full md:w-auto">
+                  <div className="flex items-center gap-2">
+                    <Filter className="w-4 h-4 text-gray-500" />
+                    <span className="text-xs text-gray-500 font-medium uppercase">Role:</span>
+                    <select
+                      value={userRoleFilter}
+                      onChange={(e) => setUserRoleFilter(e.target.value as any)}
+                      className="bg-black border border-gray-700 rounded-md text-xs px-3 py-1.5 focus:border-netflix-red focus:outline-none text-white font-medium"
+                    >
+                      <option value="all">All Roles</option>
+                      <option value="admin">Admins</option>
+                      <option value="creator">Creators</option>
+                      <option value="user">Users</option>
+                    </select>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500 font-medium uppercase">Pro Status:</span>
+                    <select
+                      value={userProFilter}
+                      onChange={(e) => setUserProFilter(e.target.value as any)}
+                      className="bg-black border border-gray-700 rounded-md text-xs px-3 py-1.5 focus:border-netflix-red focus:outline-none text-white font-medium"
+                    >
+                      <option value="all">All Statuses</option>
+                      <option value="pro">Pro Only</option>
+                      <option value="free">Free Only</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm">
+                  <thead>
+                    <tr className="text-gray-500 border-b border-gray-800">
+                      <th className="pb-3 font-medium">Name</th>
+                      <th className="pb-3 font-medium">Email</th>
+                      <th className="pb-3 font-medium">Role</th>
+                      <th className="pb-3 font-medium">Age Verified</th>
+                      <th className="pb-3 font-medium">Pro Status</th>
+                      <th className="pb-3 font-medium">Last Active</th>
+                      <th className="pb-3 font-medium">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredUsers.map(u => {
+                      const isPro = u.proExpiry ? new Date(u.proExpiry) > new Date() : false;
+                      return (
+                        <tr key={u.uid} className="border-b border-gray-800/50 hover:bg-white/[0.01] transition-colors">
+                          <td className="py-4 font-medium">
+                            <Link href={`/user/${u.uid}`} className="hover:text-netflix-red transition-colors">{u.displayName}</Link>
+                          </td>
+                          <td className="py-4 text-gray-400">{u.email}</td>
+                          <td className="py-4">
+                            <span className={`px-2 py-1 rounded-sm text-xs font-bold uppercase tracking-wider ${u.role === 'admin' ? 'bg-red-900/50 text-red-400' : u.role === 'creator' ? 'bg-blue-900/50 text-blue-400' : 'bg-gray-800 text-gray-300'}`}>
+                              {u.role}
                             </span>
-                          ) : (
-                            <span className="text-gray-500 text-xs uppercase tracking-wider">Not Verified</span>
-                          )}
-                        </td>
-                        <td className="py-4">
-                          {isPro ? (
-                            <span className="text-yellow-500 font-bold text-xs uppercase tracking-wider">Active (Expires {new Date(u.proExpiry!).toLocaleDateString()})</span>
-                          ) : (
-                            <span className="text-gray-500 text-xs uppercase tracking-wider">Free</span>
-                          )}
-                        </td>
-                        <td className="py-4">
-                          {!isPro && (
-                            <button onClick={() => handleActivatePro(u.uid)} className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-black px-3 py-1 rounded-sm text-xs font-bold uppercase tracking-wider hover:from-yellow-400 hover:to-yellow-500 transition-colors">
-                              Activate Pro (30 Days)
-                            </button>
-                          )}
+                          </td>
+                          <td className="py-4">
+                            {u.isAdultVerified ? (
+                              <span className="text-green-500 font-bold text-xs uppercase tracking-wider flex items-center gap-1">
+                                <CheckCircle className="w-3 h-3" /> 18+ Verified
+                              </span>
+                            ) : (
+                              <span className="text-gray-500 text-xs uppercase tracking-wider">Not Verified</span>
+                            )}
+                          </td>
+                          <td className="py-4">
+                            {isPro ? (
+                              <span className="text-yellow-500 font-bold text-xs uppercase tracking-wider">Active (Expires {new Date(u.proExpiry!).toLocaleDateString()})</span>
+                            ) : (
+                              <span className="text-gray-500 text-xs uppercase tracking-wider">Free</span>
+                            )}
+                          </td>
+                          <td className="py-4">
+                            {formatLastActive(u.lastActiveAt)}
+                          </td>
+                          <td className="py-4">
+                            {!isPro && (
+                              <button onClick={() => handleActivatePro(u.uid)} className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-black px-3 py-1 rounded-sm text-xs font-bold uppercase tracking-wider hover:from-yellow-400 hover:to-yellow-500 transition-colors">
+                                Activate Pro (30 Days)
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                    {filteredUsers.length === 0 && (
+                      <tr>
+                        <td colSpan={7} className="py-8 text-center text-gray-500 text-sm">
+                          No users found matching your search and filter criteria.
                         </td>
                       </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         )}

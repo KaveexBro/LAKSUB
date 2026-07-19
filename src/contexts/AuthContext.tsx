@@ -103,6 +103,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
+  useEffect(() => {
+    if (!user) return;
+    
+    const userRef = doc(db, 'users', user.uid);
+    const updateActivity = async () => {
+      try {
+        await updateDoc(userRef, {
+          lastActiveAt: new Date().toISOString()
+        });
+      } catch (err) {
+        console.error("Error updating last active time:", err);
+      }
+    };
+    
+    updateActivity();
+    
+    const interval = setInterval(updateActivity, 3 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [user]);
+
   const signIn = async () => {
     try {
       await signInWithPopup(auth, googleProvider);

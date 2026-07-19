@@ -47,7 +47,8 @@ service cloud.firestore {
              data.monetizationStatus in ['locked', 'pending_review', 'approved'] &&
              (!('watchlist' in data) || data.watchlist is list) &&
              (!('watched' in data) || data.watched is list) &&
-             (!('seriesWatchlist' in data) || data.seriesWatchlist is list);
+             (!('seriesWatchlist' in data) || data.seriesWatchlist is list) &&
+             (!('lastActiveAt' in data) || data.lastActiveAt is string);
     }
 
     function isValidSubtitle(data) {
@@ -216,6 +217,10 @@ service cloud.firestore {
                        (isOwner(userId) && 
                         request.resource.data.diff(resource.data).affectedKeys().hasAny(['watchlist', 'watched', 'seriesWatchlist']) &&
                         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['watchlist', 'watched', 'seriesWatchlist']) &&
+                        isValidUser(request.resource.data)) ||
+                       // Allow users to update their own lastActiveAt
+                       (isOwner(userId) && 
+                        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastActiveAt']) &&
                         isValidUser(request.resource.data));
     }
 

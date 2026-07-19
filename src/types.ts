@@ -94,6 +94,7 @@ export interface UserData {
   isEligibleForMonetization: boolean;
   monetizationStatus: 'locked' | 'pending_review' | 'approved';
   isAdultVerified?: boolean;
+  lastActiveAt?: string;
   bio?: string;
   watchlist?: string[];
   watched?: string[];
