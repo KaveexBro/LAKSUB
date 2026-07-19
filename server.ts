@@ -303,7 +303,12 @@ async function startServer() {
             ? `https://image.tmdb.org/t/p/w500${docData.posterPath.stringValue}`
             : 'https://laksub.com/logo.png';
             
-          const url = `https://laksub.com${req.originalUrl}`;
+          const encodedSlug = encodeURIComponent(decodeURIComponent(slug || id || ''));
+          const originalPath = id 
+            ? `/subtitle/${encodedSlug}`
+            : (isSeriesRoute ? `/series/${encodedSlug}` : `/subtitles/${encodedSlug}`);
+            
+          const url = `https://laksub.com${originalPath}`;
 
           
           const structuredData = {
@@ -356,6 +361,12 @@ async function startServer() {
       html = html.replace(/<title>.*?<\/title>/, `<title>${seoData.title}</title>`);
       html = html.replace(/<meta name="description" content="[^"]*" \/>/, `<meta name="description" content="${seoData.description}" />`);
       html = html.replace(/<meta name="keywords" content="[^"]*" \/>/, `<meta name="keywords" content="${seoData.keywords}" />`);
+      
+      // Inject Canonical & Alternate Language links to match current page URL instead of homepage
+      html = html.replace(/<link rel="canonical" href="[^"]*" \/>/, `<link rel="canonical" href="${seoData.url}" />`);
+      html = html.replace(/<link rel="alternate" hreflang="si" href="[^"]*" \/>/, `<link rel="alternate" hreflang="si" href="${seoData.url}" />`);
+      html = html.replace(/<link rel="alternate" hreflang="en" href="[^"]*" \/>/, `<link rel="alternate" hreflang="en" href="${seoData.url}" />`);
+      html = html.replace(/<link rel="alternate" hreflang="x-default" href="[^"]*" \/>/, `<link rel="alternate" hreflang="x-default" href="${seoData.url}" />`);
       
       html = html.replace(/<meta property="og:title" content="[^"]*" \/>/, `<meta property="og:title" content="${seoData.title}" />`);
       html = html.replace(/<meta property="og:description" content="[^"]*" \/>/, `<meta property="og:description" content="${seoData.description}" />`);

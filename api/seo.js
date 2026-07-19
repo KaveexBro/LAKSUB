@@ -1,3 +1,5 @@
+import firebaseConfig from '../firebase-applet-config.json' assert { type: 'json' };
+
 export default async function handler(req, res) {
   try {
     const protocol = req.headers['x-forwarded-proto'] || 'https';
@@ -30,8 +32,8 @@ export default async function handler(req, res) {
       return res.status(200).send(html);
     }
 
-    const projectId = "gen-lang-client-0744080809";
-    const databaseId = "ai-studio-1e8cd04c-3326-4b18-88c9-f52e3a9d3db1";
+    const projectId = firebaseConfig.projectId;
+    const databaseId = firebaseConfig.firestoreDatabaseId || '(default)';
     let apiUrl = '';
     let fetchOptions = {};
 
@@ -117,9 +119,10 @@ export default async function handler(req, res) {
         ? `https://image.tmdb.org/t/p/w500${docData.posterPath.stringValue}`
         : 'https://laksub.com/logo.png';
         
+      const encodedIdentifier = encodeURIComponent(decodeURIComponent(identifier));
       const originalPath = isId 
-        ? `/subtitle/${identifier}`
-        : (isSeriesRoute ? `/series/${identifier}` : `/subtitles/${identifier}`);
+        ? `/subtitle/${encodedIdentifier}`
+        : (isSeriesRoute ? `/series/${encodedIdentifier}` : `/subtitles/${encodedIdentifier}`);
         
       const url = `https://laksub.com${originalPath}`;
 
@@ -143,6 +146,12 @@ export default async function handler(req, res) {
       html = html.replace(/<title>.*?<\/title>/, `<title>${seoTitle}</title>`);
       html = html.replace(/<meta name="description" content="[^"]*" \/>/, `<meta name="description" content="${seoDescription}" />`);
       html = html.replace(/<meta name="keywords" content="[^"]*" \/>/, `<meta name="keywords" content="${keywords}" />`);
+      
+      // Inject Canonical & Alternate Language links to match current page URL instead of homepage
+      html = html.replace(/<link rel="canonical" href="[^"]*" \/>/, `<link rel="canonical" href="${url}" />`);
+      html = html.replace(/<link rel="alternate" hreflang="si" href="[^"]*" \/>/, `<link rel="alternate" hreflang="si" href="${url}" />`);
+      html = html.replace(/<link rel="alternate" hreflang="en" href="[^"]*" \/>/, `<link rel="alternate" hreflang="en" href="${url}" />`);
+      html = html.replace(/<link rel="alternate" hreflang="x-default" href="[^"]*" \/>/, `<link rel="alternate" hreflang="x-default" href="${url}" />`);
       
       const injectTag = (tag) => {
         if (html.includes('</head>')) {
