@@ -1,7 +1,11 @@
-import firebaseConfig from '../firebase-applet-config.json' assert { type: 'json' };
+import fs from 'fs';
+import path from 'path';
 
 export default async function handler(req, res) {
   try {
+    const configPath = path.join(process.cwd(), 'firebase-applet-config.json');
+    const firebaseConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+
     const projectId = firebaseConfig.projectId;
     const databaseId = firebaseConfig.firestoreDatabaseId || '(default)';
     const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${databaseId}/documents:runQuery`;

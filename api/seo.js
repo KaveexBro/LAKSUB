@@ -1,7 +1,11 @@
-import firebaseConfig from '../firebase-applet-config.json' assert { type: 'json' };
+import fs from 'fs';
+import path from 'path';
 
 export default async function handler(req, res) {
   try {
+    const configPath = path.join(process.cwd(), 'firebase-applet-config.json');
+    const firebaseConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+
     const protocol = req.headers['x-forwarded-proto'] || 'https';
     const host = req.headers['x-forwarded-host'] || req.headers.host;
     
