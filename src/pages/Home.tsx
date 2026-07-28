@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { collection, query, orderBy, limit, getDocs, where } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Link } from 'wouter';
-import { Play, Info, Volume2 } from 'lucide-react';
+import { Play, Info, Volume2, X, MessageCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Subtitle } from '../types';
 import { getTMDBImageUrl } from '../services/tmdbService';
@@ -19,6 +19,22 @@ export const Home: React.FC = () => {
   const [tvSeries, setTvSeries] = useState<Subtitle[]>([]);
   const [loading, setLoading] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
+  const [showWaBanner, setShowWaBanner] = useState(false);
+
+  useEffect(() => {
+    // Check if the user has already dismissed the WhatsApp banner
+    const waDismissed = localStorage.getItem('laksub_wa_banner_dismissed');
+    if (!waDismissed) {
+      // Delay showing the banner slightly for better UX
+      const timer = setTimeout(() => setShowWaBanner(true), 1500);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  const dismissWaBanner = () => {
+    setShowWaBanner(false);
+    localStorage.setItem('laksub_wa_banner_dismissed', 'true');
+  };
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -335,6 +351,52 @@ export const Home: React.FC = () => {
             <div className="w-full px-4 md:px-12 mx-auto"><AdZone zoneName="home-bottom" /></div>
           </div>
         </motion.div>
+      </AnimatePresence>
+
+      {/* WhatsApp Notification Banner */}
+      <AnimatePresence>
+        {showWaBanner && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.9 }}
+            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+            className="fixed bottom-6 right-6 md:bottom-10 md:right-10 z-50 max-w-sm w-[calc(100%-3rem)] md:w-full"
+          >
+            <div className="bg-[#1b1b1b] border border-gray-800 shadow-2xl rounded-2xl overflow-hidden relative">
+              <button 
+                onClick={dismissWaBanner}
+                className="absolute top-3 right-3 text-gray-400 hover:text-white bg-black/20 hover:bg-black/40 rounded-full p-1 transition-colors z-10"
+                aria-label="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+              
+              <div className="p-5 md:p-6">
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0 mt-1">
+                    <MessageCircle className="w-5 h-5 text-green-500" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-white text-base md:text-lg mb-1 pr-6">LAKSUB WhatsApp Channel</h3>
+                    <p className="text-gray-400 text-xs md:text-sm leading-relaxed mb-4">
+                      It's like joining a WhatsApp channel and getting instant notifications about website updates and newly added subtitles.
+                    </p>
+                    <a 
+                      href="https://whatsapp.com/channel/0029Vb8hNti1HspwksOPol1p" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center bg-[#25D366] hover:bg-[#1DA851] text-white font-bold py-2.5 px-5 rounded-lg text-sm w-full transition-colors"
+                      onClick={dismissWaBanner}
+                    >
+                      Join Channel Now
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
       </AnimatePresence>
     </main>
   );
