@@ -150,7 +150,7 @@ async function startServer() {
         
         urls += `
   <url>
-    <loc>https://laksub.com/${baseUrlPath}/${slug}</loc>${lastmod}
+    <loc>https://laksub.com/${baseUrlPath}/${encodeURIComponent(slug)}</loc>${lastmod}
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>`;
@@ -304,9 +304,7 @@ async function startServer() {
             : 'https://laksub.com/logo.png';
             
           const encodedSlug = encodeURIComponent(decodeURIComponent(slug || id || ''));
-          const originalPath = id 
-            ? `/subtitle/${encodedSlug}`
-            : (isSeriesRoute ? `/series/${encodedSlug}` : `/subtitles/${encodedSlug}`);
+          const originalPath = isSeriesRoute ? `/series/${encodedSlug}` : `/subtitles/${encodedSlug}`;
             
           const url = `https://laksub.com${originalPath}`;
 
@@ -362,11 +360,17 @@ async function startServer() {
       html = html.replace(/<meta name="description" content="[^"]*" \/>/, `<meta name="description" content="${seoData.description}" />`);
       html = html.replace(/<meta name="keywords" content="[^"]*" \/>/, `<meta name="keywords" content="${seoData.keywords}" />`);
       
-      // Inject Canonical & Alternate Language links to match current page URL instead of homepage
-      html = html.replace(/<link rel="canonical" href="[^"]*" \/>/, `<link rel="canonical" href="${seoData.url}" />`);
-      html = html.replace(/<link rel="alternate" hreflang="si" href="[^"]*" \/>/, `<link rel="alternate" hreflang="si" href="${seoData.url}" />`);
-      html = html.replace(/<link rel="alternate" hreflang="en" href="[^"]*" \/>/, `<link rel="alternate" hreflang="en" href="${seoData.url}" />`);
-      html = html.replace(/<link rel="alternate" hreflang="x-default" href="[^"]*" \/>/, `<link rel="alternate" hreflang="x-default" href="${seoData.url}" />`);
+      // Remove any existing ones just in case (though we removed from base HTML, good practice)
+      html = html.replace(/<link rel="canonical"[^>]+>/g, '');
+      html = html.replace(/<link rel="alternate"[^>]+hreflang[^>]+>/g, '');
+
+      const headInject = `
+        <link rel="canonical" href="${seoData.url}" />
+        <link rel="alternate" hreflang="si" href="${seoData.url}" />
+        <link rel="alternate" hreflang="en" href="${seoData.url}" />
+        <link rel="alternate" hreflang="x-default" href="${seoData.url}" />
+      `;
+      html = html.replace('</head>', `${headInject}</head>`);
       
       html = html.replace(/<meta property="og:title" content="[^"]*" \/>/, `<meta property="og:title" content="${seoData.title}" />`);
       html = html.replace(/<meta property="og:description" content="[^"]*" \/>/, `<meta property="og:description" content="${seoData.description}" />`);

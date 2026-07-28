@@ -31,7 +31,28 @@ export default async function handler(req, res) {
     let isId = type === 'subtitle-id';
     let identifier = isId ? id : slug;
 
+    const injectTag = (tag) => {
+      if (html.includes('</head>')) {
+        html = html.replace('</head>', `${tag}\n</head>`);
+      }
+    };
+
     if (!identifier) {
+      let pathname = urlObj.pathname;
+      if (pathname.length > 1 && pathname.endsWith('/')) {
+        pathname = pathname.slice(0, -1);
+      }
+      const canonicalUrl = `${protocol}://${host}${pathname === '/' ? '' : pathname}`;
+      
+      // Remove any existing canonical tags to prevent duplicates
+      html = html.replace(/<link rel="canonical"[^>]+>/g, '');
+      html = html.replace(/<link rel="alternate"[^>]+hreflang[^>]+>/g, '');
+
+      injectTag(`<link rel="canonical" href="${canonicalUrl}" />`);
+      injectTag(`<link rel="alternate" hreflang="si" href="${canonicalUrl}" />`);
+      injectTag(`<link rel="alternate" hreflang="en" href="${canonicalUrl}" />`);
+      injectTag(`<link rel="alternate" hreflang="x-default" href="${canonicalUrl}" />`);
+
       res.setHeader('Content-Type', 'text/html');
       return res.status(200).send(html);
     }
@@ -124,9 +145,7 @@ export default async function handler(req, res) {
         : 'https://laksub.com/logo.png';
         
       const encodedIdentifier = encodeURIComponent(decodeURIComponent(identifier));
-      const originalPath = isId 
-        ? `/subtitle/${encodedIdentifier}`
-        : (isSeriesRoute ? `/series/${encodedIdentifier}` : `/subtitles/${encodedIdentifier}`);
+      const originalPath = isSeriesRoute ? `/series/${encodedIdentifier}` : `/subtitles/${encodedIdentifier}`;
         
       const url = `https://laksub.com${originalPath}`;
 
@@ -151,21 +170,16 @@ export default async function handler(req, res) {
       html = html.replace(/<meta name="description" content="[^"]*" \/>/, `<meta name="description" content="${seoDescription}" />`);
       html = html.replace(/<meta name="keywords" content="[^"]*" \/>/, `<meta name="keywords" content="${keywords}" />`);
       
-      // Inject Canonical & Alternate Language links to match current page URL instead of homepage
-      html = html.replace(/<link rel="canonical" href="[^"]*" \/>/, `<link rel="canonical" href="${url}" />`);
-      html = html.replace(/<link rel="alternate" hreflang="si" href="[^"]*" \/>/, `<link rel="alternate" hreflang="si" href="${url}" />`);
-      html = html.replace(/<link rel="alternate" hreflang="en" href="[^"]*" \/>/, `<link rel="alternate" hreflang="en" href="${url}" />`);
-      html = html.replace(/<link rel="alternate" hreflang="x-default" href="[^"]*" \/>/, `<link rel="alternate" hreflang="x-default" href="${url}" />`);
-      
-      const injectTag = (tag) => {
-        if (html.includes('</head>')) {
-          html = html.replace('</head>', `${tag}\n</head>`);
-        }
-      };
-
       // Remove existing og: tags to avoid duplicates
       html = html.replace(/<meta property="og:[^>]+>/g, '');
       html = html.replace(/<meta property="twitter:[^>]+>/g, '');
+      html = html.replace(/<link rel="canonical"[^>]+>/g, '');
+      html = html.replace(/<link rel="alternate"[^>]+hreflang[^>]+>/g, '');
+
+      injectTag(`<link rel="canonical" href="${url}" />`);
+      injectTag(`<link rel="alternate" hreflang="si" href="${url}" />`);
+      injectTag(`<link rel="alternate" hreflang="en" href="${url}" />`);
+      injectTag(`<link rel="alternate" hreflang="x-default" href="${url}" />`);
 
       injectTag(`<meta property="og:title" content="${seoTitle}" />`);
       injectTag(`<meta property="og:description" content="${seoDescription}" />`);

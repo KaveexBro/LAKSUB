@@ -124,7 +124,7 @@ export default async function handler(req, res) {
       
       urls += `
   <url>
-    <loc>https://laksub.com/${baseUrlPath}/${slug}</loc>${lastmod}
+    <loc>https://laksub.com/${baseUrlPath}/${encodeURIComponent(slug)}</loc>${lastmod}
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>`;

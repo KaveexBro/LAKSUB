@@ -1,8 +1,9 @@
 {
-  "cleanUrls": true,
   "rewrites": [
     { "source": "/sitemap.xml", "destination": "/api/sitemap" },
     { "source": "/subtitles/:slug", "destination": "/api/seo?type=subtitle&slug=$slug" },
+    { "source": "/movies/:slug", "destination": "/api/seo?type=subtitle&slug=$slug" },
+    { "source": "/tv-series/:slug", "destination": "/api/seo?type=subtitle&slug=$slug" },
     { "source": "/series/:slug", "destination": "/api/seo?type=series&slug=$slug" },
     { "source": "/subtitle/:id", "destination": "/api/seo?type=subtitle-id&id=$id" },
     { "source": "/(.*)", "destination": "/api/seo" }
