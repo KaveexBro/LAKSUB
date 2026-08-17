@@ -46,7 +46,48 @@ export const Home: React.FC = () => {
           orderBy('createdAt', 'desc'), 
           limit(15)
         );
-        const latestSnap = await getDocs(latestQuery);
+        
+        // Fetch top 10 (most downloaded)
+        const top10Query = query(
+          collection(db, 'subtitles'), 
+          where('status', '==', 'approved'),
+          orderBy('downloadCount', 'desc'), 
+          limit(10)
+        );
+
+        // Fetch trending (highest rated)
+        const trendingQuery = query(
+          collection(db, 'subtitles'), 
+          where('status', '==', 'approved'),
+          orderBy('averageRating', 'desc'), 
+          limit(12)
+        );
+
+        // Fetch Action movies
+        const actionQuery = query(
+          collection(db, 'subtitles'), 
+          where('status', '==', 'approved'),
+          where('genres', 'array-contains', 'Action'), 
+          limit(12)
+        );
+
+        // Fetch TV Series
+        const seriesQuery = query(
+          collection(db, 'subtitles'), 
+          where('status', '==', 'approved'),
+          where('type', '==', 'series'), 
+          limit(12)
+        );
+
+        // Execute all queries in parallel
+        const [latestSnap, top10Snap, trendingSnap, actionSnap, seriesSnap] = await Promise.all([
+          getDocs(latestQuery),
+          getDocs(top10Query),
+          getDocs(trendingQuery),
+          getDocs(actionQuery),
+          getDocs(seriesQuery)
+        ]);
+
         const latestSubs = latestSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Subtitle));
         
         if (latestSubs.length > 0) {
@@ -56,44 +97,9 @@ export const Home: React.FC = () => {
           setLatestReleases(latestSubs.filter((_, i) => i !== featuredIndex));
         }
 
-        // Fetch top 10 (most downloaded)
-        const top10Query = query(
-          collection(db, 'subtitles'), 
-          where('status', '==', 'approved'),
-          orderBy('downloadCount', 'desc'), 
-          limit(10)
-        );
-        const top10Snap = await getDocs(top10Query);
         setTop10(top10Snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Subtitle)));
-
-        // Fetch trending (highest rated)
-        const trendingQuery = query(
-          collection(db, 'subtitles'), 
-          where('status', '==', 'approved'),
-          orderBy('averageRating', 'desc'), 
-          limit(12)
-        );
-        const trendingSnap = await getDocs(trendingQuery);
         setTrendingNow(trendingSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Subtitle)));
-
-        // Fetch Action movies
-        const actionQuery = query(
-          collection(db, 'subtitles'), 
-          where('status', '==', 'approved'),
-          where('genres', 'array-contains', 'Action'), 
-          limit(12)
-        );
-        const actionSnap = await getDocs(actionQuery);
         setActionMovies(actionSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Subtitle)));
-
-        // Fetch TV Series
-        const seriesQuery = query(
-          collection(db, 'subtitles'), 
-          where('status', '==', 'approved'),
-          where('type', '==', 'series'), 
-          limit(12)
-        );
-        const seriesSnap = await getDocs(seriesQuery);
         setTvSeries(seriesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Subtitle)));
 
       } catch (error) {
@@ -135,9 +141,8 @@ export const Home: React.FC = () => {
         <div className="flex gap-4 overflow-x-auto pb-8 pt-2 px-4 md:px-12 scrollbar-hide snap-x">
           {top10.map((sub, index) => (
             <Link key={sub.id} href={sub.slug ? `/subtitles/${sub.slug}` : `/subtitles/${sub.id}`}>
-              <motion.div 
-                whileHover={{ scale: 1.05, zIndex: 50 }}
-                className="flex-none w-64 md:w-80 h-40 md:h-48 relative group cursor-pointer snap-start flex items-end"
+              <div 
+                className="flex-none w-64 md:w-80 h-40 md:h-48 relative group cursor-pointer snap-start flex items-end hover:z-50 transition-transform duration-300 hover:scale-105"
               >
                 <div className="absolute left-0 bottom-0 text-[120px] md:text-[200px] font-black leading-[0.7] text-black stroke-white stroke-2 drop-shadow-[0_0_20px_rgba(255,255,255,0.2)] z-10 select-none opacity-80 group-hover:opacity-100 transition-opacity"
                      style={{ WebkitTextStroke: '3px rgba(255,255,255,0.6)', color: 'transparent' }}>
@@ -155,7 +160,7 @@ export const Home: React.FC = () => {
                     <p className="font-bold text-sm line-clamp-1">{sub.movieTitle}</p>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             </Link>
           ))}
         </div>
@@ -189,10 +194,8 @@ export const Home: React.FC = () => {
               key={sub.id} 
               href={sub.isGroup ? `/series/${encodeURIComponent(sub.movieTitle)}` : (sub.slug ? `/subtitles/${sub.slug}` : `/subtitles/${sub.id}`)}
             >
-              <motion.div 
-                whileHover={{ scale: 1.1, zIndex: 50 }}
-                transition={{ duration: 0.3 }}
-                className="flex-none w-36 md:w-52 aspect-[2/3] relative group cursor-pointer snap-start rounded-md overflow-hidden shadow-lg border border-gray-800/50"
+              <div 
+                className="flex-none w-36 md:w-52 aspect-[2/3] relative group cursor-pointer snap-start rounded-md overflow-hidden shadow-lg border border-gray-800/50 hover:z-50 transition-transform duration-300 hover:scale-110"
               >
                 <img 
                   src={sub.posterPath ? getTMDBImageUrl(sub.posterPath) : `https://picsum.photos/seed/${(sub.movieTitle || '').replace(/\s+/g, '')}/400/600`} 
@@ -220,7 +223,7 @@ export const Home: React.FC = () => {
                     PRO
                   </div>
                 )}
-              </motion.div>
+              </div>
             </Link>
           ))}
         </div>

@@ -45,35 +45,39 @@ export const Explore: React.FC<{ initialType?: 'movie' | 'series' | 'all', initi
   }, [searchString, initialType, initialGenre]);
 
   useEffect(() => {
-    const q = query(
-      collection(db, 'subtitles'), 
-      where('status', '==', 'approved'),
-      orderBy('createdAt', 'desc')
-    );
-
-    const unsubscribe = onSnapshot(q, async (snapshot) => {
+    const fetchExploreData = async () => {
       try {
+        const q = query(
+          collection(db, 'subtitles'), 
+          where('status', '==', 'approved'),
+          orderBy('createdAt', 'desc')
+        );
+        const snapshot = await getDocs(q);
         const subs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Subtitle));
         setSubtitles(subs);
         setFilteredSubtitles(subs);
 
-        // Fetch TMDB languages for filtering
+        // Fetch TMDB languages for filtering in chunks to avoid freezing the browser
         const uniqueTmdbIds = Array.from(new Set(subs.map(s => `${s.type}-${s.tmdbId}`)));
         const langMap: Record<string, string> = {};
         
-        await Promise.all(uniqueTmdbIds.map(async (key) => {
-          const [type, id] = key.split('-');
-          if (id && id !== 'undefined') {
-            try {
-              const lang = await getTMDBLanguage(Number(id), type as 'movie' | 'series');
-              if (lang) {
-                langMap[key] = lang;
+        const chunkSize = 20;
+        for (let i = 0; i < uniqueTmdbIds.length; i += chunkSize) {
+          const chunk = uniqueTmdbIds.slice(i, i + chunkSize);
+          await Promise.all(chunk.map(async (key) => {
+            const [type, id] = key.split('-');
+            if (id && id !== 'undefined') {
+              try {
+                const lang = await getTMDBLanguage(Number(id), type as 'movie' | 'series');
+                if (lang) {
+                  langMap[key] = lang;
+                }
+              } catch (e) {
+                console.error(e);
               }
-            } catch (e) {
-              console.error(e);
             }
-          }
-        }));
+          }));
+        }
         
         setTmdbLanguages(langMap);
       } catch (err) {
@@ -81,16 +85,18 @@ export const Explore: React.FC<{ initialType?: 'movie' | 'series' | 'all', initi
       } finally {
         setLoading(false);
       }
-    }, (error) => {
-      console.error("Firestore Error: ", error);
-      setLoading(false);
-    });
+    };
 
-    return () => unsubscribe();
+    fetchExploreData();
   }, []);
+
+  const [visibleCount, setVisibleCount] = useState(24);
 
   useEffect(() => {
     let result = [...subtitles];
+    
+    // reset visible count when filters change
+    setVisibleCount(24);
 
     if (type !== 'all') {
       result = result.filter(sub => sub.type === type);
@@ -299,73 +305,86 @@ export const Explore: React.FC<{ initialType?: 'movie' | 'series' | 'all', initi
               </button>
             </div>
           ) : (
-            groupedResults.map((sub, index) => (
-              <React.Fragment key={sub.id}>
-                <Link href={sub.isGroup ? `/series/${encodeURIComponent(sub.movieTitle)}` : (sub.slug ? `/subtitles/${sub.slug}` : `/subtitles/${sub.id}`)}>
-                  <div className="aspect-[2/3] relative group cursor-pointer rounded-xl overflow-hidden transition-all duration-500 hover:scale-105 hover:z-40 shadow-lg hover:shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/5 bg-netflix-surface">
-                    <img 
-                      src={sub.posterPath ? getTMDBImageUrl(sub.posterPath) : `https://picsum.photos/seed/${(sub.movieTitle || '').replace(/\s+/g, '')}/400/600`} 
-                      alt={sub.movieTitle}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                      referrerPolicy="no-referrer"
-                      loading="lazy"
-                    />
-                    
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-300" />
-                    
-                    {/* Content Overlay */}
-                    <div className="absolute inset-0 flex flex-col justify-end p-4 md:p-5 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                      <h3 className="font-bold text-sm md:text-base text-white leading-tight mb-2 line-clamp-2 drop-shadow-md">
-                        {sub.movieTitle}
-                      </h3>
+            <>
+              {groupedResults.slice(0, visibleCount).map((sub, index) => (
+                <React.Fragment key={sub.id}>
+                  <Link href={sub.isGroup ? `/series/${encodeURIComponent(sub.movieTitle)}` : (sub.slug ? `/subtitles/${sub.slug}` : `/subtitles/${sub.id}`)}>
+                    <div className="aspect-[2/3] relative group cursor-pointer rounded-xl overflow-hidden transition-all duration-500 hover:scale-105 hover:z-40 shadow-lg hover:shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/5 bg-netflix-surface">
+                      <img 
+                        src={sub.posterPath ? getTMDBImageUrl(sub.posterPath) : `https://picsum.photos/seed/${(sub.movieTitle || '').replace(/\s+/g, '')}/400/600`} 
+                        alt={sub.movieTitle}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        referrerPolicy="no-referrer"
+                        loading="lazy"
+                      />
                       
-                      <div className="flex flex-wrap items-center gap-2 text-[10px] md:text-xs font-medium text-gray-300 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
-                        <span className="text-green-400 font-bold bg-green-400/10 px-1.5 py-0.5 rounded">
-                          {sub.averageRating > 0 ? `★ ${sub.averageRating.toFixed(1)}` : 'NEW'}
-                        </span>
-                        <span>{sub.releaseYear}</span>
-                        {sub.isGroup && (
-                          <span className="bg-white/20 text-white px-1.5 py-0.5 rounded">Series</span>
-                        )}
-                      </div>
+                      {/* Gradient Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-300" />
                       
-                      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-150">
-                        <TMDBLanguageBadge tmdbId={sub.tmdbId} type={sub.type} />
-                        {sub.genres && (Array.isArray(sub.genres) ? sub.genres.length > 0 : typeof sub.genres === 'string') && (
-                          <span className="text-[10px] text-gray-400 truncate">
-                            {Array.isArray(sub.genres) ? sub.genres[0] : sub.genres}
+                      {/* Content Overlay */}
+                      <div className="absolute inset-0 flex flex-col justify-end p-4 md:p-5 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                        <h3 className="font-bold text-sm md:text-base text-white leading-tight mb-2 line-clamp-2 drop-shadow-md">
+                          {sub.movieTitle}
+                        </h3>
+                        
+                        <div className="flex flex-wrap items-center gap-2 text-[10px] md:text-xs font-medium text-gray-300 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
+                          <span className="text-green-400 font-bold bg-green-400/10 px-1.5 py-0.5 rounded">
+                            {sub.averageRating > 0 ? `★ ${sub.averageRating.toFixed(1)}` : 'NEW'}
                           </span>
+                          <span>{sub.releaseYear}</span>
+                          {sub.isGroup && (
+                            <span className="bg-white/20 text-white px-1.5 py-0.5 rounded">Series</span>
+                          )}
+                        </div>
+                        
+                        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-150">
+                          <TMDBLanguageBadge tmdbId={sub.tmdbId} type={sub.type} />
+                          {sub.genres && (Array.isArray(sub.genres) ? sub.genres.length > 0 : typeof sub.genres === 'string') && (
+                            <span className="text-[10px] text-gray-400 truncate">
+                              {Array.isArray(sub.genres) ? sub.genres[0] : sub.genres}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Badges */}
+                      <div className="absolute top-3 left-3 flex flex-col gap-2">
+                        {sub.proOnlyUntil && new Date(sub.proOnlyUntil) > new Date() && (
+                          <div className="bg-netflix-red text-white text-[9px] font-black px-2 py-1 rounded shadow-lg uppercase tracking-widest backdrop-blur-md">
+                            Pro
+                          </div>
                         )}
                       </div>
                     </div>
-
-                    {/* Badges */}
-                    <div className="absolute top-3 left-3 flex flex-col gap-2">
-                      {sub.proOnlyUntil && new Date(sub.proOnlyUntil) > new Date() && (
-                        <div className="bg-netflix-red text-white text-[9px] font-black px-2 py-1 rounded shadow-lg uppercase tracking-widest backdrop-blur-md">
-                          Pro
-                        </div>
-                      )}
+                  </Link>
+                  {index === 7 && (
+                    <div className="col-span-full my-4">
+                      <AdZone zoneName="explore-middle-1" />
                     </div>
-                  </div>
-                </Link>
-                {index === 7 && (
-                  <div className="col-span-full my-4">
-                    <AdZone zoneName="explore-middle-1" />
-                  </div>
-                )}
-                {index === 15 && (
-                  <div className="col-span-full my-4">
-                    <AdZone zoneName="explore-middle-2" />
-                  </div>
-                )}
-              </React.Fragment>
-            ))
+                  )}
+                  {index === 15 && (
+                    <div className="col-span-full my-4">
+                      <AdZone zoneName="explore-middle-2" />
+                    </div>
+                  )}
+                </React.Fragment>
+              ))}
+            </>
           )}
         </div>
         
-        <div className="mt-8">
+        {visibleCount < groupedResults.length && (
+          <div className="mt-12 text-center">
+            <button 
+              onClick={() => setVisibleCount(prev => prev + 24)}
+              className="px-8 py-3 bg-white/10 hover:bg-white/20 text-white rounded-full font-medium transition-colors"
+            >
+              Load More
+            </button>
+          </div>
+        )}
+
+        <div className="mt-12">
           <AdZone zoneName="explore-bottom" />
         </div>
       </section>
