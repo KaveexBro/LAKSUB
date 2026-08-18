@@ -1,32 +1,27 @@
 User-agent: *
 Allow: /
-Allow: /explore
-Allow: /movies
-Allow: /series
-Allow: /about
-Allow: /contact
 Disallow: /admin
 Disallow: /dashboard
 Disallow: /api/
 Disallow: /private/
-Disallow: /*.json$
 Disallow: /user/
-Crawl-delay: 1
-Request-rate: 30/60
 
 User-agent: Googlebot
 Allow: /
-Crawl-delay: 0
-Request-rate: 100/60
 
 User-agent: Bingbot
 Allow: /
-Crawl-delay: 1
-Request-rate: 30/60
 
 User-agent: Slurp
 Allow: /
-Crawl-delay: 1
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: YandexBot
+Allow: /
 
 Sitemap: https://www.laksub.com/sitemap.xml
-Sitemap: https://www.laksub.com/sitemap-keywords.xml

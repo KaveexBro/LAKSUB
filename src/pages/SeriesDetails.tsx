@@ -1,3 +1,4 @@
+import { useDynamicSEO } from '../hooks/useDynamicSEO';
 import React, { useEffect, useState } from 'react';
 import { useRoute, Link } from 'wouter';
 import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
@@ -188,6 +189,12 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
       }
     ]
   };
+
+  useDynamicSEO({
+    title: seoTitle,
+    description: seoDescription,
+    canonicalUrl: canonicalUrl
+  });
 
   return (
     <article className="min-h-screen bg-netflix-bg text-white pb-20">

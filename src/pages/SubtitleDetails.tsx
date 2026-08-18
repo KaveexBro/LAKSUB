@@ -1,3 +1,4 @@
+import { useDynamicSEO } from '../hooks/useDynamicSEO';
 import React, { useEffect, useState } from 'react';
 import { useRoute, Link } from 'wouter';
 import { doc, getDoc, updateDoc, increment, setDoc, collection, query, where, getDocs, writeBatch } from 'firebase/firestore';
@@ -719,6 +720,12 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
       }
     ]
   };
+
+  useDynamicSEO({
+    title: seoTitle,
+    description: seoDescription,
+    canonicalUrl: canonicalUrl
+  });
 
   const renderDownloadCard = () => (
     <div className="bg-[#121212] p-8 rounded-xl border border-gray-800 shadow-xl relative isolate transform-gpu w-full">
