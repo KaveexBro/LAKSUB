@@ -28,5 +28,5 @@ User-agent: Slurp
 Allow: /
 Crawl-delay: 1
 
-Sitemap: https://laksub.com/sitemap.xml
-Sitemap: https://laksub.com/sitemap-keywords.xml
+Sitemap: https://www.laksub.com/sitemap.xml
+Sitemap: https://www.laksub.com/sitemap-keywords.xml

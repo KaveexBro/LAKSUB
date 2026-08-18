@@ -654,7 +654,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
   const seoDescription = `Download high-quality Sinhala subtitles for ${fullTitle} (${subtitle.releaseYear}). ${plainTextDescription}`;
   const keywordsList = `${fullTitle} Sinhala Subtitles, ${subtitle.movieTitle} Sinhala Sub, ${fullTitle} Sinhala Subtitle, download ${subtitle.movieTitle} Sinhala Subtitles, Sinhala subtitles, Sinhala sub, LAKSUB`;
   
-  const canonicalUrl = `https://laksub.com/subtitles/${subtitle.slug || subtitle.id}`;
+  const canonicalUrl = `https://www.laksub.com/subtitles/${subtitle.slug || subtitle.id}`;
 
   const structuredData: any = {
     "@context": "https://schema.org",
@@ -703,13 +703,13 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
         "@type": "ListItem",
         "position": 1,
         "name": "Home",
-        "item": "https://laksub.com/"
+        "item": "https://www.laksub.com/"
       },
       {
         "@type": "ListItem",
         "position": 2,
         "name": subtitle.type === 'movie' ? "Movies" : "TV Series",
-        "item": `https://laksub.com/${subtitle.type === 'movie' ? 'movies' : 'series'}`
+        "item": `https://www.laksub.com/${subtitle.type === 'movie' ? 'movies' : 'series'}`
       },
       {
         "@type": "ListItem",

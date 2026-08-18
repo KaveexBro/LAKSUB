@@ -13,7 +13,7 @@ export const SchemaInjector: React.FC<SchemaInjectorProps> = ({ schemaData, type
   if (!schemaData) return null;
 
   // Add the current URL dynamically if not present in schema
-  const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://laksub.com';
+  const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://www.laksub.com';
   const enhancedSchema = {
     ...schemaData,
     url: schemaData.url || `${baseUrl}${location}`

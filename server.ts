@@ -14,6 +14,8 @@ const imagekit = new ImageKit({
 
 async function startServer() {
   const app = express();
+  
+  app.set('trust proxy', true);
 
   app.get('/api/imagekit/auth', (req, res) => {
     try {
@@ -29,6 +31,14 @@ async function startServer() {
   });
 
   const PORT = process.env.PORT || 3000;
+
+  // Enforce www.laksub.com for SEO
+  app.use((req, res, next) => {
+    if (req.hostname === 'laksub.com') {
+      return res.redirect(301, 'https://www.laksub.com' + req.originalUrl);
+    }
+    next();
+  });
 
   app.get('/sitemap.xml', async (req, res, next) => {
     try {
@@ -63,62 +73,62 @@ async function startServer() {
       const currentDate = new Date().toISOString().split('T')[0];
       
       let urls = `  <url>
-    <loc>https://laksub.com/</loc>
+    <loc>https://www.laksub.com/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://laksub.com/explore</loc>
+    <loc>https://www.laksub.com/explore</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://laksub.com/movies</loc>
+    <loc>https://www.laksub.com/movies</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://laksub.com/series</loc>
+    <loc>https://www.laksub.com/series</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://laksub.com/about</loc>
+    <loc>https://www.laksub.com/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://laksub.com/contact</loc>
+    <loc>https://www.laksub.com/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://laksub.com/request</loc>
+    <loc>https://www.laksub.com/request</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://laksub.com/apply</loc>
+    <loc>https://www.laksub.com/apply</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://laksub.com/upgrade</loc>
+    <loc>https://www.laksub.com/upgrade</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://laksub.com/privacy</loc>
+    <loc>https://www.laksub.com/privacy</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://laksub.com/terms</loc>
+    <loc>https://www.laksub.com/terms</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://laksub.com/dmca</loc>
+    <loc>https://www.laksub.com/dmca</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>`;
@@ -150,7 +160,7 @@ async function startServer() {
         
         urls += `
   <url>
-    <loc>https://laksub.com/${baseUrlPath}/${encodeURIComponent(slug)}</loc>${lastmod}
+    <loc>https://www.laksub.com/${baseUrlPath}/${encodeURIComponent(slug)}</loc>${lastmod}
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>`;
@@ -159,7 +169,7 @@ async function startServer() {
       for (const series of seriesTitles) {
         urls += `
   <url>
-    <loc>https://laksub.com/series/${encodeURIComponent(series)}</loc>
+    <loc>https://www.laksub.com/series/${encodeURIComponent(series)}</loc>
     <lastmod>${currentDate}T00:00:00Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -301,12 +311,12 @@ async function startServer() {
           
           const posterUrl = docData.posterPath?.stringValue 
             ? `https://image.tmdb.org/t/p/w500${docData.posterPath.stringValue}`
-            : 'https://laksub.com/logo.png';
+            : 'https://www.laksub.com/logo.png';
             
           const encodedSlug = encodeURIComponent(decodeURIComponent(slug || id || ''));
           const originalPath = isSeriesRoute ? `/series/${encodedSlug}` : `/subtitles/${encodedSlug}`;
             
-          const url = `https://laksub.com${originalPath}`;
+          const url = `https://www.laksub.com${originalPath}`;
 
           
           const structuredData = {
@@ -321,7 +331,7 @@ async function startServer() {
             "author": {
               "@type": "Organization",
               "name": "LakSub",
-              "url": "https://laksub.com"
+              "url": "https://www.laksub.com"
             }
           };
           

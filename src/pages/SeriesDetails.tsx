@@ -145,7 +145,7 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
   const seoTitle = `${title} Sinhala Subtitles | ${title} Sinhala Sub | LAKSUB`;
   const seoDescription = `Download high-quality Sinhala subtitles (Sinhala sub) for ${title}. Latest seasons and episodes available. Join Sri Lanka's largest subtitle community.`;
   const slugLink = encodeURIComponent(title);
-  const canonicalUrl = `https://laksub.com/series/${slugLink}`;
+  const canonicalUrl = `https://www.laksub.com/series/${slugLink}`;
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -160,7 +160,7 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
     "author": {
       "@type": "Organization",
       "name": "LakSub",
-      "url": "https://laksub.com"
+      "url": "https://www.laksub.com"
     }
   };
 
@@ -172,13 +172,13 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
         "@type": "ListItem",
         "position": 1,
         "name": "Home",
-        "item": "https://laksub.com/"
+        "item": "https://www.laksub.com/"
       },
       {
         "@type": "ListItem",
         "position": 2,
         "name": "TV Series",
-        "item": "https://laksub.com/series"
+        "item": "https://www.laksub.com/series"
       },
       {
         "@type": "ListItem",

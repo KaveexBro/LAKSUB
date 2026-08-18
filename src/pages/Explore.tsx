@@ -172,7 +172,7 @@ export const Explore: React.FC<{ initialType?: 'movie' | 'series' | 'all', initi
         <title>{searchTerm ? `Search Results for "${searchTerm}" Sinhala Subtitles` : initialType === 'movie' ? 'Sinhala Subtitles for Movies & Sinhala Sub' : initialType === 'series' ? 'Sinhala Subtitles for TV Series & Sinhala Sub' : 'Explore All Sinhala Subtitles & Sinhala Sub'} | LAKSUB</title>
         <meta name="description" content={`Browse and download high-quality Sinhala subtitles (Sinhala sub) for your favorite ${initialType === 'movie' ? 'Hollywood and latest movies' : initialType === 'series' ? 'Netflix and popular TV series' : 'movies and TV shows'} on LAKSUB.`} />
         <meta name="keywords" content={`Sinhala subtitles, Sinhala sub, download Sinhala sub, ${initialType === 'movie' ? 'movies Sinhala sub, English movie Sinhala subtitles' : initialType === 'series' ? 'TV series Sinhala subtitles, Netflix Sinhala subtitles' : 'Sinhala movie subtitles, Korean dramas Sinhala subtitles, Anime Sinhala subtitles'}`} />
-        <link rel="canonical" href={`https://laksub.com/${initialType === 'movie' ? 'movies' : initialType === 'series' ? 'series' : 'explore'}`} />
+        <link rel="canonical" href={`https://www.laksub.com/${initialType === 'movie' ? 'movies' : initialType === 'series' ? 'series' : 'explore'}`} />
       </Helmet>
 
       {/* Compact Header & Filters */}

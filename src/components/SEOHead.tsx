@@ -16,8 +16,8 @@ export function SEOHead({
   title = 'LakSub - The Largest Sinhala Subtitle Collection',
   description = 'Download high-quality Sinhala subtitles for movies and TV series. Join Sri Lanka\'s largest subtitle community at LakSub.',
   keywords = 'Sinhala subtitles, Sinhala sub, download Sinhala subtitles, movie subtitles, tv series subtitles, LakSub',
-  image = 'https://laksub.com/logo.png',
-  url = 'https://laksub.com',
+  image = 'https://www.laksub.com/logo.png',
+  url = 'https://www.laksub.com',
   type = 'WebSite',
   structuredData,
   releaseYear,
@@ -28,7 +28,7 @@ export function SEOHead({
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "LakSub",
-    "url": "https://laksub.com"
+    "url": "https://www.laksub.com"
   };
 
   const finalStructuredData = structuredData || defaultStructuredData;

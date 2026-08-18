@@ -237,18 +237,18 @@ export const Home: React.FC = () => {
         <title>Sinhala Subtitles & Sinhala Sub | LAKSUB</title>
         <meta name="description" content="Download the best high-quality Sinhala subtitles (Sinhala sub) for English movies, TV series, Netflix originals, Korean dramas, and Anime at LAKSUB." />
         <meta name="keywords" content="Sinhala subtitle, Sinhala sub, English movie Sinhala subtitles, TV series Sinhala subtitles, Netflix Sinhala subtitles, LAKSUB, movie subtitle download" />
-        <link rel="canonical" href="https://laksub.com/" />
+        <link rel="canonical" href="https://www.laksub.com/" />
         
         <meta property="og:title" content="Sinhala Subtitles & Sinhala Sub | LAKSUB" />
         <meta property="og:description" content="Download the best high-quality Sinhala subtitles (Sinhala sub) for English movies, TV series, Netflix originals, Korean dramas, and Anime at LAKSUB." />
-        <meta property="og:url" content="https://laksub.com/" />
+        <meta property="og:url" content="https://www.laksub.com/" />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://laksub.com/logo.png" />
+        <meta property="og:image" content="https://www.laksub.com/logo.png" />
         
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Sinhala Subtitles & Sinhala Sub | LAKSUB" />
         <meta name="twitter:description" content="Download the best high-quality Sinhala subtitles (Sinhala sub) for English movies, TV series, Netflix originals, Korean dramas, and Anime at LAKSUB." />
-        <meta name="twitter:image" content="https://laksub.com/logo.png" />
+        <meta name="twitter:image" content="https://www.laksub.com/logo.png" />
       </Helmet>
       <AnimatePresence mode="wait">
         <motion.div

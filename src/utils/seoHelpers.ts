@@ -23,7 +23,7 @@ export function generateSubtitleSEO(
   subtitle: Subtitle,
   fullTitle: string,
   posterUrl: string,
-  baseUrl: string = 'https://laksub.com'
+  baseUrl: string = 'https://www.laksub.com'
 ): SEOData {
   const baseUrlPath = subtitle.type === 'series' ? 'tv-series' : 'movies';
   const canonicalUrl = `${baseUrl}/${baseUrlPath}/${subtitle.slug || subtitle.id}`;
@@ -99,7 +99,7 @@ export function generateSubtitleSEO(
 export function generateSeriesSEO(
   seriesTitle: string,
   episodeCount: number,
-  baseUrl: string = 'https://laksub.com'
+  baseUrl: string = 'https://www.laksub.com'
 ): SEOData {
   const canonicalUrl = `${baseUrl}/series/${encodeURIComponent(seriesTitle)}`;
   
@@ -147,7 +147,7 @@ export function generateSeriesSEO(
  */
 export function generateListingSEO(
   pageType: 'movies' | 'series' | 'explore',
-  baseUrl: string = 'https://laksub.com'
+  baseUrl: string = 'https://www.laksub.com'
 ): SEOData {
   const titles = {
     movies: 'Sinhala Subtitles for Movies | LakSub',
@@ -277,7 +277,7 @@ export function generateFAQSchema() {
 /**
  * Generate Organization structured data
  */
-export function generateOrganizationSchema(baseUrl: string = 'https://laksub.com') {
+export function generateOrganizationSchema(baseUrl: string = 'https://www.laksub.com') {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
