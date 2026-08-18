@@ -355,13 +355,12 @@ async function startServer() {
         return next();
       }
 
-      // Read the index.html from dist (production). In dev, just rely on standard Vite middleware.
-      const isProd = process.env.NODE_ENV === 'production';
-      if (!isProd) {
+      // Read the index.html from dist (production).
+      const templatePath = path.join(process.cwd(), 'dist', 'index.html');
+      if (!fs.existsSync(templatePath)) {
+        // If no dist build exists, we are in pure dev mode without a build, fallback to Vite middleware
         return next();
       }
-
-      const templatePath = path.join(process.cwd(), 'dist', 'index.html');
       
       let html = fs.readFileSync(templatePath, 'utf8');
 
