@@ -1,13 +1,16 @@
 import { useEffect } from 'react';
 
-interface SEOParams {
+export interface SEOParams {
   title: string;
   description: string;
   canonicalUrl: string;
 }
 
-export function useDynamicSEO({ title, description, canonicalUrl }: SEOParams) {
+export function useDynamicSEO(params: SEOParams | null) {
   useEffect(() => {
+    if (!params) return;
+    const { title, description, canonicalUrl } = params;
+
     // Update Title
     document.title = title;
 
@@ -43,5 +46,5 @@ export function useDynamicSEO({ title, description, canonicalUrl }: SEOParams) {
     let ogUrl = document.querySelector('meta[property="og:url"]');
     if (ogUrl) ogUrl.setAttribute('content', canonicalUrl);
 
-  }, [title, description, canonicalUrl]);
+  }, [params]);
 }

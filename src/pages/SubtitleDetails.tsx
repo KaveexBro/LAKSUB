@@ -634,6 +634,14 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
     setTimeout(() => setCopySuccess(false), 2000);
   };
 
+  const seoParams = subtitle ? {
+    title: `${subtitle.type === 'series' && subtitle.season && subtitle.episode ? `${subtitle.movieTitle} S${subtitle.season.toString().padStart(2, '0')}E${subtitle.episode.toString().padStart(2, '0')}` : subtitle.movieTitle} Sinhala Subtitles | ${subtitle.movieTitle} Sinhala Sub | LAKSUB`,
+    description: `Download high-quality Sinhala subtitles for ${subtitle.movieTitle} (${subtitle.releaseYear}). ${(subtitle.description || '').replace(/<[^>]*>?/gm, '').substring(0, 160)}`,
+    canonicalUrl: `https://www.laksub.com/subtitles/${subtitle.slug || subtitle.id}`
+  } : null;
+
+  useDynamicSEO(seoParams);
+
   if (loading) return <div className="min-h-screen bg-netflix-bg flex items-center justify-center"><div className="w-12 h-12 border-4 border-netflix-red border-t-transparent rounded-full animate-spin"></div></div>;
   if (!subtitle) return <div className="min-h-screen bg-netflix-bg text-white flex items-center justify-center">Subtitle not found</div>;
 
@@ -721,11 +729,6 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
     ]
   };
 
-  useDynamicSEO({
-    title: seoTitle,
-    description: seoDescription,
-    canonicalUrl: canonicalUrl
-  });
 
   const renderDownloadCard = () => (
     <div className="bg-[#121212] p-8 rounded-xl border border-gray-800 shadow-xl relative isolate transform-gpu w-full">
