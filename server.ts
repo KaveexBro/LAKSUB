@@ -365,43 +365,43 @@ async function startServer() {
       let html = fs.readFileSync(templatePath, 'utf8');
 
       // Inject SEO
-      html = html.replace(/<title>.*?<\/title>/, `<title>${seoData.title}</title>`);
-      html = html.replace(/<meta name="description" content="[^"]*" \/>/, `<meta name="description" content="${seoData.description}" />`);
-      html = html.replace(/<meta name="keywords" content="[^"]*" \/>/, `<meta name="keywords" content="${seoData.keywords}" />`);
+      html = html.replace(/<title>.*?<\/title>/, `<title data-rh="true">${seoData.title}</title>`);
+      html = html.replace(/<meta name="description" content="[^"]*" \/>/, `<meta data-rh="true" name="description" content="${seoData.description}" />`);
+      html = html.replace(/<meta name="keywords" content="[^"]*" \/>/, `<meta data-rh="true" name="keywords" content="${seoData.keywords}" />`);
       
       // Remove any existing ones just in case (though we removed from base HTML, good practice)
       html = html.replace(/<link rel="canonical"[^>]+>/g, '');
       html = html.replace(/<link rel="alternate"[^>]+hreflang[^>]+>/g, '');
 
       const headInject = `
-        <link rel="canonical" href="${seoData.url}" />
-        <link rel="alternate" hreflang="si" href="${seoData.url}" />
-        <link rel="alternate" hreflang="en" href="${seoData.url}" />
-        <link rel="alternate" hreflang="x-default" href="${seoData.url}" />
+        <link data-rh="true" rel="canonical" href="${seoData.url}" />
+        <link data-rh="true" rel="alternate" hreflang="si" href="${seoData.url}" />
+        <link data-rh="true" rel="alternate" hreflang="en" href="${seoData.url}" />
+        <link data-rh="true" rel="alternate" hreflang="x-default" href="${seoData.url}" />
       `;
       html = html.replace('</head>', `${headInject}</head>`);
       
-      html = html.replace(/<meta property="og:title" content="[^"]*" \/>/, `<meta property="og:title" content="${seoData.title}" />`);
-      html = html.replace(/<meta property="og:description" content="[^"]*" \/>/, `<meta property="og:description" content="${seoData.description}" />`);
-      html = html.replace(/<meta property="og:url" content="[^"]*" \/>/, `<meta property="og:url" content="${seoData.url}" />`);
+      html = html.replace(/<meta property="og:title" content="[^"]*" \/>/, `<meta data-rh="true" property="og:title" content="${seoData.title}" />`);
+      html = html.replace(/<meta property="og:description" content="[^"]*" \/>/, `<meta data-rh="true" property="og:description" content="${seoData.description}" />`);
+      html = html.replace(/<meta property="og:url" content="[^"]*" \/>/, `<meta data-rh="true" property="og:url" content="${seoData.url}" />`);
       
       // Inject image safely (some tags might not exist in index.html, so we append them before </head> if needed, or simply replace)
       if (seoData.image) {
           if (html.includes('<meta property="og:image"')) {
-             html = html.replace(/<meta property="og:image" content="[^"]*" \/>/, `<meta property="og:image" content="${seoData.image}" />`);
+             html = html.replace(/<meta property="og:image" content="[^"]*" \/>/, `<meta data-rh="true" property="og:image" content="${seoData.image}" />`);
           } else {
-             html = html.replace('</head>', `<meta property="og:image" content="${seoData.image}" />\n</head>`);
+             html = html.replace('</head>', `<meta data-rh="true" property="og:image" content="${seoData.image}" />\n</head>`);
           }
-          if (html.includes('<meta property="twitter:image"')) {
-             html = html.replace(/<meta property="twitter:image" content="[^"]*" \/>/, `<meta name="twitter:image" content="${seoData.image}" />`);
+          if (html.includes('<meta name="twitter:image"')) {
+             html = html.replace(/<meta name="twitter:image" content="[^"]*" \/>/, `<meta data-rh="true" name="twitter:image" content="${seoData.image}" />`);
           } else {
-             html = html.replace('</head>', `<meta name="twitter:image" content="${seoData.image}" />\n</head>`);
+             html = html.replace('</head>', `<meta data-rh="true" name="twitter:image" content="${seoData.image}" />\n</head>`);
           }
       }
       
       // Inject Structured Data (Movie or TVSeries)
       if (seoData.structuredData) {
-          html = html.replace('</head>', `<script type="application/ld+json">${JSON.stringify(seoData.structuredData)}</script>\n</head>`);
+          html = html.replace('</head>', `<script data-rh="true" type="application/ld+json">${JSON.stringify(seoData.structuredData)}</script>\n</head>`);
       }
       
       res.status(200).set({ 'Content-Type': 'text/html' }).send(html);

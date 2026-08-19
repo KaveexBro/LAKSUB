@@ -1,4 +1,3 @@
-import { useDynamicSEO } from '../hooks/useDynamicSEO';
 import React, { useEffect, useState } from 'react';
 import { useRoute, Link } from 'wouter';
 import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
@@ -127,14 +126,6 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
 
     fetchSeasonData();
   }, [tmdbData?.id, selectedSeason]);
-
-  const seoParams = title ? {
-    title: `${title} Sinhala Subtitles | ${title} Sinhala Sub | LAKSUB`,
-    description: `Download high-quality Sinhala subtitles (Sinhala sub) for ${title}. Latest seasons and episodes available. Join Sri Lanka's largest subtitle community.`,
-    canonicalUrl: `https://www.laksub.com/series/${encodeURIComponent(title)}`
-  } : null;
-
-  useDynamicSEO(seoParams);
 
   if (loading) return <div className="min-h-screen bg-netflix-bg flex items-center justify-center"><div className="w-12 h-12 border-4 border-netflix-red border-t-transparent rounded-full animate-spin"></div></div>;
   if (subtitles.length === 0) return <div className="min-h-screen bg-netflix-bg text-white flex items-center justify-center">Series not found</div>;
