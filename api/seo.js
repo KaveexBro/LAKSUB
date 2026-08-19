@@ -18,9 +18,29 @@ export default async function handler(req, res) {
       urlObj = new URL(`https://example.com${req.url}`);
     }
     
-    const type = req.query?.type || urlObj.searchParams.get('type');
-    const slug = req.query?.slug || urlObj.searchParams.get('slug');
-    const id = req.query?.id || urlObj.searchParams.get('id');
+    let type = req.query?.type || urlObj.searchParams.get('type');
+    let slug = req.query?.slug || urlObj.searchParams.get('slug');
+    let id = req.query?.id || urlObj.searchParams.get('id');
+
+    // Fallback extraction from pathname if query params are missing (Vercel rewrite issue)
+    if (!type || (!slug && !id)) {
+      const pathParts = urlObj.pathname.split('/').filter(Boolean);
+      if (pathParts.length >= 2) {
+        const route = pathParts[0];
+        const pathIdentifier = pathParts.slice(1).join('/'); // support slugs with slashes if any
+
+        if (route === 'subtitles' || route === 'movies' || route === 'tv-series') {
+          type = 'subtitle';
+          slug = pathIdentifier;
+        } else if (route === 'series') {
+          type = 'series';
+          slug = pathIdentifier;
+        } else if (route === 'subtitle') {
+          type = 'subtitle-id';
+          id = pathIdentifier;
+        }
+      }
+    }
 
     // Fetch the base index.html
     const baseUrl = `${protocol}://${host}`;
