@@ -151,7 +151,7 @@ export default async function handler(req, res) {
 
       const structuredData = {
         "@context": "https://schema.org",
-        "@type": isSeriesRoute ? "TVSeries" : "Movie",
+        "@type": isSeriesRoute ? "TVSeries" : (subtitleType === 'series' ? "TVSeries" : "Movie"),
         "name": isSeriesRoute ? movieTitle : fullTitle,
         "description": seoDescription,
         "url": url,
@@ -166,9 +166,9 @@ export default async function handler(req, res) {
       }
 
       // Inject SEO
-      html = html.replace(/<title>.*?<\/title>/, `<title>${seoTitle}</title>`);
-      html = html.replace(/<meta name="description" content="[^"]*" \/>/, `<meta name="description" content="${seoDescription}" />`);
-      html = html.replace(/<meta name="keywords" content="[^"]*" \/>/, `<meta name="keywords" content="${keywords}" />`);
+      html = html.replace(/<title>.*?<\/title>/, `<title data-rh="true">${seoTitle}</title>`);
+      html = html.replace(/<meta name="description" content="[^"]*" \/>/, `<meta data-rh="true" name="description" content="${seoDescription}" />`);
+      html = html.replace(/<meta name="keywords" content="[^"]*" \/>/, `<meta data-rh="true" name="keywords" content="${keywords}" />`);
       
       // Remove existing og: tags to avoid duplicates
       html = html.replace(/<meta property="og:[^>]+>/g, '');
@@ -176,23 +176,23 @@ export default async function handler(req, res) {
       html = html.replace(/<link rel="canonical"[^>]+>/g, '');
       html = html.replace(/<link rel="alternate"[^>]+hreflang[^>]+>/g, '');
 
-      injectTag(`<link rel="canonical" href="${url}" />`);
-      injectTag(`<link rel="alternate" hreflang="si" href="${url}" />`);
-      injectTag(`<link rel="alternate" hreflang="en" href="${url}" />`);
-      injectTag(`<link rel="alternate" hreflang="x-default" href="${url}" />`);
+      injectTag(`<link data-rh="true" rel="canonical" href="${url}" />`);
+      injectTag(`<link data-rh="true" rel="alternate" hreflang="si" href="${url}" />`);
+      injectTag(`<link data-rh="true" rel="alternate" hreflang="en" href="${url}" />`);
+      injectTag(`<link data-rh="true" rel="alternate" hreflang="x-default" href="${url}" />`);
 
-      injectTag(`<meta property="og:title" content="${seoTitle}" />`);
-      injectTag(`<meta property="og:description" content="${seoDescription}" />`);
-      injectTag(`<meta property="og:url" content="${url}" />`);
-      injectTag(`<meta property="og:image" content="${posterUrl}" />`);
-      injectTag(`<meta property="og:type" content="website" />`);
+      injectTag(`<meta data-rh="true" property="og:title" content="${seoTitle}" />`);
+      injectTag(`<meta data-rh="true" property="og:description" content="${seoDescription}" />`);
+      injectTag(`<meta data-rh="true" property="og:url" content="${url}" />`);
+      injectTag(`<meta data-rh="true" property="og:image" content="${posterUrl}" />`);
+      injectTag(`<meta data-rh="true" property="og:type" content="website" />`);
       
-      injectTag(`<meta name="twitter:card" content="summary_large_image" />`);
-      injectTag(`<meta name="twitter:title" content="${seoTitle}" />`);
-      injectTag(`<meta name="twitter:description" content="${seoDescription}" />`);
-      injectTag(`<meta name="twitter:image" content="${posterUrl}" />`);
+      injectTag(`<meta data-rh="true" name="twitter:card" content="summary_large_image" />`);
+      injectTag(`<meta data-rh="true" name="twitter:title" content="${seoTitle}" />`);
+      injectTag(`<meta data-rh="true" name="twitter:description" content="${seoDescription}" />`);
+      injectTag(`<meta data-rh="true" name="twitter:image" content="${posterUrl}" />`);
       
-      injectTag(`<script type="application/ld+json">${JSON.stringify(structuredData)}</script>`);
+      injectTag(`<script data-rh="true" type="application/ld+json">${JSON.stringify(structuredData)}</script>`);
       
       // We do not need a visual static HTML injection since the screenshot issue was actually
       // caused by the rewrite rule returning the standard index.html (which just has default title/desc)
