@@ -24,7 +24,11 @@ export default async function handler(req, res) {
 
     // Fallback extraction from pathname if query params are missing (Vercel rewrite issue)
     if (!type || (!slug && !id)) {
-      const pathParts = urlObj.pathname.split('/').filter(Boolean);
+      // Vercel exposes the original requested path in the 'x-invoke-path' header. 
+      // If missing, use req.url.
+      const originalPath = req.headers['x-invoke-path'] || urlObj.pathname;
+      const pathParts = originalPath.split('/').filter(Boolean);
+      
       if (pathParts.length >= 2) {
         const route = pathParts[0];
         const pathIdentifier = pathParts.slice(1).join('/'); // support slugs with slashes if any
@@ -44,8 +48,22 @@ export default async function handler(req, res) {
 
     // Fetch the base index.html
     const baseUrl = `${protocol}://${host}`;
-    const htmlResponse = await fetch(`${baseUrl}/index.html`);
-    let html = await htmlResponse.text();
+    let html = '';
+    try {
+      const htmlResponse = await fetch(`${baseUrl}/index.html`);
+      if (htmlResponse.ok) {
+        html = await htmlResponse.text();
+      } else {
+        throw new Error('Failed to fetch index.html');
+      }
+    } catch (e) {
+      // Fallback: Read locally (depends on Vercel deployment structure)
+      try {
+        html = fs.readFileSync(path.join(process.cwd(), 'dist', 'index.html'), 'utf8');
+      } catch (localErr) {
+        html = fs.readFileSync(path.join(process.cwd(), 'index.html'), 'utf8');
+      }
+    }
 
     let isSeriesRoute = type === 'series';
     let isId = type === 'subtitle-id';
