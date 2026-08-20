@@ -37,62 +37,62 @@ export default async function handler(req, res) {
     const currentDate = new Date().toISOString().split('T')[0];
     
     let urls = `  <url>
-    <loc>https://laksub.com/</loc>
+    <loc>https://www.laksub.com/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://laksub.com/explore</loc>
+    <loc>https://www.laksub.com/explore</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://laksub.com/movies</loc>
+    <loc>https://www.laksub.com/movies</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://laksub.com/series</loc>
+    <loc>https://www.laksub.com/series</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://laksub.com/about</loc>
+    <loc>https://www.laksub.com/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://laksub.com/contact</loc>
+    <loc>https://www.laksub.com/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://laksub.com/request</loc>
+    <loc>https://www.laksub.com/request</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://laksub.com/apply</loc>
+    <loc>https://www.laksub.com/apply</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://laksub.com/upgrade</loc>
+    <loc>https://www.laksub.com/upgrade</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://laksub.com/privacy</loc>
+    <loc>https://www.laksub.com/privacy</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://laksub.com/terms</loc>
+    <loc>https://www.laksub.com/terms</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://laksub.com/dmca</loc>
+    <loc>https://www.laksub.com/dmca</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>`;
@@ -124,7 +124,7 @@ export default async function handler(req, res) {
       
       urls += `
   <url>
-    <loc>https://laksub.com/${baseUrlPath}/${encodeURIComponent(slug)}</loc>${lastmod}
+    <loc>https://www.laksub.com/${baseUrlPath}/${encodeURIComponent(slug)}</loc>${lastmod}
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>`;
@@ -133,7 +133,7 @@ export default async function handler(req, res) {
     for (const series of seriesTitles) {
       urls += `
   <url>
-    <loc>https://laksub.com/series/${encodeURIComponent(series)}</loc>
+    <loc>https://www.laksub.com/series/${encodeURIComponent(series)}</loc>
     <lastmod>${currentDate}T00:00:00Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>

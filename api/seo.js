@@ -180,12 +180,12 @@ export default async function handler(req, res) {
       
       const posterUrl = docData.posterPath?.stringValue 
         ? `https://image.tmdb.org/t/p/w500${docData.posterPath.stringValue}`
-        : 'https://laksub.com/logo.png';
+        : 'https://www.laksub.com/logo.png';
         
       const encodedIdentifier = encodeURIComponent(decodeURIComponent(identifier));
       const originalPath = isSeriesRoute ? `/series/${encodedIdentifier}` : `/subtitles/${encodedIdentifier}`;
         
-      const url = `https://laksub.com${originalPath}`;
+      const url = `https://www.laksub.com${originalPath}`;
 
       const structuredData = {
         "@context": "https://schema.org",
@@ -196,7 +196,7 @@ export default async function handler(req, res) {
         "image": posterUrl,
         "inLanguage": "si",
         "isAccessibleForFree": true,
-        "author": { "@type": "Organization", "name": "LakSub", "url": "https://laksub.com" }
+        "author": { "@type": "Organization", "name": "LakSub", "url": "https://www.laksub.com" }
       };
       
       if (!isSeriesRoute && releaseYear) {
