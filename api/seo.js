@@ -97,8 +97,8 @@ export default async function handler(req, res) {
       const canonicalUrl = `${protocol}://${host}${pathname === '/' ? '' : pathname}`;
       
       // Remove any existing canonical tags to prevent duplicates
-      html = html.replace(/<link rel="canonical"[^>]+>/g, '');
-      html = html.replace(/<link rel="alternate"[^>]+hreflang[^>]+>/g, '');
+      html = html.replace(/<link rel="canonical"[^>]+>/gi, '');
+      html = html.replace(/<link rel="alternate"[^>]+hreflang[^>]+>/gi, '');
 
       injectTag(`<link rel="canonical" href="${canonicalUrl}" />`);
       injectTag(`<link rel="alternate" hreflang="si" href="${canonicalUrl}" />`);
@@ -226,15 +226,19 @@ export default async function handler(req, res) {
       }
 
       // Inject SEO
-      html = html.replace(/<title>.*?<\/title>/, `<title data-rh="true">${seoTitle}</title>`);
-      html = html.replace(/<meta name="description" content="[^"]*" \/>/, `<meta data-rh="true" name="description" content="${seoDescription}" />`);
-      html = html.replace(/<meta name="keywords" content="[^"]*" \/>/, `<meta data-rh="true" name="keywords" content="${keywords}" />`);
+      html = html.replace(/<title>.*?<\/title>/s, '');
+      html = html.replace(/<meta name="description"[^>]+>/gi, '');
+      html = html.replace(/<meta name="keywords"[^>]+>/gi, '');
+
+      injectTag(`<title data-rh="true">${seoTitle}</title>`);
+      injectTag(`<meta data-rh="true" name="description" content="${seoDescription}" />`);
+      injectTag(`<meta data-rh="true" name="keywords" content="${keywords}" />`);
       
       // Remove existing og: tags to avoid duplicates
-      html = html.replace(/<meta property="og:[^>]+>/g, '');
-      html = html.replace(/<meta property="twitter:[^>]+>/g, '');
-      html = html.replace(/<link rel="canonical"[^>]+>/g, '');
-      html = html.replace(/<link rel="alternate"[^>]+hreflang[^>]+>/g, '');
+      html = html.replace(/<meta property="og:[^>]+>/gi, '');
+      html = html.replace(/<meta property="twitter:[^>]+>/gi, '');
+      html = html.replace(/<link rel="canonical"[^>]+>/gi, '');
+      html = html.replace(/<link rel="alternate"[^>]+hreflang[^>]+>/gi, '');
 
       injectTag(`<link data-rh="true" rel="canonical" href="${url}" />`);
       injectTag(`<link data-rh="true" rel="alternate" hreflang="si" href="${url}" />`);

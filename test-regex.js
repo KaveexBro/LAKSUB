@@ -1,7 +1,10 @@
 const html = `    <!-- Primary Title & Description -->
-    <title>Sinhala Subtitles &amp; Sinhala Sub | LAKSUB</title>
+    <title>Sinhala Subtitles & Sinhala Sub | LAKSUB</title>
     <meta name="description" content="Download the best high-quality Sinhala subtitles (Sinhala sub) for English movies, TV series, Netflix originals, Korean dramas, and Anime at LAKSUB." />
-`;
-const newTitle = 'Rick and Morty S01E01 Sinhala Subtitles';
-const replaced = html.replace(/<title>.*?<\/title>/, `<title>${newTitle}</title>`);
-console.log(replaced);
+    <meta name="keywords" content="Sinhala subtitle, Sinhala sub, English movie Sinhala subtitles, TV series Sinhala subtitles, Netflix Sinhala subtitles, LAKSUB, movie subtitle download" />`;
+
+let result = html;
+result = result.replace(/<title>.*?<\/title>/s, '');
+result = result.replace(/<meta name="description"[^>]+>/gi, '');
+result = result.replace(/<meta name="keywords"[^>]+>/gi, '');
+console.log(result);
