@@ -45,6 +45,10 @@ export default async function handler(req, res) {
         }
       }
     }
+    
+    console.log(`[SEO-Logs] Request URL: ${req.url}`);
+    console.log(`[SEO-Logs] x-invoke-path: ${req.headers['x-invoke-path']}`);
+    console.log(`[SEO-Logs] Resolved Type: ${type}, Slug: ${slug}, ID: ${id}`);
 
     // Fetch the base index.html
     const baseUrl = `${protocol}://${host}`;
@@ -61,8 +65,18 @@ export default async function handler(req, res) {
       try {
         html = fs.readFileSync(path.join(process.cwd(), 'dist', 'index.html'), 'utf8');
       } catch (localErr) {
-        html = fs.readFileSync(path.join(process.cwd(), 'index.html'), 'utf8');
+        try {
+          html = fs.readFileSync(path.join(process.cwd(), 'index.html'), 'utf8');
+        } catch (finalErr) {
+          console.error('[SEO-Logs] Failed to read index.html from all locations.');
+        }
       }
+    }
+
+    // Safeguard: Ensure we have a valid base HTML structure
+    if (!html || !html.includes('</head>')) {
+      console.log('[SEO-Logs] HTML missing or invalid, using basic template fallback.');
+      html = `<!DOCTYPE html><html lang="si"><head><meta charset="utf-8"/><title>LAKSUB</title></head><body><div id="root"></div></body></html>`;
     }
 
     let isSeriesRoute = type === 'series';
@@ -149,6 +163,14 @@ export default async function handler(req, res) {
       docData = data.fields;
     } else if (data && data.length > 0 && data[0].document) {
       docData = data[0].document.fields;
+    }
+
+    console.log(`[SEO-Logs] Firebase fetch status: ${firestoreResponse.status}`);
+    console.log(`[SEO-Logs] Firestore document found: ${!!docData}`);
+    if (docData) {
+      console.log(`[SEO-Logs] Title: ${docData.movieTitle?.stringValue}, Type: ${docData.type?.stringValue}`);
+    } else {
+      console.warn(`[SEO-Logs] No document found for identifier: ${identifier}`);
     }
 
     if (docData) {
