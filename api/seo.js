@@ -50,26 +50,28 @@ export default async function handler(req, res) {
     console.log(`[SEO-Logs] x-invoke-path: ${req.headers['x-invoke-path']}`);
     console.log(`[SEO-Logs] Resolved Type: ${type}, Slug: ${slug}, ID: ${id}`);
 
-    // Fetch the base index.html
-    const baseUrl = `${protocol}://${host}`;
+    // Load the base index.html
     let html = '';
     try {
-      const htmlResponse = await fetch(`${baseUrl}/index.html`);
-      if (htmlResponse.ok) {
-        html = await htmlResponse.text();
-      } else {
-        throw new Error('Failed to fetch index.html');
-      }
-    } catch (e) {
-      // Fallback: Read locally (depends on Vercel deployment structure)
+      // Prioritize local file system read (much faster and avoids Vercel rewrite redirect loops)
       try {
         html = fs.readFileSync(path.join(process.cwd(), 'dist', 'index.html'), 'utf8');
       } catch (localErr) {
-        try {
-          html = fs.readFileSync(path.join(process.cwd(), 'index.html'), 'utf8');
-        } catch (finalErr) {
-          console.error('[SEO-Logs] Failed to read index.html from all locations.');
+        html = fs.readFileSync(path.join(process.cwd(), 'index.html'), 'utf8');
+      }
+    } catch (fsErr) {
+      // Fallback: Fetch over network if local reads fail
+      console.log('[SEO-Logs] Local HTML read failed, attempting network fetch...');
+      try {
+        const baseUrl = `${protocol}://${host}`;
+        const htmlResponse = await fetch(`${baseUrl}/index.html`, { redirect: 'manual' });
+        if (htmlResponse.ok) {
+          html = await htmlResponse.text();
+        } else {
+          throw new Error('Network fetch failed');
         }
+      } catch (e) {
+        console.error('[SEO-Logs] Failed to fetch index.html from all locations.');
       }
     }
 
