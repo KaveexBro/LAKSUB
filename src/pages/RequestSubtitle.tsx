@@ -116,9 +116,9 @@ export const RequestSubtitle: React.FC = () => {
             >
               <div className="flex items-center gap-3 mb-2">
                 <Crown className="w-6 h-6 text-netflix-red" />
-                <span className="text-netflix-red font-black uppercase tracking-widest text-xs">Pro Exclusive Feature</span>
+                <span className="text-netflix-red font-bold tracking-wide text-xs">Pro Exclusive Feature</span>
               </div>
-              <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-6 leading-none">
+              <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6 leading-none">
                 Request <span className="text-netflix-red">Subtitles</span>
               </h1>
               <p className="text-gray-400 text-lg mb-10 font-medium leading-relaxed max-w-xl">
@@ -129,10 +129,10 @@ export const RequestSubtitle: React.FC = () => {
                 <div className="bg-netflix-red/10 border border-netflix-red/20 p-6 rounded-2xl mb-10 flex items-start gap-4">
                   <AlertCircle className="w-6 h-6 text-netflix-red flex-shrink-0 mt-1" />
                   <div>
-                    <h3 className="font-black uppercase tracking-tight text-netflix-red mb-1">Upgrade Required</h3>
+                    <h3 className="font-bold tracking-tight text-netflix-red mb-1">Upgrade Required</h3>
                     <p className="text-gray-300 text-sm mb-4">Subtitle requests are exclusive to Pro members. Upgrade now to get priority access.</p>
                     <Link href="/upgrade">
-                      <button className="bg-netflix-red text-white px-6 py-2 rounded-lg font-black text-xs uppercase tracking-widest hover:bg-red-700 transition-all">
+                      <button className="bg-netflix-red text-white px-6 py-2 rounded-lg font-bold text-xs uppercase tracking-widest hover:bg-red-700 transition-all">
                         Upgrade to Pro
                       </button>
                     </Link>
@@ -143,7 +143,7 @@ export const RequestSubtitle: React.FC = () => {
               <form onSubmit={handleSubmit} className="space-y-6 bg-netflix-surface/30 p-8 rounded-3xl border border-white/5 backdrop-blur-xl">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Content Title</label>
+                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Content Title</label>
                     <input 
                       type="text"
                       value={title}
@@ -155,7 +155,7 @@ export const RequestSubtitle: React.FC = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Content Type</label>
+                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Content Type</label>
                     <div className="flex gap-2">
                       <button
                         type="button"
@@ -179,7 +179,7 @@ export const RequestSubtitle: React.FC = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Release Year (Optional)</label>
+                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Release Year (Optional)</label>
                     <input 
                       type="number"
                       value={year}
@@ -190,7 +190,7 @@ export const RequestSubtitle: React.FC = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Language / Version</label>
+                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Language / Version</label>
                     <input 
                       type="text"
                       placeholder="e.g. Sinhala (WEB-DL)"
@@ -201,7 +201,7 @@ export const RequestSubtitle: React.FC = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Additional Information</label>
+                  <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Additional Information</label>
                   <textarea 
                     value={additionalInfo}
                     onChange={(e) => setAdditionalInfo(e.target.value)}
@@ -233,7 +233,7 @@ export const RequestSubtitle: React.FC = () => {
                 <button 
                   type="submit"
                   disabled={!isPro || loading}
-                  className="w-full bg-netflix-red text-white py-3 rounded-xl font-black uppercase tracking-widest hover:bg-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl flex items-center justify-center gap-3 group"
+                  className="w-full bg-netflix-red text-white py-3 rounded-xl font-bold tracking-wide hover:bg-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl flex items-center justify-center gap-3 group"
                 >
                   {loading ? (
                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -255,7 +255,7 @@ export const RequestSubtitle: React.FC = () => {
               animate={{ opacity: 1, x: 0 }}
               className="bg-netflix-surface/50 backdrop-blur-xl rounded-3xl border border-white/5 p-8"
             >
-              <h2 className="text-xl font-black uppercase tracking-tight mb-6 flex items-center gap-2">
+              <h2 className="text-xl font-bold tracking-tight mb-6 flex items-center gap-2">
                 <History className="w-5 h-5 text-gray-500" /> My Requests
               </h2>
 
@@ -276,12 +276,12 @@ export const RequestSubtitle: React.FC = () => {
                         <div>
                           <h3 className="font-bold text-sm line-clamp-1">{req.title}</h3>
                           {req.isPro && (
-                            <span className="flex items-center gap-0.5 text-[7px] font-black text-netflix-red uppercase tracking-tighter mt-0.5">
+                            <span className="flex items-center gap-0.5 text-[7px] font-bold text-netflix-red uppercase tracking-tighter mt-0.5">
                               <Crown className="w-2 h-2" /> Priority Request
                             </span>
                           )}
                         </div>
-                        <span className={`text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter ${getStatusColor(req.status)}`}>
+                        <span className={`text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tighter ${getStatusColor(req.status)}`}>
                           {req.status.replace('_', ' ')}
                         </span>
                       </div>

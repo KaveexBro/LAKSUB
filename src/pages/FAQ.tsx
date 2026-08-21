@@ -101,7 +101,7 @@ export const FAQ: React.FC = () => {
           <div className="w-20 h-20 bg-netflix-red/10 border-2 border-netflix-red rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(229,9,20,0.3)]">
             <HelpCircle className="w-10 h-10 text-netflix-red" />
           </div>
-          <h1 className="text-4xl md:text-6xl font-black mb-4 tracking-tighter uppercase">FAQ</h1>
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 tracking-tighter uppercase">FAQ</h1>
           <h2 className="text-2xl font-bold text-gray-400 font-sinhala-text mb-4">නිතර අසන ප්‍රශ්න</h2>
           <p className="text-gray-500 max-w-2xl mx-auto text-lg">
             Find answers to commonly asked questions about using LAKSUB for downloading Sinhala subtitles.

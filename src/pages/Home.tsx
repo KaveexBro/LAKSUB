@@ -135,7 +135,7 @@ export const Home: React.FC = () => {
     if (top10.length === 0) return null;
     return (
       <section className="mb-12 relative z-30">
-        <h2 className="text-xl md:text-2xl font-black mb-4 text-white px-4 md:px-12 flex items-center gap-2 uppercase tracking-tighter">
+        <h2 className="text-2xl md:text-3xl font-bold mb-4 text-white px-4 md:px-12 flex items-center gap-2 uppercase tracking-tighter">
           Top 10 in Sri Lanka Today
         </h2>
         <div className="flex gap-4 overflow-x-auto pb-8 pt-2 px-4 md:px-12 scrollbar-hide snap-x">
@@ -144,11 +144,11 @@ export const Home: React.FC = () => {
               <div 
                 className="flex-none w-64 md:w-80 h-40 md:h-48 relative group cursor-pointer snap-start flex items-end hover:z-50 transition-transform duration-300 hover:scale-105"
               >
-                <div className="absolute left-0 bottom-0 text-[120px] md:text-[200px] font-black leading-[0.7] text-black stroke-white stroke-2 drop-shadow-[0_0_20px_rgba(255,255,255,0.2)] z-10 select-none opacity-80 group-hover:opacity-100 transition-opacity"
+                <div className="absolute left-0 bottom-0 text-[120px] md:text-[200px] font-bold leading-[0.7] text-black stroke-white stroke-2 drop-shadow-[0_0_20px_rgba(255,255,255,0.2)] z-10 select-none opacity-80 group-hover:opacity-100 transition-opacity"
                      style={{ WebkitTextStroke: '3px rgba(255,255,255,0.6)', color: 'transparent' }}>
                   {index + 1}
                 </div>
-                <div className="ml-20 md:ml-28 w-full h-full rounded-md overflow-hidden border border-white/10 shadow-2xl relative">
+                <div className="ml-20 md:ml-28 w-full h-full rounded-2xl overflow-hidden border border-white/10 shadow-lg relative">
                   <img 
                     src={sub.backdropPath ? getTMDBImageUrl(sub.backdropPath, 'w500') : `https://picsum.photos/seed/${sub.movieTitle}/800/450`} 
                     alt={sub.movieTitle}
@@ -187,7 +187,7 @@ export const Home: React.FC = () => {
 
     return (
       <section className="mb-12 relative z-30">
-        <h2 className="text-xl md:text-2xl font-black mb-4 text-white px-4 md:px-12 uppercase tracking-tighter">{title}</h2>
+        <h2 className="text-2xl md:text-3xl font-bold mb-4 text-white px-4 md:px-12 uppercase tracking-tighter">{title}</h2>
         <div className="flex gap-4 overflow-x-auto pb-8 pt-4 px-4 md:px-12 scrollbar-hide snap-x">
           {groupedContent.map((sub) => (
             <Link 
@@ -195,7 +195,7 @@ export const Home: React.FC = () => {
               href={sub.isGroup ? `/series/${encodeURIComponent(sub.movieTitle)}` : (sub.slug ? `/subtitles/${sub.slug}` : `/subtitles/${sub.id}`)}
             >
               <div 
-                className="flex-none w-36 md:w-52 aspect-[2/3] relative group cursor-pointer snap-start rounded-md overflow-hidden shadow-lg border border-gray-800/50 hover:z-50 transition-transform duration-300 hover:scale-110"
+                className="flex-none w-36 md:w-52 aspect-[2/3] relative group cursor-pointer snap-start rounded-2xl overflow-hidden shadow-md border border-white/5 hover:z-50 transition-transform duration-300 hover:scale-110"
               >
                 <img 
                   src={sub.posterPath ? getTMDBImageUrl(sub.posterPath) : `https://picsum.photos/seed/${(sub.movieTitle || '').replace(/\s+/g, '')}/400/600`} 
@@ -219,7 +219,7 @@ export const Home: React.FC = () => {
                   </div>
                 </div>
                 {sub.proOnlyUntil && new Date(sub.proOnlyUntil) > new Date() && (
-                  <div className="absolute top-2 right-2 bg-netflix-red text-white text-[8px] font-black px-1.5 py-0.5 rounded-sm uppercase tracking-wider shadow-lg z-20">
+                  <div className="absolute top-2 right-2 bg-netflix-red text-white text-[8px] font-bold px-1.5 py-0.5 rounded-sm uppercase tracking-wider shadow-md z-20">
                     PRO
                   </div>
                 )}
@@ -283,10 +283,10 @@ export const Home: React.FC = () => {
                 >
                   <div className="flex items-center gap-2 mb-2 md:mb-4">
                     <img src="/logo.png" alt="LAKSUB" className="h-6 md:h-8 w-auto drop-shadow-md" referrerPolicy="no-referrer" />
-                    <span className="text-[10px] md:text-sm font-black tracking-[0.2em] text-white/90 uppercase drop-shadow-md">Original</span>
+                    <span className="text-[10px] md:text-sm font-bold tracking-[0.2em] text-white/90 uppercase drop-shadow-md">Original</span>
                   </div>
                   
-                  <h1 className="text-4xl md:text-8xl font-black mb-3 md:mb-6 drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)] uppercase tracking-tighter leading-[0.85] text-white">
+                  <h1 className="text-4xl md:text-8xl font-bold mb-3 md:mb-6 drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)] uppercase tracking-tighter leading-[0.85] text-white">
                     {featured.movieTitle}
                   </h1>
 
@@ -294,10 +294,10 @@ export const Home: React.FC = () => {
                     {top10.some(t => t.id === featured.id) && (
                       <div className="flex items-center gap-2 bg-black/40 backdrop-blur-md px-2 py-1 rounded border border-white/10">
                         <div className="bg-netflix-red text-white p-0.5 md:p-1 rounded-sm">
-                          <div className="text-[6px] md:text-[8px] font-black leading-none uppercase">Top</div>
-                          <div className="text-xs md:text-sm font-black leading-none">10</div>
+                          <div className="text-[6px] md:text-[8px] font-bold leading-none uppercase">Top</div>
+                          <div className="text-xs md:text-sm font-bold leading-none">10</div>
                         </div>
-                        <span className="text-[10px] md:text-sm font-black uppercase tracking-tighter">#1 in Sri Lanka Today</span>
+                        <span className="text-[10px] md:text-sm font-bold tracking-tight">#1 in Sri Lanka Today</span>
                       </div>
                     )}
                     {featured.genres && (Array.isArray(featured.genres) ? featured.genres.length > 0 : typeof featured.genres === 'string') && (
@@ -366,7 +366,7 @@ export const Home: React.FC = () => {
             transition={{ type: "spring", stiffness: 400, damping: 25 }}
             className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
           >
-            <div className="bg-[#1b1b1b] border border-gray-800 shadow-2xl rounded-2xl overflow-hidden relative max-w-md w-full">
+            <div className="bg-[#1b1b1b] border border-gray-800 shadow-lg rounded-2xl overflow-hidden relative max-w-md w-full">
               <button 
                 onClick={dismissWaBanner}
                 className="absolute top-3 right-3 text-gray-400 hover:text-white bg-black/20 hover:bg-black/40 rounded-full p-2 transition-colors z-10"

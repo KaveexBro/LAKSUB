@@ -188,7 +188,7 @@ export const Explore: React.FC<{ initialType?: 'movie' | 'series' | 'all', initi
               placeholder="Search movies, shows..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-netflix-surface border border-gray-800 rounded-md pl-9 pr-4 py-2 text-sm text-white focus:border-gray-500 focus:outline-none transition-colors"
+              className="w-full bg-netflix-surface border border-gray-800 rounded-2xl pl-9 pr-4 py-2 text-sm text-white focus:border-gray-500 focus:outline-none transition-colors"
             />
           </div>
         </header>
@@ -202,7 +202,7 @@ export const Explore: React.FC<{ initialType?: 'movie' | 'series' | 'all', initi
           <select 
             value={type} 
             onChange={(e) => setType(e.target.value as 'movie' | 'series' | 'all')}
-            className="bg-netflix-surface border border-gray-800 rounded-md px-3 py-1.5 text-sm text-white focus:border-gray-500 focus:outline-none hover:bg-gray-900 transition-colors cursor-pointer appearance-none pr-8 relative"
+            className="bg-netflix-surface border border-gray-800 rounded-2xl px-3 py-1.5 text-sm text-white focus:border-gray-500 focus:outline-none hover:bg-gray-900 transition-colors cursor-pointer appearance-none pr-8 relative"
             style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='gray'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center', backgroundSize: '14px' }}
           >
             <option value="all">All Types</option>
@@ -213,7 +213,7 @@ export const Explore: React.FC<{ initialType?: 'movie' | 'series' | 'all', initi
           <select 
             value={language} 
             onChange={(e) => setLanguage(e.target.value)}
-            className="bg-netflix-surface border border-gray-800 rounded-md px-3 py-1.5 text-sm text-white focus:border-gray-500 focus:outline-none hover:bg-gray-900 transition-colors cursor-pointer appearance-none pr-8"
+            className="bg-netflix-surface border border-gray-800 rounded-2xl px-3 py-1.5 text-sm text-white focus:border-gray-500 focus:outline-none hover:bg-gray-900 transition-colors cursor-pointer appearance-none pr-8"
             style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='gray'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center', backgroundSize: '14px' }}
           >
             <option value="">All Languages</option>
@@ -223,7 +223,7 @@ export const Explore: React.FC<{ initialType?: 'movie' | 'series' | 'all', initi
           <select 
             value={year} 
             onChange={(e) => setYear(e.target.value)}
-            className="bg-netflix-surface border border-gray-800 rounded-md px-3 py-1.5 text-sm text-white focus:border-gray-500 focus:outline-none hover:bg-gray-900 transition-colors cursor-pointer appearance-none pr-8"
+            className="bg-netflix-surface border border-gray-800 rounded-2xl px-3 py-1.5 text-sm text-white focus:border-gray-500 focus:outline-none hover:bg-gray-900 transition-colors cursor-pointer appearance-none pr-8"
             style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='gray'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center', backgroundSize: '14px' }}
           >
             <option value="">All Years</option>
@@ -232,7 +232,7 @@ export const Explore: React.FC<{ initialType?: 'movie' | 'series' | 'all', initi
 
           <button
             onClick={() => setSortByRating(!sortByRating)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md border transition-all whitespace-nowrap text-sm font-medium ml-auto md:ml-0 ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-2xl border transition-all whitespace-nowrap text-sm font-medium ml-auto md:ml-0 ${
               sortByRating 
                 ? 'bg-netflix-red/10 border-netflix-red text-netflix-red' 
                 : 'bg-netflix-surface border-gray-800 text-gray-300 hover:text-white hover:border-gray-500'
@@ -309,7 +309,7 @@ export const Explore: React.FC<{ initialType?: 'movie' | 'series' | 'all', initi
               {groupedResults.slice(0, visibleCount).map((sub, index) => (
                 <React.Fragment key={sub.id}>
                   <Link href={sub.isGroup ? `/series/${encodeURIComponent(sub.movieTitle)}` : (sub.slug ? `/subtitles/${sub.slug}` : `/subtitles/${sub.id}`)}>
-                    <div className="aspect-[2/3] relative group cursor-pointer rounded-xl overflow-hidden transition-all duration-500 hover:scale-105 hover:z-40 shadow-lg hover:shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/5 bg-netflix-surface">
+                    <div className="aspect-[2/3] relative group cursor-pointer rounded-xl overflow-hidden transition-all duration-500 hover:scale-105 hover:z-40 shadow-md hover:shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/5 bg-netflix-surface">
                       <img 
                         src={sub.posterPath ? getTMDBImageUrl(sub.posterPath) : `https://picsum.photos/seed/${(sub.movieTitle || '').replace(/\s+/g, '')}/400/600`} 
                         alt={sub.movieTitle}
@@ -350,7 +350,7 @@ export const Explore: React.FC<{ initialType?: 'movie' | 'series' | 'all', initi
                       {/* Badges */}
                       <div className="absolute top-3 left-3 flex flex-col gap-2">
                         {sub.proOnlyUntil && new Date(sub.proOnlyUntil) > new Date() && (
-                          <div className="bg-netflix-red text-white text-[9px] font-black px-2 py-1 rounded shadow-lg uppercase tracking-widest backdrop-blur-md">
+                          <div className="bg-netflix-red text-white text-[9px] font-bold px-2 py-1 rounded shadow-md uppercase tracking-widest backdrop-blur-md">
                             Pro
                           </div>
                         )}

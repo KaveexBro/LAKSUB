@@ -71,7 +71,7 @@ export const Contact: React.FC = () => {
             <div className="w-12 h-12 bg-netflix-red/10 rounded-full flex items-center justify-center">
               <Mail className="w-6 h-6 text-netflix-red" />
             </div>
-            <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tighter">Contact Us</h1>
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Contact Us</h1>
           </div>
 
           <p className="text-gray-400 text-lg leading-relaxed">
@@ -176,7 +176,7 @@ export const Contact: React.FC = () => {
               <button 
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-netflix-red text-white py-3 rounded-lg font-black uppercase tracking-widest hover:bg-red-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-netflix-red text-white py-3 rounded-lg font-bold tracking-wide hover:bg-red-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? (
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />

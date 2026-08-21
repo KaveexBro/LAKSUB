@@ -55,7 +55,7 @@ export const TopSubtitlers: React.FC = () => {
           <div className="p-3 bg-yellow-500/20 text-yellow-500 rounded-xl">
             <Trophy className="w-8 h-8" />
           </div>
-          <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter">Top Subtitlers</h1>
+          <h1 className="text-3xl md:text-5xl font-bold tracking-tight">Top Subtitlers</h1>
         </div>
 
         {topCreators.length > 0 ? (
@@ -73,7 +73,7 @@ export const TopSubtitlers: React.FC = () => {
                         </div>
                       )}
                     </div>
-                    <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-gray-800 to-gray-900 shadow-xl text-white text-xs font-black uppercase tracking-widest px-4 py-1.5 rounded-full border-2 border-gray-700 transform-gpu">
+                    <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-gray-800 to-gray-900 shadow-xl text-white text-xs font-bold tracking-wide px-4 py-1.5 rounded-full border-2 border-gray-700 transform-gpu">
                       #{index + 1}
                     </div>
                   </div>

@@ -26,7 +26,7 @@ export const DMCA: React.FC = () => {
           <div className="w-12 h-12 bg-netflix-red/10 rounded-full flex items-center justify-center">
             <Shield className="w-6 h-6 text-netflix-red" />
           </div>
-          <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tighter">DMCA Policy</h1>
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight">DMCA Policy</h1>
         </div>
 
         <div className="space-y-6 text-gray-300 leading-relaxed font-sinhala-text text-lg">

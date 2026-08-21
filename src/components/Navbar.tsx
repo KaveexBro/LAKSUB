@@ -16,7 +16,7 @@ const Tooltip: React.FC<{ text: string; children: React.ReactNode }> = ({ text, 
             initial={{ opacity: 0, y: 5, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 5, scale: 0.9 }}
-            className="absolute top-full mt-2 px-2 py-1 bg-netflix-surface border border-white/10 rounded text-[10px] font-black uppercase tracking-widest text-white whitespace-nowrap z-[110] shadow-2xl pointer-events-none"
+            className="absolute top-full mt-2 px-2 py-1 bg-netflix-surface border border-white/10 rounded text-[10px] font-semibold tracking-wide text-white whitespace-nowrap z-[110] shadow-2xl pointer-events-none"
           >
             {text}
           </motion.div>
@@ -60,12 +60,12 @@ export const Navbar: React.FC = () => {
               alt="LAKSUB" 
               className="h-8 md:h-10 w-auto object-contain group-hover:scale-105 transition-transform origin-left" 
             />
-            <span className="text-[8px] md:text-[10px] font-black text-white/40 uppercase tracking-[0.3em] leading-none mt-1">
+            <span className="text-[8px] md:text-[10px] font-medium text-white/40 tracking-[0.2em] leading-none mt-1">
               Sinhala Subtitles
             </span>
           </div>
         </Link>
-        <div className="hidden md:flex gap-6 text-sm font-black uppercase tracking-widest text-gray-400">
+        <div className="hidden md:flex gap-6 text-sm font-semibold tracking-wide text-gray-400">
           <Link href="/"><span className="hover:text-white cursor-pointer transition-colors">Home</span></Link>
           <Link href="/series"><span className="hover:text-white cursor-pointer transition-colors">TV Shows</span></Link>
           <Link href="/movies"><span className="hover:text-white cursor-pointer transition-colors">Movies</span></Link>
@@ -87,13 +87,13 @@ export const Navbar: React.FC = () => {
         {user ? (
           <div className="flex items-center gap-4">
             {isPro ? (
-              <span className="flex items-center gap-1 text-[10px] font-black bg-gradient-to-r from-yellow-400 to-yellow-600 text-black px-2 py-1 rounded-sm uppercase tracking-tighter">
+              <span className="flex items-center gap-1 text-[10px] font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 text-black px-2 py-1 rounded-sm uppercase tracking-tighter">
                 <Crown className="w-3 h-3" /> Pro
               </span>
             ) : (
               <Link 
                 href="/upgrade" 
-                className="hidden sm:block text-[10px] font-black bg-netflix-red text-white px-3 py-1.5 rounded-sm hover:bg-red-700 transition-colors uppercase tracking-widest"
+                className="hidden sm:block text-[10px] font-bold bg-netflix-red text-white px-3 py-1.5 rounded-sm hover:bg-red-700 transition-colors uppercase tracking-widest"
               >
                 Upgrade
               </Link>
@@ -121,10 +121,10 @@ export const Navbar: React.FC = () => {
                       className="absolute right-0 top-full mt-2 w-56 bg-netflix-surface/95 backdrop-blur-xl border border-white/10 rounded-md shadow-2xl py-2 z-[110]"
                     >
                       <div className="px-4 py-3 border-b border-white/5 mb-2">
-                        <p className="text-sm font-black text-white truncate uppercase tracking-tighter">{userData?.displayName}</p>
+                        <p className="text-sm font-bold text-white truncate uppercase tracking-tighter">{userData?.displayName}</p>
                         <p className="text-[10px] text-gray-500 truncate font-mono">{userData?.email}</p>
                         {isPro && userData?.proExpiry && (
-                          <p className="text-[9px] text-yellow-500 font-black uppercase tracking-tighter mt-1 flex items-center gap-1">
+                          <p className="text-[9px] text-yellow-500 font-bold tracking-tight mt-1 flex items-center gap-1">
                             <Crown className="w-2 h-2" /> Expires: {new Date(userData.proExpiry).toLocaleDateString()}
                           </p>
                         )}
@@ -157,7 +157,7 @@ export const Navbar: React.FC = () => {
                           setIsMenuOpen(false);
                           signOut();
                         }}
-                        className="w-full text-left px-4 py-2 text-xs font-black text-netflix-red hover:bg-netflix-red/10 flex items-center gap-2 mt-2 border-t border-white/5 pt-2 uppercase tracking-widest transition-colors"
+                        className="w-full text-left px-4 py-2 text-xs font-bold text-netflix-red hover:bg-netflix-red/10 flex items-center gap-2 mt-2 border-t border-white/5 pt-2 uppercase tracking-widest transition-colors"
                       >
                         <LogOut className="w-4 h-4" /> Sign out
                       </button>
@@ -170,7 +170,7 @@ export const Navbar: React.FC = () => {
         ) : (
           <button 
             onClick={signIn}
-            className="bg-netflix-red text-white px-6 py-2 rounded-sm text-xs font-black uppercase tracking-widest hover:bg-red-700 transition-all active:scale-95 shadow-lg"
+            className="bg-netflix-red text-white px-6 py-2 rounded-sm text-xs font-bold tracking-wide hover:bg-red-700 transition-all active:scale-95 shadow-lg"
           >
             Sign In
           </button>
@@ -202,12 +202,12 @@ export const Navbar: React.FC = () => {
                     alt="LAKSUB" 
                     className="h-12 w-auto object-contain self-start" 
                   />
-                  <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em] leading-none mt-2">
+                  <span className="text-[10px] font-bold text-white/40 uppercase tracking-[0.3em] leading-none mt-2">
                     Sinhala Subtitles
                   </span>
                 </div>
               </div>
-              <div className="flex flex-col gap-6 text-lg font-black uppercase tracking-[0.2em]">
+              <div className="flex flex-col gap-6 text-lg font-bold tracking-[0.2em]">
                 <Link href="/"><span onClick={() => setIsMobileMenuOpen(false)} className="hover:text-netflix-red transition-colors">Home</span></Link>
                 <Link href="/series"><span onClick={() => setIsMobileMenuOpen(false)} className="hover:text-netflix-red transition-colors">TV Shows</span></Link>
                 <Link href="/movies"><span onClick={() => setIsMobileMenuOpen(false)} className="hover:text-netflix-red transition-colors">Movies</span></Link>
@@ -219,7 +219,7 @@ export const Navbar: React.FC = () => {
               <div className="mt-auto pt-8 border-t border-white/5">
                 {isPro && userData?.proExpiry && (
                   <div className="mb-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl">
-                    <p className="text-[10px] text-yellow-500 font-black uppercase tracking-widest mb-1 flex items-center gap-1">
+                    <p className="text-[10px] text-yellow-500 font-bold tracking-wide mb-1 flex items-center gap-1">
                       <Crown className="w-3 h-3" /> Pro Member
                     </p>
                     <p className="text-xs font-bold text-white">
@@ -231,7 +231,7 @@ export const Navbar: React.FC = () => {
                   <Link 
                     href="/upgrade" 
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="block w-full text-center bg-netflix-red text-white py-3 rounded-xl font-black uppercase tracking-widest text-sm"
+                    className="block w-full text-center bg-netflix-red text-white py-3 rounded-xl font-bold tracking-wide text-sm"
                   >
                     Upgrade to Pro
                   </Link>

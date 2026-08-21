@@ -722,7 +722,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
 
 
   const renderDownloadCard = () => (
-    <div className="bg-white/5 backdrop-blur-2xl p-6 lg:p-8 rounded-3xl border border-white/5 shadow-2xl relative isolate w-full">
+    <div className="bg-[#181818] p-6 lg:p-8 rounded-3xl border border-white/5 shadow-xl relative isolate w-full">
       <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row justify-between gap-6 mb-8 items-start sm:items-center lg:items-start xl:items-center">
         <Link href={`/user/${subtitle.authorUid}`}>
           <div className="flex items-center gap-4 cursor-pointer group">
@@ -769,7 +769,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                   value={commentInput}
                   onChange={(e) => setCommentInput(e.target.value)}
                   placeholder="Write a comment (optional)..."
-                  className="w-full bg-black/20 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-netflix-red transition-colors font-medium h-24 resize-none text-sm"
+                  className="w-full bg-black/20 border border-white/5 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-netflix-red transition-colors font-medium h-24 resize-none text-sm"
                 />
                 <div className="flex justify-end gap-3">
                   <button 
@@ -843,14 +843,14 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
             </div>
             {((subtitle.videoOptions && subtitle.videoOptions.length > 0) || (subtitle.videoLinks?.raw?.p480 || subtitle.videoLinks?.raw?.p720 || subtitle.videoLinks?.raw?.p1080 || subtitle.videoLinks?.hardcoded?.p480 || subtitle.videoLinks?.hardcoded?.p720 || subtitle.videoLinks?.hardcoded?.p1080)) && (
               <Link href={subtitle.slug ? `/subtitles/${subtitle.slug}/video` : `/subtitle/${subtitle.id}/video`} className="w-full">
-                <button className="btn-secondary w-full flex items-center justify-center gap-2 font-bold bg-white/5 hover:bg-white/10 text-white border border-white/5 py-3 rounded-xl shadow-sm transition-all">
+                <button className="btn-secondary w-full flex items-center justify-center gap-2 font-bold bg-white/5 hover:bg-white/10 text-white border border-white/5 py-3 rounded-2xl shadow-sm transition-all">
                   <Video className="w-5 h-5" /> Download Video
                 </button>
               </Link>
             )}
           </div>
         ) : isPreparing ? (
-          <div className="w-full max-w-2xl mx-auto aspect-video rounded-2xl border border-white/10 shadow-2xl relative overflow-hidden bg-black">
+          <div className="w-full max-w-2xl mx-auto aspect-video rounded-2xl border border-white/5 shadow-xl relative overflow-hidden bg-black">
             <VastPlayer 
               vastUrl="https://scrawnyslice.com/d.mLFsz/d/GhNpvAZZGeUJ/RetmA9buuZhUbl/k/PuT/c/xNMUDsESx/N/D/UltoNXzdE-wOMZTxE/0/OiQN"
               onFinished={() => setCountdown(0)}
@@ -887,7 +887,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
             className={`btn w-full sm:w-auto lg:w-full bg-[#0088cc] text-white shadow-lg border border-[#0088cc] hover:bg-[#0077b3] hover:shadow-xl hover:-translate-y-0.5 relative overflow-hidden ${telegramCountdown !== null && telegramCountdown > 0 ? 'opacity-50' : ''}`}
           >
             {isPro && (
-              <span className="absolute top-1 right-1 bg-yellow-500 text-black text-[8px] font-black px-1.5 py-0.5 rounded-sm flex items-center gap-1 uppercase tracking-tighter shadow-md">
+              <span className="absolute top-1 right-1 bg-yellow-500 text-black text-[8px] font-bold px-1.5 py-0.5 rounded-sm flex items-center gap-1 uppercase tracking-tighter shadow-md">
                 <Crown className="w-2 h-2" /> Pro
               </span>
             )}
@@ -909,7 +909,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
               className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-bold text-sm tracking-wide font-semibold text-xs transition-all border w-full sm:w-auto lg:w-full ${
                 isWatchlisted 
                   ? 'bg-netflix-red text-white border-netflix-red' 
-                  : 'bg-white/5 text-white border-white/10 hover:bg-white/10'
+                  : 'bg-white/5 text-white border-white/5 hover:bg-white/10'
               }`}
             >
               <Bookmark className={`w-5 h-5 ${isWatchlisted ? 'fill-current' : ''}`} />
@@ -921,7 +921,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
               className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-bold text-sm tracking-wide font-semibold text-xs transition-all border w-full sm:w-auto lg:w-full ${
                 isWatched 
                   ? 'bg-green-600 text-white border-green-600' 
-                  : 'bg-white/5 text-white border-white/10 hover:bg-white/10'
+                  : 'bg-white/5 text-white border-white/5 hover:bg-white/10'
               }`}
             >
               <CheckCircle className={`w-5 h-5 ${isWatched ? 'fill-current' : ''}`} />
@@ -934,7 +934,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                 className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-bold text-sm tracking-wide font-semibold text-xs transition-all border w-full sm:w-auto lg:w-full ${
                   isSeriesWatchlisted 
                     ? 'bg-blue-600 text-white border-blue-600' 
-                    : 'bg-white/5 text-white border-white/10 hover:bg-white/10'
+                    : 'bg-white/5 text-white border-white/5 hover:bg-white/10'
                 }`}
               >
                 <Film className={`w-5 h-5 ${isSeriesWatchlisted ? 'fill-current' : ''}`} />
@@ -995,7 +995,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
         <div className="absolute top-28 left-4 md:left-12 z-40">
           <button 
             onClick={() => window.history.back()}
-            className="inline-flex items-center gap-2 text-white/70 hover:text-white bg-black/20 hover:bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 transition-all group transform-gpu backface-hidden"
+            className="inline-flex items-center gap-2 text-white/70 hover:text-white bg-black/20 hover:bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/5 transition-all group transform-gpu backface-hidden"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> 
             <span className="text-[10px] md:text-xs font-bold tracking-wide text-xs">Back</span>
@@ -1019,7 +1019,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="aspect-[2/3] rounded-2xl overflow-hidden shadow-2xl relative border border-white/5 group ring-1 ring-white/10"
+                className="aspect-[2/3] rounded-2xl overflow-hidden shadow-xl relative border border-white/5 group ring-1 ring-white/10"
               >
                 <img 
                   src={posterUrl || undefined} 
@@ -1028,7 +1028,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                   referrerPolicy="no-referrer"
                 />
                 {isProOnly && (
-                  <div className="absolute top-4 right-4 bg-netflix-red text-white text-[10px] font-black px-3 py-1.5 rounded-sm tracking-wide font-semibold text-xs shadow-lg z-10">
+                  <div className="absolute top-4 right-4 bg-netflix-red text-white text-[10px] font-bold px-3 py-1.5 rounded-sm tracking-wide font-semibold text-xs shadow-lg z-10">
                     Pro Only
                   </div>
                 )}
@@ -1043,7 +1043,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
-                  className="mt-6 aspect-video rounded-xl overflow-hidden shadow-2xl relative border border-white/10 group"
+                  className="mt-6 aspect-video rounded-2xl overflow-hidden shadow-xl relative border border-white/5 group"
                 >
                   <img 
                     src={getTMDBImageUrl(episodeData.still_path) || undefined} 
@@ -1051,7 +1051,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     referrerPolicy="no-referrer"
                   />
-                  <div className="absolute top-3 left-3 bg-black/80 backdrop-blur-md px-2 py-1 rounded text-[10px] font-bold text-white border border-white/10 shadow-lg transform-gpu backface-hidden">
+                  <div className="absolute top-3 left-3 bg-black/80 backdrop-blur-md px-2 py-1 rounded text-[10px] font-bold text-white border border-white/5 shadow-lg transform-gpu backface-hidden">
                     EP {subtitle.episode?.toString().padStart(2, '0')}
                   </div>
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
@@ -1066,7 +1066,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="mt-6 space-y-4 bg-white/5 backdrop-blur-md p-5 rounded-2xl border border-white/5 shadow-lg transform-gpu backface-hidden"
+                className="mt-6 space-y-4 bg-[#181818] p-6 rounded-2xl border border-white/5 shadow-lg transform-gpu backface-hidden"
               >
                 <div className="flex items-center justify-between text-xs font-semibold tracking-wide text-gray-400">
                   <span className="text-gray-500 flex items-center gap-2"><Star className="w-4 h-4 text-yellow-500" /> TMDB Rating</span>
@@ -1108,7 +1108,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
               
               <div className="flex flex-wrap items-center gap-3 md:gap-6 flex flex-wrap items-center gap-3 md:gap-4 text-sm font-medium mb-8 text-gray-400">
                 {subtitle.averageRating > 0 ? (
-                  <div className="flex items-center gap-1 bg-yellow-500/10 text-yellow-500 px-3 py-1.5 rounded-full border border-yellow-500/20 shadow-[0_0_10px_rgba(234,179,8,0.1)]">
+                  <div className="flex items-center gap-1 bg-yellow-500/10 text-yellow-500 px-4 py-1.5 rounded-full bg-[#181818] border border-yellow-500/20 shadow-[0_0_10px_rgba(234,179,8,0.1)]">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <Star
                         key={star}
@@ -1118,7 +1118,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                     <span className="ml-1.5 font-bold">{subtitle.averageRating.toFixed(1)}</span>
                   </div>
                 ) : (
-                  <span className="text-gray-400 bg-gray-500/10 px-3 py-1.5 rounded-full border border-gray-500/20 font-bold">
+                  <span className="text-gray-400 bg-gray-500/10 px-4 py-1.5 rounded-full bg-[#181818] border border-white/10 font-bold">
                     NOT RATED YET
                   </span>
                 )}
@@ -1150,7 +1150,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                 {subtitle.isAdult && (
                   <>
                     <span className="text-gray-600">|</span>
-                    <span className="bg-red-600 text-white px-2 py-1 rounded text-[10px] font-black">18+ ADULT</span>
+                    <span className="bg-red-600 text-white px-2 py-1 rounded text-[10px] font-bold">18+ ADULT</span>
                   </>
                 )}
               </div>
@@ -1170,20 +1170,20 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
 
             {/* Parents Guide */}
             {(subtitle.parentalRating || subtitle.parentsGuide) && (
-              <div className="mb-8 bg-white/5 backdrop-blur-xl p-6 rounded-xl border border-white/10 transform-gpu backface-hidden">
+              <div className="mb-8 bg-[#181818] p-6 rounded-2xl border border-white/5 transform-gpu backface-hidden">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-bold flex items-center gap-2 text-gray-100">
                     <ShieldCheck className="w-5 h-5 text-netflix-red" /> Parents Guide
                   </h2>
                   {subtitle.parentalRating && (
-                    <span className="bg-netflix-red text-white px-3 py-1 rounded font-black text-sm">
+                    <span className="bg-netflix-red text-white px-3 py-1 rounded font-bold text-sm">
                       {subtitle.parentalRating}
                     </span>
                   )}
                 </div>
 
                 {subtitle.parentalDescription && (
-                  <p className="text-gray-400 text-sm italic mb-6 border-b border-white/10 pb-4">
+                  <p className="text-gray-400 text-sm italic mb-6 border-b border-white/5 pb-4">
                     {subtitle.parentalDescription}
                   </p>
                 )}
@@ -1233,7 +1233,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
 
             <div className="mb-10">
               <div 
-                className={`relative bg-[#272727] transition-colors rounded-xl p-4 md:p-6 text-gray-200 font-sinhala-text leading-relaxed overflow-hidden text-lg md:text-xl ${!isDescExpanded ? 'max-h-48' : ''}`}
+                className={`relative bg-[#181818] transition-colors rounded-2xl p-4 md:p-6 text-gray-200 font-sinhala-text leading-relaxed overflow-hidden text-lg md:text-xl ${!isDescExpanded ? 'max-h-48' : ''}`}
               >
                 {(() => {
                   const html = subtitle.description || 'No description available.';
@@ -1301,7 +1301,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                   </div>
                 ) : (
                   <div 
-                    className="mt-6 pt-4 border-t border-white/10 cursor-pointer"
+                    className="mt-6 pt-4 border-t border-white/5 cursor-pointer"
                     onClick={() => setIsDescExpanded(false)}
                   >
                     <span className="text-white font-bold text-sm hover:underline">Show less</span>
@@ -1321,7 +1321,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                 <div className="flex gap-4 overflow-x-auto pb-4 hide-scrollbar">
                   {tmdbData.credits.cast.slice(0, 10).map((person: any) => (
                     <div key={person.id} className="flex-none w-24 text-center">
-                      <div className="w-20 h-20 mx-auto rounded-full overflow-hidden mb-2 border-2 border-gray-800 transform-gpu backface-hidden">
+                      <div className="w-20 h-20 mx-auto rounded-full overflow-hidden mb-2 border-2 border-white/5 transform-gpu backface-hidden">
                         <img 
                           src={person.profile_path ? getTMDBImageUrl(person.profile_path) || undefined : `https://ui-avatars.com/api/?name=${encodeURIComponent(person.name)}&background=random`} 
                           alt={person.name}
@@ -1351,7 +1351,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                       <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-gray-100">
                         <Play className="w-5 h-5 text-netflix-red" /> Official Trailer
                       </h2>
-                      <div className="aspect-video w-full rounded-lg overflow-hidden border border-gray-800 shadow-2xl">
+                      <div className="aspect-video w-full rounded-lg overflow-hidden border border-white/5 shadow-xl">
                         <iframe
                           src={`https://www.youtube.com/embed/${trailer.key}`}
                           title="Movie Trailer"
@@ -1380,7 +1380,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
           </h2>
           
           {ratings.length === 0 ? (
-            <div className="bg-netflix-surface p-12 rounded-3xl border border-white/5 text-center">
+            <div className="bg-[#181818] p-12 rounded-3xl border border-white/5 text-center">
               <p className="text-gray-500 font-medium">No reviews yet. Be the first to rate this subtitle!</p>
             </div>
           ) : (
@@ -1390,12 +1390,12 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                   key={rating.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-netflix-surface p-6 rounded-2xl border border-white/5 shadow-xl transform-gpu backface-hidden"
+                  className="bg-[#181818] p-8 rounded-3xl border border-white/5 shadow-xl transform-gpu backface-hidden"
                 >
                   <div className="flex items-center justify-between mb-4">
                     <Link href={`/user/${rating.userId}`}>
                       <div className="flex items-center gap-3 cursor-pointer group">
-                        <div className="w-10 h-10 rounded-full bg-gray-700 overflow-hidden border border-white/10 transition-transform group-hover:scale-110 transform-gpu backface-hidden">
+                        <div className="w-10 h-10 rounded-full bg-gray-700 overflow-hidden border border-white/5 transition-transform group-hover:scale-110 transform-gpu backface-hidden">
                           {rating.userPhoto ? (
                             <img src={rating.userPhoto} alt={rating.userName} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                           ) : (
@@ -1449,7 +1449,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-lg bg-netflix-surface border border-white/10 rounded-3xl p-8 shadow-2xl overflow-hidden"
+              className="relative w-full max-w-lg bg-[#181818] border border-white/5 rounded-3xl p-8 shadow-xl overflow-hidden"
             >
               {reportSuccess ? (
                 <div className="text-center py-12">
@@ -1472,11 +1472,11 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
 
                   <form onSubmit={handleReport} className="space-y-6">
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black text-gray-500 tracking-wide font-semibold text-xs ml-1">Reason for reporting</label>
+                      <label className="text-[10px] font-bold text-gray-500 tracking-wide font-semibold text-xs ml-1">Reason for reporting</label>
                       <select 
                         value={reportReason}
                         onChange={(e) => setReportReason(e.target.value as any)}
-                        className="w-full bg-black/20 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-netflix-red transition-colors font-medium appearance-none"
+                        className="w-full bg-black/20 border border-white/5 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-netflix-red transition-colors font-medium appearance-none"
                         required
                       >
                         <option value="broken_link">Broken Download Link</option>
@@ -1487,11 +1487,11 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black text-gray-500 tracking-wide font-semibold text-xs ml-1">Additional Details</label>
+                      <label className="text-[10px] font-bold text-gray-500 tracking-wide font-semibold text-xs ml-1">Additional Details</label>
                       <textarea 
                         value={reportMessage}
                         onChange={(e) => setReportMessage(e.target.value)}
-                        className="w-full bg-black/20 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-netflix-red transition-colors font-medium h-32 resize-none"
+                        className="w-full bg-black/20 border border-white/5 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-netflix-red transition-colors font-medium h-32 resize-none"
                         placeholder="Please provide more details about the problem..."
                         required
                       />
@@ -1534,7 +1534,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-md bg-netflix-surface border border-white/10 rounded-3xl p-8 shadow-2xl"
+              className="relative w-full max-w-md bg-[#181818] border border-white/5 rounded-3xl p-8 shadow-xl"
             >
               <div className="flex items-center justify-between mb-8">
                 <h3 className="text-2xl font-bold tracking-tight flex items-center gap-3">
@@ -1546,7 +1546,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
               </div>
 
               <div className="space-y-6">
-                <div className="p-4 bg-black/40 border border-white/10 rounded-xl flex items-center justify-between gap-4">
+                <div className="p-4 bg-black/40 border border-white/5 rounded-2xl flex items-center justify-between gap-4">
                   <p className="text-xs text-gray-400 truncate font-mono">{window.location.href}</p>
                   <button 
                     onClick={handleCopyLink}
@@ -1562,7 +1562,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                     href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-3 bg-[#1877F2]/10 hover:bg-[#1877F2]/20 border border-[#1877F2]/20 p-4 rounded-xl transition-all group"
+                    className="flex items-center justify-center gap-3 bg-[#1877F2]/10 hover:bg-[#1877F2]/20 border border-[#1877F2]/20 p-4 rounded-2xl transition-all group"
                   >
                     <div className="w-5 h-5 flex items-center justify-center bg-[#1877F2] rounded-sm text-white font-bold text-[10px]">f</div>
                     <span className="text-xs font-semibold tracking-wide text-gray-400">Facebook</span>
@@ -1571,7 +1571,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                     href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(`Check out these Sinhala subtitles for ${fullTitle} on LAKSUB!`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-3 bg-[#1DA1F2]/10 hover:bg-[#1DA1F2]/20 border border-[#1DA1F2]/20 p-4 rounded-xl transition-all group"
+                    className="flex items-center justify-center gap-3 bg-[#1DA1F2]/10 hover:bg-[#1DA1F2]/20 border border-[#1DA1F2]/20 p-4 rounded-2xl transition-all group"
                   >
                     <div className="w-5 h-5 flex items-center justify-center bg-[#1DA1F2] rounded-sm text-white font-bold text-[10px]">𝕏</div>
                     <span className="text-xs font-semibold tracking-wide text-gray-400">Twitter</span>
@@ -1580,7 +1580,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                     href={`https://wa.me/?text=${encodeURIComponent(`Check out these Sinhala subtitles for ${fullTitle} on LAKSUB! ${window.location.href}`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-3 bg-[#25D366]/10 hover:bg-[#25D366]/20 border border-[#25D366]/20 p-4 rounded-xl transition-all group"
+                    className="flex items-center justify-center gap-3 bg-[#25D366]/10 hover:bg-[#25D366]/20 border border-[#25D366]/20 p-4 rounded-2xl transition-all group"
                   >
                     <MessageSquare className="w-5 h-5 text-[#25D366]" />
                     <span className="text-xs font-semibold tracking-wide text-gray-400">WhatsApp</span>
@@ -1589,7 +1589,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                     href={`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(`Check out these Sinhala subtitles for ${fullTitle} on LAKSUB!`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-3 bg-[#0088cc]/10 hover:bg-[#0088cc]/20 border border-[#0088cc]/20 p-4 rounded-xl transition-all group"
+                    className="flex items-center justify-center gap-3 bg-[#0088cc]/10 hover:bg-[#0088cc]/20 border border-[#0088cc]/20 p-4 rounded-2xl transition-all group"
                   >
                     <Send className="w-5 h-5 text-[#0088cc]" />
                     <span className="text-xs font-semibold tracking-wide text-gray-400">Telegram</span>
@@ -1615,7 +1615,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-md bg-netflix-surface border border-white/10 rounded-3xl p-10 shadow-2xl text-center"
+              className="relative w-full max-w-md bg-[#181818] border border-white/5 rounded-3xl p-10 shadow-xl text-center"
             >
               <div className="w-20 h-20 bg-red-600/20 rounded-full flex items-center justify-center mx-auto mb-8 border border-red-600/30">
                 <ShieldCheck className="w-10 h-10 text-red-600" />
@@ -1639,7 +1639,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                 </Link>
               </div>
               
-              <p className="mt-8 text-[10px] text-gray-600 tracking-wide font-semibold text-xs font-black">
+              <p className="mt-8 text-[10px] text-gray-600 tracking-wide font-semibold text-xs font-bold">
                 By clicking "I am 18 or older", you confirm that you are of legal age to view mature content.
               </p>
             </motion.div>
@@ -1664,7 +1664,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
             >
               {!vastVideoEnabled && (
                 <div className="absolute top-4 right-4 z-50">
-                  <div className="flex items-center gap-4 bg-black/50 p-4 rounded-xl backdrop-blur-md transform-gpu backface-hidden">
+                  <div className="flex items-center gap-4 bg-black/50 p-4 rounded-2xl backdrop-blur-md transform-gpu backface-hidden">
                     <span className="text-sm font-bold text-gray-400">
                       {adCountdown > 0 ? `You can skip in ${adCountdown}s` : 'You can skip now'}
                     </span>
@@ -1705,7 +1705,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                       <AdZone zoneName="download-popup" />
                     </div>
                     {/* Fallback content if AdZone is empty or loading */}
-                    <div className="text-center p-8 z-[-1] mt-16 max-w-2xl mx-auto bg-netflix-surface border border-white/10 rounded-3xl">
+                    <div className="text-center p-8 z-[-1] mt-16 max-w-2xl mx-auto bg-[#181818] border border-white/5 rounded-3xl">
                       <Crown className="w-16 h-16 text-yellow-500 mx-auto mb-4 opacity-50" />
                       <h4 className="text-2xl font-bold tracking-tight text-white/50 mb-2">Upgrade to Pro</h4>
                       <p className="text-gray-500 font-medium">Get instant downloads without ads or waiting times.</p>
@@ -1731,7 +1731,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-md bg-netflix-surface border border-white/10 rounded-3xl p-8 shadow-2xl text-center"
+              className="relative w-full max-w-md bg-[#181818] border border-white/5 rounded-3xl p-8 shadow-xl text-center"
             >
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-3xl font-bold tracking-tight text-white font-sinhala-text">කරුණාකර කියවන්න!</h3>

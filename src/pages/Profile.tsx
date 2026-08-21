@@ -234,14 +234,14 @@ export const Profile: React.FC = () => {
 
           <div className="text-center md:text-left flex-1">
             <div className="flex flex-col md:flex-row md:items-center gap-3 mb-2">
-              <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase">{userData.displayName}</h1>
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tighter uppercase">{userData.displayName}</h1>
               {userData.role === 'admin' && (
-                <span className="bg-netflix-red text-white text-[10px] font-black px-2 py-1 rounded uppercase tracking-widest self-start md:self-center flex items-center gap-1">
+                <span className="bg-netflix-red text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-widest self-start md:self-center flex items-center gap-1">
                   <ShieldCheck className="w-3 h-3" /> Admin
                 </span>
               )}
               {userData.role === 'creator' && (
-                <span className="bg-blue-600 text-white text-[10px] font-black px-2 py-1 rounded uppercase tracking-widest self-start md:self-center flex items-center gap-1">
+                <span className="bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-widest self-start md:self-center flex items-center gap-1">
                   <Star className="w-3 h-3 fill-current" /> Creator
                 </span>
               )}
@@ -255,27 +255,27 @@ export const Profile: React.FC = () => {
             <div className="flex flex-wrap justify-center md:justify-start gap-4">
               {userData.proExpiry && new Date(userData.proExpiry) > new Date() && (
                 <div className="bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 px-4 py-2 rounded-xl border border-yellow-500/30">
-                  <p className="text-[10px] text-yellow-500 font-black uppercase tracking-widest mb-1 flex items-center gap-1">
+                  <p className="text-[10px] text-yellow-500 font-bold tracking-wide mb-1 flex items-center gap-1">
                     <Crown className="w-3 h-3" /> Pro Expiry
                   </p>
-                  <p className="text-xl font-black font-mono text-yellow-500">
+                  <p className="text-xl font-bold font-mono text-yellow-500">
                     {userData.proExpiry ? new Date(userData.proExpiry).toLocaleDateString() : ''}
                   </p>
                 </div>
               )}
               <div className="bg-white/5 px-4 py-2 rounded-xl border border-white/5">
-                <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Uploads</p>
-                <p className="text-xl font-black font-mono">{userData.totalUploads || 0}</p>
+                <p className="text-[10px] text-gray-500 font-bold tracking-wide mb-1">Uploads</p>
+                <p className="text-xl font-bold font-mono">{userData.totalUploads || 0}</p>
               </div>
               <div className="bg-white/5 px-4 py-2 rounded-xl border border-white/5">
-                <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Downloads</p>
-                <p className="text-xl font-black font-mono">
+                <p className="text-[10px] text-gray-500 font-bold tracking-wide mb-1">Downloads</p>
+                <p className="text-xl font-bold font-mono">
                   {userData.totalDownloads || 0}
                 </p>
               </div>
               <div className="bg-white/5 px-4 py-2 rounded-xl border border-white/5">
-                <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Balance</p>
-                <p className="text-xl font-black font-mono text-green-500">${typeof userData.walletBalance === 'number' ? userData.walletBalance.toFixed(2) : '0.00'}</p>
+                <p className="text-[10px] text-gray-500 font-bold tracking-wide mb-1">Balance</p>
+                <p className="text-xl font-bold font-mono text-green-500">${typeof userData.walletBalance === 'number' ? userData.walletBalance.toFixed(2) : '0.00'}</p>
               </div>
             </div>
           </div>
@@ -292,35 +292,35 @@ export const Profile: React.FC = () => {
         <div className="flex border-b border-white/10 mb-8 overflow-x-auto scrollbar-hide">
           <button 
             onClick={() => setActiveTab('uploads')}
-            className={`px-6 py-3 text-sm font-black uppercase tracking-widest transition-all relative ${activeTab === 'uploads' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+            className={`px-6 py-3 text-sm font-bold tracking-wide transition-all relative ${activeTab === 'uploads' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
           >
             <span className="flex items-center gap-2"><Upload className="w-4 h-4" /> Uploads</span>
             {activeTab === 'uploads' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-1 bg-netflix-red" />}
           </button>
           <button 
             onClick={() => setActiveTab('history')}
-            className={`px-6 py-3 text-sm font-black uppercase tracking-widest transition-all relative ${activeTab === 'history' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+            className={`px-6 py-3 text-sm font-bold tracking-wide transition-all relative ${activeTab === 'history' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
           >
             <span className="flex items-center gap-2"><History className="w-4 h-4" /> History</span>
             {activeTab === 'history' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-1 bg-netflix-red" />}
           </button>
           <button 
             onClick={() => setActiveTab('watchlist')}
-            className={`px-6 py-3 text-sm font-black uppercase tracking-widest transition-all relative ${activeTab === 'watchlist' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+            className={`px-6 py-3 text-sm font-bold tracking-wide transition-all relative ${activeTab === 'watchlist' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
           >
             <span className="flex items-center gap-2"><Bookmark className="w-4 h-4" /> Watchlist</span>
             {activeTab === 'watchlist' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-1 bg-netflix-red" />}
           </button>
           <button 
             onClick={() => setActiveTab('watched')}
-            className={`px-6 py-3 text-sm font-black uppercase tracking-widest transition-all relative ${activeTab === 'watched' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+            className={`px-6 py-3 text-sm font-bold tracking-wide transition-all relative ${activeTab === 'watched' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
           >
             <span className="flex items-center gap-2"><CheckCircle className="w-4 h-4" /> Watched</span>
             {activeTab === 'watched' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-1 bg-netflix-red" />}
           </button>
           <button 
             onClick={() => setActiveTab('settings')}
-            className={`px-6 py-3 text-sm font-black uppercase tracking-widest transition-all relative ${activeTab === 'settings' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+            className={`px-6 py-3 text-sm font-bold tracking-wide transition-all relative ${activeTab === 'settings' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
           >
             <span className="flex items-center gap-2"><Settings className="w-4 h-4" /> Settings</span>
             {activeTab === 'settings' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-1 bg-netflix-red" />}
@@ -355,12 +355,12 @@ export const Profile: React.FC = () => {
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
                             <div className="absolute bottom-4 left-4">
-                              <h3 className="font-black text-lg uppercase tracking-tighter leading-none">{sub.movieTitle}</h3>
+                              <h3 className="font-bold text-lg uppercase tracking-tighter leading-none">{sub.movieTitle}</h3>
                               <p className="text-xs text-gray-400 mt-1 font-mono">
                                 {sub.type === 'series' ? `S${sub.season} E${sub.episode}` : sub.releaseYear}
                               </p>
                             </div>
-                            <div className={`absolute top-4 right-4 px-2 py-1 rounded text-[10px] font-black uppercase tracking-widest ${sub.status === 'approved' ? 'bg-green-500' : 'bg-yellow-500'}`}>
+                            <div className={`absolute top-4 right-4 px-2 py-1 rounded text-[10px] font-bold tracking-wide ${sub.status === 'approved' ? 'bg-green-500' : 'bg-yellow-500'}`}>
                               {sub.status}
                             </div>
                           </div>
@@ -409,7 +409,7 @@ export const Profile: React.FC = () => {
                               <Download className="w-6 h-6 text-netflix-red" />
                             </div>
                             <div>
-                              <h3 className="font-black text-lg uppercase tracking-tighter group-hover:text-netflix-red transition-colors">{record.subtitleTitle}</h3>
+                              <h3 className="font-bold text-lg uppercase tracking-tighter group-hover:text-netflix-red transition-colors">{record.subtitleTitle}</h3>
                               <p className="text-sm text-gray-500 font-medium flex items-center gap-2">
                                 <Clock className="w-3 h-3" /> {record.downloadedAt ? new Date(record.downloadedAt).toLocaleDateString() : ''} at {record.downloadedAt ? new Date(record.downloadedAt).toLocaleTimeString() : ''}
                               </p>
@@ -417,7 +417,7 @@ export const Profile: React.FC = () => {
                           </div>
                           <div className="flex items-center gap-4">
                             {record.isProDownload && (
-                              <span className="bg-netflix-red text-white text-[10px] font-black px-2 py-1 rounded uppercase tracking-widest">PRO</span>
+                              <span className="bg-netflix-red text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-widest">PRO</span>
                             )}
                             <ChevronRight className="w-5 h-5 text-gray-600 group-hover:text-netflix-red transition-colors" />
                           </div>
@@ -447,7 +447,7 @@ export const Profile: React.FC = () => {
                   {/* Series Watchlist */}
                   {userData.seriesWatchlist && userData.seriesWatchlist.length > 0 && (
                     <div>
-                      <h2 className="text-xl font-black uppercase tracking-widest mb-4 flex items-center gap-2">
+                      <h2 className="text-xl font-bold tracking-wide mb-4 flex items-center gap-2">
                         <Film className="w-5 h-5 text-netflix-red" /> Series Watchlist
                       </h2>
                       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
@@ -464,7 +464,7 @@ export const Profile: React.FC = () => {
 
                   {/* Subtitle Watchlist */}
                   <div>
-                    <h2 className="text-xl font-black uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <h2 className="text-xl font-bold tracking-wide mb-4 flex items-center gap-2">
                       <Bookmark className="w-5 h-5 text-netflix-red" /> Subtitle Watchlist
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -480,7 +480,7 @@ export const Profile: React.FC = () => {
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
                                 <div className="absolute bottom-4 left-4">
-                                  <h3 className="font-black text-lg uppercase tracking-tighter leading-none">{sub.movieTitle}</h3>
+                                  <h3 className="font-bold text-lg uppercase tracking-tighter leading-none">{sub.movieTitle}</h3>
                                   <p className="text-xs text-gray-400 mt-1 font-mono">
                                     {sub.type === 'series' ? `S${sub.season} E${sub.episode}` : sub.releaseYear}
                                   </p>
@@ -520,7 +520,7 @@ export const Profile: React.FC = () => {
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
                             <div className="absolute bottom-4 left-4">
-                              <h3 className="font-black text-lg uppercase tracking-tighter leading-none">{sub.movieTitle}</h3>
+                              <h3 className="font-bold text-lg uppercase tracking-tighter leading-none">{sub.movieTitle}</h3>
                               <p className="text-xs text-gray-400 mt-1 font-mono">
                                 {sub.type === 'series' ? `S${sub.season} E${sub.episode}` : sub.releaseYear}
                               </p>
@@ -550,7 +550,7 @@ export const Profile: React.FC = () => {
                   className="max-w-2xl mx-auto"
                 >
                   <form onSubmit={handleUpdateProfile} className="bg-white/5 p-8 rounded-3xl border border-white/10 space-y-6">
-                    <h2 className="text-2xl font-black uppercase tracking-tighter mb-8 flex items-center gap-3">
+                    <h2 className="text-2xl font-bold tracking-tight mb-8 flex items-center gap-3">
                       <ShieldCheck className="w-6 h-6 text-netflix-red" /> Account Settings
                     </h2>
 
@@ -561,7 +561,7 @@ export const Profile: React.FC = () => {
                     )}
 
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Display Name</label>
+                      <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Display Name</label>
                       <input 
                         type="text" 
                         value={displayName}
@@ -573,7 +573,7 @@ export const Profile: React.FC = () => {
                     </div>
 
                     <div className="space-y-4">
-                      <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1 block">Profile Photo (ImageKit.io Upload)</label>
+                      <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1 block">Profile Photo (ImageKit.io Upload)</label>
                       
                       <div className="flex flex-col md:flex-row items-center gap-6 p-5 rounded-2xl bg-black/40 border border-white/10">
                         {/* Preview */}
@@ -628,7 +628,7 @@ export const Profile: React.FC = () => {
                       )}
 
                       <div className="space-y-2 pt-2">
-                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Or paste a custom Photo URL</label>
+                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Or paste a custom Photo URL</label>
                         <input 
                           type="url" 
                           value={photoURL}
@@ -640,7 +640,7 @@ export const Profile: React.FC = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Bio</label>
+                      <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Bio</label>
                       <textarea 
                         value={bio}
                         onChange={(e) => setBio(e.target.value)}
@@ -648,14 +648,14 @@ export const Profile: React.FC = () => {
                         placeholder="Tell us about yourself..."
                         maxLength={200}
                       />
-                      <p className="text-[10px] text-gray-600 text-right font-black uppercase tracking-widest">{bio.length}/200</p>
+                      <p className="text-[10px] text-gray-600 text-right font-bold tracking-wide">{bio.length}/200</p>
                     </div>
 
                     <div className="pt-4">
                       <button 
                         type="submit"
                         disabled={updating}
-                        className="w-full bg-netflix-red text-white py-3 rounded-xl font-black uppercase tracking-widest hover:bg-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl"
+                        className="w-full bg-netflix-red text-white py-3 rounded-xl font-bold tracking-wide hover:bg-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl"
                       >
                         {updating ? 'Updating...' : 'Save Changes'}
                       </button>

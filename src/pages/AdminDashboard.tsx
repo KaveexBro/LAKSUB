@@ -1055,7 +1055,7 @@ export const AdminDashboard: React.FC = () => {
               <div className="bg-netflix-surface border border-gray-800 p-4 rounded-lg flex items-center justify-between">
                 <div>
                   <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Total Registered</p>
-                  <p className="text-2xl font-black mt-1 text-white">{users.length}</p>
+                  <p className="text-2xl font-bold mt-1 text-white">{users.length}</p>
                 </div>
                 <div className="p-2.5 bg-netflix-red/10 border border-netflix-red/20 rounded-md text-netflix-red">
                   <Users className="w-5 h-5" />
@@ -1065,7 +1065,7 @@ export const AdminDashboard: React.FC = () => {
               <div className="bg-netflix-surface border border-gray-800 p-4 rounded-lg flex items-center justify-between">
                 <div>
                   <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Online Now</p>
-                  <p className="text-2xl font-black mt-1 text-green-500 flex items-center gap-2">
+                  <p className="text-2xl font-bold mt-1 text-green-500 flex items-center gap-2">
                     {users.filter(u => u.lastActiveAt && (new Date().getTime() - new Date(u.lastActiveAt).getTime()) < 5 * 60 * 1000).length}
                     <span className="relative flex h-3 w-3">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -1081,7 +1081,7 @@ export const AdminDashboard: React.FC = () => {
               <div className="bg-netflix-surface border border-gray-800 p-4 rounded-lg flex items-center justify-between">
                 <div>
                   <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Active Today</p>
-                  <p className="text-2xl font-black mt-1 text-white">
+                  <p className="text-2xl font-bold mt-1 text-white">
                     {users.filter(u => u.lastActiveAt && (new Date().getTime() - new Date(u.lastActiveAt).getTime()) < 24 * 60 * 60 * 1000).length}
                   </p>
                 </div>
@@ -1093,7 +1093,7 @@ export const AdminDashboard: React.FC = () => {
               <div className="bg-netflix-surface border border-gray-800 p-4 rounded-lg flex items-center justify-between">
                 <div>
                   <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Active This Week</p>
-                  <p className="text-2xl font-black mt-1 text-white">
+                  <p className="text-2xl font-bold mt-1 text-white">
                     {users.filter(u => u.lastActiveAt && (new Date().getTime() - new Date(u.lastActiveAt).getTime()) < 7 * 24 * 60 * 60 * 1000).length}
                   </p>
                 </div>
@@ -1359,7 +1359,7 @@ export const AdminDashboard: React.FC = () => {
                               <td className="p-4 font-medium">
                                 {group.item.movieTitle}
                                 {group.item.isAdult && (
-                                  <span className="ml-2 bg-red-600 text-white text-[8px] px-1 rounded font-black">18+</span>
+                                  <span className="ml-2 bg-red-600 text-white text-[8px] px-1 rounded font-bold">18+</span>
                                 )}
                               </td>
                               <td className="p-4">
@@ -1429,7 +1429,7 @@ export const AdminDashboard: React.FC = () => {
                                   <ChevronRight className={`w-4 h-4 transition-transform ${expandedSeries.includes(group.title) ? 'rotate-90' : ''}`} />
                                   {group.title}
                                   {group.items.some((i: any) => i.isAdult) && (
-                                    <span className="bg-red-600 text-white text-[8px] px-1 rounded font-black">18+</span>
+                                    <span className="bg-red-600 text-white text-[8px] px-1 rounded font-bold">18+</span>
                                   )}
                                   <span className="text-[10px] bg-netflix-red px-1.5 py-0.5 rounded-full text-white ml-2">
                                     {group.items.length} Episodes
@@ -1478,7 +1478,7 @@ export const AdminDashboard: React.FC = () => {
                                       <td className="p-4 pl-12 text-gray-300 italic">
                                         S{sub.season?.toString().padStart(2, '0')} E{sub.episode?.toString().padStart(2, '0')}
                                         {sub.isAdult && (
-                                          <span className="ml-2 bg-red-600 text-white text-[8px] px-1 rounded font-black">18+</span>
+                                          <span className="ml-2 bg-red-600 text-white text-[8px] px-1 rounded font-bold">18+</span>
                                         )}
                                       </td>
                                       <td className="p-4 text-gray-500 text-xs">Episode</td>
@@ -1649,7 +1649,7 @@ export const AdminDashboard: React.FC = () => {
                               <div className="flex items-center gap-2">
                                 <p className="font-bold">{req.title}</p>
                                 {req.isPro && (
-                                  <span className="flex items-center gap-0.5 text-[8px] font-black bg-netflix-red text-white px-1.5 py-0.5 rounded uppercase tracking-tighter animate-pulse">
+                                  <span className="flex items-center gap-0.5 text-[8px] font-bold bg-netflix-red text-white px-1.5 py-0.5 rounded uppercase tracking-tighter animate-pulse">
                                     <Crown className="w-2 h-2" /> Priority
                                   </span>
                                 )}
@@ -1661,7 +1661,7 @@ export const AdminDashboard: React.FC = () => {
                         </td>
                         <td className="py-4">
                           <Link href={`/user/${req.userId}`} className="font-medium hover:text-netflix-red transition-colors">{req.userName}</Link>
-                          {req.isPro && <span className="text-[8px] font-black bg-yellow-500 text-black px-1 rounded uppercase tracking-tighter ml-1">Pro</span>}
+                          {req.isPro && <span className="text-[8px] font-bold bg-yellow-500 text-black px-1 rounded uppercase tracking-tighter ml-1">Pro</span>}
                         </td>
                         <td className="py-4">
                           <span className={`px-2 py-0.5 text-[10px] uppercase font-bold rounded ${

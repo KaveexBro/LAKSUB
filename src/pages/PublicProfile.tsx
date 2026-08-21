@@ -109,7 +109,7 @@ export const PublicProfile: React.FC = () => {
             className="inline-flex items-center gap-2 text-white/70 hover:text-white bg-white/5 hover:bg-white/10 px-4 py-2 rounded-full border border-white/10 transition-all group"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> 
-            <span className="text-[10px] md:text-xs font-black uppercase tracking-widest">Back</span>
+            <span className="text-[10px] md:text-xs font-bold tracking-wide">Back</span>
           </button>
         </div>
 
@@ -135,19 +135,19 @@ export const PublicProfile: React.FC = () => {
 
           <div className="text-center md:text-left flex-1">
             <div className="flex flex-col md:flex-row md:items-center gap-3 mb-2">
-              <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase">{targetUser.displayName}</h1>              <div className="flex flex-wrap gap-2">
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tighter uppercase">{targetUser.displayName}</h1>              <div className="flex flex-wrap gap-2">
                 {targetUser.role === 'admin' && (
-                  <span className="bg-netflix-red text-white text-[10px] font-black px-2 py-1 rounded uppercase tracking-widest flex items-center gap-1">
+                  <span className="bg-netflix-red text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-widest flex items-center gap-1">
                     <ShieldCheck className="w-3 h-3" /> Admin
                   </span>
                 )}
                 {targetUser.role === 'creator' && (
-                  <span className="bg-blue-600 text-white text-[10px] font-black px-2 py-1 rounded uppercase tracking-widest flex items-center gap-1">
+                  <span className="bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-widest flex items-center gap-1">
                     <Star className="w-3 h-3 fill-current" /> Creator
                   </span>
                 )}
                 {targetUser.proExpiry && new Date(targetUser.proExpiry) > new Date() && (
-                  <span className="bg-amber-500 text-white text-[10px] font-black px-2 py-1 rounded uppercase tracking-widest flex items-center gap-1">
+                  <span className="bg-amber-500 text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-widest flex items-center gap-1">
                     <Crown className="w-3 h-3" /> Pro Member
                   </span>
                 )}
@@ -160,20 +160,20 @@ export const PublicProfile: React.FC = () => {
             )}            
             <div className="flex flex-wrap justify-center md:justify-start gap-4">
               <div className="bg-white/5 px-4 py-2 rounded-xl border border-white/5">
-                <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Total Uploads</p>
-                <p className="text-xl font-black font-mono">{uploads.length}</p>
+                <p className="text-[10px] text-gray-500 font-bold tracking-wide mb-1">Total Uploads</p>
+                <p className="text-xl font-bold font-mono">{uploads.length}</p>
               </div>
               <div className="bg-white/5 px-4 py-2 rounded-xl border border-white/5">
-                <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Total Downloads</p>
-                <p className="text-xl font-black font-mono">
+                <p className="text-[10px] text-gray-500 font-bold tracking-wide mb-1">Total Downloads</p>
+                <p className="text-xl font-bold font-mono">
                   {targetUser.totalDownloads || 0}
                 </p>
               </div>
               {creatorAvgRating > 0 && (
                 <div className="bg-white/5 px-4 py-2 rounded-xl border border-white/5">
-                  <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Avg. Rating</p>
+                  <p className="text-[10px] text-gray-500 font-bold tracking-wide mb-1">Avg. Rating</p>
                   <div className="flex items-center gap-2">
-                    <p className="text-xl font-black font-mono text-yellow-500">{creatorAvgRating.toFixed(1)}</p>
+                    <p className="text-xl font-bold font-mono text-yellow-500">{creatorAvgRating.toFixed(1)}</p>
                     <Star className="w-4 h-4 text-yellow-500 fill-current" />
                   </div>
                 </div>
@@ -185,10 +185,10 @@ export const PublicProfile: React.FC = () => {
         {/* Uploads Section */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-black uppercase tracking-tighter flex items-center gap-2">
+            <h2 className="text-2xl font-bold tracking-tight flex items-center gap-2">
               <Upload className="w-6 h-6 text-netflix-red" /> Subtitles by {targetUser.displayName}
             </h2>
-            <div className="bg-white/5 px-4 py-1.5 rounded-full border border-white/10 text-[10px] font-black uppercase tracking-widest text-gray-400">
+            <div className="bg-white/5 px-4 py-1.5 rounded-full border border-white/10 text-[10px] font-bold tracking-wide text-gray-400">
               {uploads.length} Results
             </div>
           </div>
@@ -218,7 +218,7 @@ export const PublicProfile: React.FC = () => {
                       </div>
                     </div>
                     {sub.proOnlyUntil && new Date(sub.proOnlyUntil) > new Date() && (
-                      <div className="absolute top-2 right-2 bg-netflix-red text-white text-[8px] font-black px-1.5 py-0.5 rounded-sm uppercase tracking-wider shadow-lg z-20">
+                      <div className="absolute top-2 right-2 bg-netflix-red text-white text-[8px] font-bold px-1.5 py-0.5 rounded-sm uppercase tracking-wider shadow-lg z-20">
                         PRO
                       </div>
                     )}

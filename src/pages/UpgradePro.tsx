@@ -51,7 +51,7 @@ export const UpgradePro: React.FC = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 bg-netflix-red/20 text-netflix-red px-4 py-2 rounded-full font-black uppercase tracking-widest text-xs mb-6 border border-netflix-red/30"
+            className="inline-flex items-center gap-2 bg-netflix-red/20 text-netflix-red px-4 py-2 rounded-full font-bold tracking-wide text-xs mb-6 border border-netflix-red/30"
           >
             <Crown className="w-4 h-4" /> Premium Membership
           </motion.div>
@@ -60,7 +60,7 @@ export const UpgradePro: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-5xl md:text-7xl font-black mb-6 uppercase tracking-tighter leading-none"
+            className="text-5xl md:text-7xl font-bold mb-6 uppercase tracking-tighter leading-none"
           >
             Unlock the <span className="text-netflix-red">Pro</span> Experience
           </motion.h1>
@@ -107,7 +107,7 @@ export const UpgradePro: React.FC = () => {
               <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 {benefit.icon}
               </div>
-              <h3 className="text-xl font-black uppercase tracking-tight mb-3">{benefit.title}</h3>
+              <h3 className="text-xl font-bold tracking-tight mb-3">{benefit.title}</h3>
               <p className="text-gray-400 font-medium leading-relaxed">{benefit.description}</p>
             </motion.div>
           ))}
@@ -117,7 +117,7 @@ export const UpgradePro: React.FC = () => {
       {/* Comparison Table */}
       <div className="max-w-4xl mx-auto px-4 md:px-12 py-20">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-black uppercase tracking-tighter mb-4">Plan Comparison</h2>
+          <h2 className="text-3xl font-bold tracking-tight mb-4">Plan Comparison</h2>
           <p className="text-gray-400 font-medium">See why Pro is the better choice for you.</p>
         </div>
 
@@ -125,41 +125,41 @@ export const UpgradePro: React.FC = () => {
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-white/5">
-                <th className="p-6 text-gray-500 font-black uppercase tracking-widest text-xs">Feature</th>
-                <th className="p-6 text-gray-500 font-black uppercase tracking-widest text-xs text-center">Free</th>
-                <th className="p-6 text-netflix-red font-black uppercase tracking-widest text-xs text-center">Pro</th>
+                <th className="p-6 text-gray-500 font-bold tracking-wide text-xs">Feature</th>
+                <th className="p-6 text-gray-500 font-bold tracking-wide text-xs text-center">Free</th>
+                <th className="p-6 text-netflix-red font-bold tracking-wide text-xs text-center">Pro</th>
               </tr>
             </thead>
             <tbody className="font-medium">
               <tr className="border-b border-white/5">
                 <td className="p-6">Wait Time</td>
                 <td className="p-6 text-center text-gray-500">15 Seconds</td>
-                <td className="p-6 text-center text-green-500 font-black">Instant</td>
+                <td className="p-6 text-center text-green-500 font-bold">Instant</td>
               </tr>
               <tr className="border-b border-white/5">
                 <td className="p-6">Daily Downloads</td>
                 <td className="p-6 text-center text-gray-500">10 / Day</td>
-                <td className="p-6 text-center text-green-500 font-black">Unlimited</td>
+                <td className="p-6 text-center text-green-500 font-bold">Unlimited</td>
               </tr>
               <tr className="border-b border-white/5">
                 <td className="p-6">Early Access</td>
                 <td className="p-6 text-center text-gray-500">No</td>
-                <td className="p-6 text-center text-green-500 font-black flex justify-center"><Check className="w-5 h-5" /></td>
+                <td className="p-6 text-center text-green-500 font-bold flex justify-center"><Check className="w-5 h-5" /></td>
               </tr>
               <tr className="border-b border-white/5">
                 <td className="p-6">Support Creators</td>
                 <td className="p-6 text-center text-gray-500">No</td>
-                <td className="p-6 text-center text-green-500 font-black flex justify-center"><Check className="w-5 h-5" /></td>
+                <td className="p-6 text-center text-green-500 font-bold flex justify-center"><Check className="w-5 h-5" /></td>
               </tr>
               <tr className="border-b border-white/5">
                 <td className="p-6">Private Group</td>
                 <td className="p-6 text-center text-gray-500">No</td>
-                <td className="p-6 text-center text-green-500 font-black flex justify-center"><Check className="w-5 h-5" /></td>
+                <td className="p-6 text-center text-green-500 font-bold flex justify-center"><Check className="w-5 h-5" /></td>
               </tr>
               <tr>
                 <td className="p-6">Top-of-Queue Priority</td>
                 <td className="p-6 text-center text-gray-500">No</td>
-                <td className="p-6 text-center text-green-500 font-black flex justify-center"><Check className="w-5 h-5" /></td>
+                <td className="p-6 text-center text-green-500 font-bold flex justify-center"><Check className="w-5 h-5" /></td>
               </tr>
             </tbody>
           </table>
@@ -169,7 +169,7 @@ export const UpgradePro: React.FC = () => {
       {/* CTA Section */}
       <div className="max-w-4xl mx-auto px-4 text-center py-20">
         <div className="bg-gradient-to-r from-netflix-red/20 via-netflix-red/10 to-netflix-red/20 p-12 rounded-[3rem] border border-netflix-red/20 shadow-2xl">
-          <h2 className="text-4xl font-black uppercase tracking-tighter mb-6">Ready to go Pro?</h2>
+          <h2 className="text-4xl font-bold tracking-tight mb-6">Ready to go Pro?</h2>
           <p className="text-gray-400 mb-10 text-lg font-medium">Join hundreds of other members and enjoy the best subtitle experience in Sri Lanka.</p>
           <a 
             href="https://t.me/KaveeshGimhan" 
