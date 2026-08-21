@@ -238,7 +238,7 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
           <div className="mb-6 md:absolute md:top-28 md:left-12 md:mb-0">
             <Link href="/explore?type=series" className="inline-flex items-center gap-2 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 transition-all group">
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> 
-              <span className="text-[10px] md:text-xs font-black uppercase tracking-widest">Back to Explore</span>
+              <span className="text-xs font-semibold tracking-wide">Back to Explore</span>
             </Link>
           </div>
 
@@ -248,21 +248,21 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <h1 className="text-4xl md:text-8xl font-black mb-4 md:mb-6 drop-shadow-2xl tracking-tighter uppercase leading-[0.9]">{featured.movieTitle}</h1>
+              <h1 className="text-5xl md:text-7xl font-bold mb-4 md:mb-6 drop-shadow-lg tracking-tight leading-tight">{featured.movieTitle}</h1>
               
-              <div className="flex flex-wrap items-center gap-3 md:gap-6 text-[10px] md:text-sm font-bold mb-6 md:mb-8 text-gray-200">
+              <div className="flex flex-wrap items-center gap-3 md:gap-4 text-xs md:text-sm font-medium mb-6 md:mb-8 text-gray-300">
                 <div className="flex items-center gap-1 text-green-500 bg-green-500/10 px-3 py-1 rounded-md border border-green-500/20">
                   <Star className="w-4 h-4 fill-green-500" />
                   {tmdbData?.vote_average ? tmdbData.vote_average.toFixed(1) : (featured.averageRating > 0 ? featured.averageRating.toFixed(1) : 'Not Rated Yet')}
                 </div>
                 <span className="text-gray-600 hidden md:inline">|</span>
-                <span className="bg-white/10 px-3 py-1 rounded-md">{featured.releaseYear}</span>
+                <span className="bg-white/10 px-3 py-1 rounded-lg font-semibold text-xs">{featured.releaseYear}</span>
                 <span className="text-gray-600 hidden md:inline">|</span>
-                <span className="bg-netflix-red/20 text-netflix-red px-3 py-1 rounded-md border border-netflix-red/30 uppercase tracking-widest text-[10px]">TV Series</span>
+                <span className="bg-netflix-red/10 text-netflix-red px-3 py-1 rounded-lg border border-netflix-red/20 font-semibold tracking-wide text-xs">TV Series</span>
                 <span className="text-gray-600 hidden md:inline">|</span>
                 <span className="text-white/80">{subtitles.length} Subtitles</span>
                 <span className="text-gray-600 hidden md:inline">|</span>
-                <TMDBLanguageBadge tmdbId={featured.tmdbId} type="series" className="bg-white/10 text-white px-3 py-1 rounded-md uppercase tracking-widest text-[10px]" />
+                <TMDBLanguageBadge tmdbId={featured.tmdbId} type="series" className="bg-white/10 text-white px-3 py-1 rounded-lg font-semibold tracking-wide text-xs" />
                 {tmdbData?.genres && tmdbData.genres.length > 0 && (
                   <>
                     <span className="text-gray-600 hidden md:inline">|</span>
@@ -328,7 +328,7 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
                 onClick={() => setIsSeasonDropdownOpen(!isSeasonDropdownOpen)}
                 className="w-full md:w-auto flex items-center justify-between md:justify-start gap-3 bg-white/5 hover:bg-white/10 border border-white/10 px-4 md:px-6 py-2 md:py-3 rounded-xl transition-all group"
               >
-                <span className="text-lg md:text-xl font-black uppercase tracking-tighter">
+                <span className="text-lg md:text-xl font-bold tracking-tight">
                   {selectedSeason === 0 ? 'Specials' : `Season ${selectedSeason}`}
                 </span>
                 <ChevronDown className={`w-4 h-4 md:w-5 md:h-5 text-gray-400 transition-transform duration-300 ${isSeasonDropdownOpen ? 'rotate-180' : ''}`} />
@@ -388,7 +388,7 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
               </AnimatePresence>
             </div>
 
-            <div className="hidden md:flex items-center gap-2 text-xs font-black text-gray-500 uppercase tracking-widest">
+            <div className="hidden md:flex items-center gap-2 text-xs font-black text-gray-500 tracking-wide font-semibold text-xs">
               <Film className="w-4 h-4" />
               {filteredEpisodes.length} Episodes in this season
             </div>
@@ -427,7 +427,7 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
                                 <div className="bg-netflix-red/20 text-netflix-red px-2 py-1 rounded border border-netflix-red/30 text-[10px] font-black flex-shrink-0">
                                   EP {sub.episode?.toString().padStart(2, '0')}
                                 </div>
-                                <h4 className="text-base md:text-lg font-black text-white group-hover:text-netflix-red transition-colors truncate">
+                                <h4 className="text-base md:text-lg font-bold text-white group-hover:text-netflix-red transition-colors truncate">
                                   {tmdbEpisode?.name || `${sub.language} Subtitle`}
                                 </h4>
                                 {sub.proOnlyUntil && new Date(sub.proOnlyUntil) > new Date() && (
@@ -486,7 +486,7 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
                         />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-sm md:text-base font-black text-white truncate">{person.name}</p>
+                        <p className="text-sm md:text-base font-bold text-white truncate">{person.name}</p>
                         <p className="text-xs text-gray-500 truncate font-medium">{person.character}</p>
                       </div>
                     </div>
@@ -515,18 +515,18 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
                       className="h-4 invert opacity-70"
                     />
                   )}
-                  <span className="text-sm font-black text-white">{tmdbData?.networks?.[0]?.name || 'N/A'}</span>
+                  <span className="text-sm font-bold text-white">{tmdbData?.networks?.[0]?.name || 'N/A'}</span>
                 </div>
               </div>
 
               <div className="flex items-center justify-between">
                 <span className="text-sm font-bold text-gray-500">Total Seasons</span>
-                <span className="text-sm font-black text-white">{tmdbData?.number_of_seasons}</span>
+                <span className="text-sm font-bold text-white">{tmdbData?.number_of_seasons}</span>
               </div>
 
               <div className="flex items-center justify-between">
                 <span className="text-sm font-bold text-gray-500">Total Episodes</span>
-                <span className="text-sm font-black text-white">{tmdbData?.number_of_episodes}</span>
+                <span className="text-sm font-bold text-white">{tmdbData?.number_of_episodes}</span>
               </div>
 
               {tmdbData?.homepage && (
@@ -534,7 +534,7 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
                   href={tmdbData.homepage} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="mt-6 flex items-center justify-center gap-2 w-full bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all"
+                  className="mt-6 flex items-center justify-center gap-2 w-full bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-xl text-xs font-bold tracking-wide text-xs transition-all"
                 >
                   Official Website <ExternalLink className="w-3 h-3" />
                 </a>
