@@ -32,6 +32,40 @@ async function startServer() {
 
   const PORT = process.env.PORT || 3000;
 
+  // Explicit route for robots.txt to ensure crawlers can always reach it
+  app.get('/robots.txt', (req, res) => {
+    res.type('text/plain');
+    res.send(`User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /api/
+Disallow: /private/
+Disallow: /user/
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+Sitemap: https://www.laksub.com/sitemap.xml
+`);
+  });
+
+
   // Enforce www.laksub.com for SEO
   app.use((req, res, next) => {
     if (req.hostname === 'laksub.com') {
