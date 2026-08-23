@@ -75,7 +75,7 @@ export const AdminDashboard: React.FC = () => {
         body: formData,
       });
 
-      if (!response.ok) throw new Error('Upload failed');
+      if (!response.ok) { const errText = await response.text(); throw new Error(`Upload failed: ${errText || response.statusText}`); }
       
       const uploadResult = await response.json();
       
@@ -84,11 +84,15 @@ export const AdminDashboard: React.FC = () => {
       const settingsSnap = await getDoc(settingsRef);
       if (settingsSnap.exists()) {
         await updateDoc(settingsRef, {
-          [type === 'logo' ? 'logoUrl' : 'faviconUrl']: uploadResult.url
+          [type === 'logo' ? 'logoUrl' : 'faviconUrl']: uploadResult.url,
+          enabled: true,
+          updatedAt: new Date().toISOString()
         });
       } else {
         await setDoc(settingsRef, {
-          [type === 'logo' ? 'logoUrl' : 'faviconUrl']: uploadResult.url
+          [type === 'logo' ? 'logoUrl' : 'faviconUrl']: uploadResult.url,
+          enabled: true,
+          updatedAt: new Date().toISOString()
         });
       }
 
