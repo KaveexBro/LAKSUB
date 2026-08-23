@@ -31,8 +31,8 @@ export const CreatorBadge: React.FC<CreatorBadgeProps> = ({ uploadCount }) => {
   }
 
   return (
-    <span className={`px-3 py-1 rounded border flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest transform-gpu backface-hidden ${colors}`}>
-      <Award className={`w-3.5 h-3.5 ${IconColor}`} />
+    <span className={`px-2 py-0.5 rounded border flex items-center gap-1 text-[8px] md:text-[9px] font-bold tracking-wide transform-gpu backface-hidden ${colors}`}>
+      <Award className={`w-3 h-3 ${IconColor}`} />
       <span>{rankName}</span>
     </span>
   );

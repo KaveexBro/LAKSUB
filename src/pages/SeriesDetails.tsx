@@ -212,7 +212,7 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
         </script>
       </Helmet>
       {/* Hero Section */}
-      <div className="relative min-h-[70vh] md:h-[80vh] w-full overflow-hidden flex flex-col">
+      <div className="relative min-h-[50vh] md:h-[60vh] w-full overflow-hidden flex flex-col">
         {/* Backdrop Image */}
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-netflix-bg/40 to-netflix-bg z-10" />
@@ -233,7 +233,7 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
         </div>
 
         {/* Content Container */}
-        <div className="relative z-20 flex-1 flex flex-col pt-24 px-4 md:px-12 max-w-6xl mx-auto w-full">
+        <div className="relative z-20 flex-1 flex flex-col pt-16 px-4 md:px-12 max-w-6xl mx-auto w-full">
           {/* Back Button */}
           <div className="mb-6 md:absolute md:top-28 md:left-12 md:mb-0">
             <Link href="/explore?type=series" className="inline-flex items-center gap-2 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 backdrop-blur-md px-4 py-2 rounded-full border border-white/5 transition-all group">
@@ -248,9 +248,9 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <h1 className="text-5xl md:text-7xl font-bold mb-4 md:mb-6 drop-shadow-lg tracking-tight leading-tight">{featured.movieTitle}</h1>
+              <h1 className="text-4xl md:text-6xl font-bold mb-3 md:mb-6 drop-shadow-lg tracking-tight leading-tight">{featured.movieTitle}</h1>
               
-              <div className="flex flex-wrap items-center gap-3 md:gap-4 text-xs md:text-sm font-medium mb-6 md:mb-8 text-gray-300">
+              <div className="flex flex-wrap items-center gap-3 md:gap-4 text-xs md:text-sm font-medium mb-6 md:mb-5 text-gray-300">
                 <div className="flex items-center gap-1 text-green-500 bg-green-500/10 px-3 py-1 rounded-md border border-green-500/20">
                   <Star className="w-4 h-4 fill-green-500" />
                   {tmdbData?.vote_average ? tmdbData.vote_average.toFixed(1) : (featured.averageRating > 0 ? featured.averageRating.toFixed(1) : 'Not Rated Yet')}
@@ -318,8 +318,8 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
       </div>
 
       {/* Season Selector & Episode List */}
-      <div id="episodes" className="max-w-7xl mx-auto px-4 md:px-12 mt-4 md:-mt-16 relative z-30">
-        <div className="bg-[#181818]/60 backdrop-blur-2xl rounded-2xl md:rounded-3xl border border-white/5 overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+      <div id="episodes" className="max-w-7xl mx-auto px-4 md:px-12 mt-0 md:-mt-10 relative z-30">
+        <div className="bg-[#181818]/60 backdrop-blur-2xl rounded-2xl md:rounded-2xl border border-white/5 overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
           
           {/* Season Selector */}
           <div className="px-4 md:px-6 py-3 md:py-4 border-b border-white/5 bg-black/40 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
@@ -328,7 +328,7 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
                 onClick={() => setIsSeasonDropdownOpen(!isSeasonDropdownOpen)}
                 className="w-full md:w-auto flex items-center justify-between md:justify-start gap-3 bg-white/5 hover:bg-white/10 border border-white/5 px-4 md:px-6 py-2 md:py-3 rounded-2xl transition-all group"
               >
-                <span className="text-lg md:text-xl font-bold tracking-tight">
+                <span className="text-base md:text-lg font-bold tracking-tight">
                   {selectedSeason === 0 ? 'Specials' : `Season ${selectedSeason}`}
                 </span>
                 <ChevronDown className={`w-4 h-4 md:w-5 md:h-5 text-gray-400 transition-transform duration-300 ${isSeasonDropdownOpen ? 'rotate-180' : ''}`} />
@@ -395,7 +395,7 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
           </div>
 
           {/* Episode List View */}
-          <div className="p-8">
+          <div className="p-6 lg:p-8">
             <AnimatePresence mode="wait">
               <motion.div
                 key={selectedSeason}
@@ -420,14 +420,14 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
                       filteredEpisodes.map((sub) => {
                         const tmdbEpisode = seasonData?.episodes?.find((e: any) => e.episode_number === sub.episode);
                         return (
-                          <div key={sub.id} className="group relative bg-white/5 hover:bg-white/10 rounded-2xl border border-white/5 hover:border-white/20 transition-all duration-300 overflow-hidden">
-                            <div className="flex flex-col sm:flex-row items-center gap-4 p-3 md:p-4">
+                          <div key={sub.id} className="group relative bg-white/5 hover:bg-white/10 rounded-xl border border-white/5 hover:border-white/10 transition-all duration-300 overflow-hidden">
+                            <div className="flex flex-col sm:flex-row items-center gap-3 p-2">
                               {/* Episode Info */}
                               <div className="flex-1 min-w-0 flex items-center gap-4 w-full">
-                                <div className="bg-netflix-red/20 text-netflix-red px-2 py-1 rounded border border-netflix-red/30 text-[10px] font-bold flex-shrink-0">
+                                <div className="bg-white/10 text-gray-300 px-2 py-0.5 rounded border border-white/10 text-[10px] font-bold flex-shrink-0">
                                   EP {sub.episode?.toString().padStart(2, '0')}
                                 </div>
-                                <h4 className="text-base md:text-lg font-bold text-white group-hover:text-netflix-red transition-colors truncate">
+                                <h4 className="text-sm font-semibold text-gray-200 group-hover:text-netflix-red transition-colors truncate">
                                   {tmdbEpisode?.name || `${sub.language} Subtitle`}
                                 </h4>
                                 {sub.proOnlyUntil && new Date(sub.proOnlyUntil) > new Date() && (
@@ -440,12 +440,12 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
                               {/* Action */}
                               <div className="w-full sm:w-auto flex-shrink-0 flex items-center gap-2">
                                 {sub.telegramLink && (
-                                  <a href={sub.telegramLink} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto bg-[#0088cc] text-white px-6 py-2.5 rounded-lg font-bold text-xs hover:bg-[#0077b5] transition-all transform active:scale-95 flex items-center justify-center gap-2 shadow-lg group/btn">
+                                  <a href={sub.telegramLink} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto bg-[#0088cc] text-white px-3 py-1.5 rounded-lg font-semibold text-[10px] hover:bg-[#0077b5] transition-all transform active:scale-95 flex items-center justify-center gap-2 shadow-lg group/btn">
                                     <Send className="w-3 h-3" /> TELEGRAM
                                   </a>
                                 )}
                                 <Link href={sub.slug ? `/subtitles/${sub.slug}` : `/subtitles/${sub.id}`}>
-                                  <button className="w-full sm:w-auto bg-white text-black px-6 py-2.5 rounded-lg font-bold text-xs hover:bg-netflix-red hover:text-white transition-all transform active:scale-95 flex items-center justify-center gap-2 shadow-lg group/btn">
+                                  <button className="w-full sm:w-auto bg-white text-black px-3 py-1.5 rounded-lg font-semibold text-[10px] hover:bg-netflix-red hover:text-white transition-all transform active:scale-95 flex items-center justify-center gap-2 shadow-lg group/btn">
                                     DOWNLOAD <Play className="w-3 h-3 fill-current group-hover/btn:translate-x-1 transition-transform" />
                                   </button>
                                 </Link>
@@ -472,13 +472,13 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
           <div className="lg:col-span-2 space-y-12">
             {tmdbData?.credits?.cast && (
               <section>
-                <h3 className="text-2xl font-bold mb-8 flex items-center gap-3 uppercase tracking-tighter">
+                <h3 className="text-2xl font-bold mb-5 flex items-center gap-3 uppercase tracking-tighter">
                   <Users className="w-6 h-6 text-netflix-red" /> Starring Cast
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                   {tmdbData.credits.cast.slice(0, 6).map((person: any) => (
-                    <div key={person.id} className="group flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/5 hover:border-white/20 transition-all hover:bg-white/10">
-                      <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl overflow-hidden border-2 border-white/5 group-hover:border-netflix-red transition-colors flex-shrink-0 shadow-lg transform-gpu backface-hidden">
+                    <div key={person.id} className="group flex items-center gap-4 bg-white/5 p-4 rounded-xl border border-white/5 hover:border-white/10 transition-all hover:bg-white/10">
+                      <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl overflow-hidden border-2 border-white/5 group-hover:border-netflix-red transition-colors flex-shrink-0 shadow-lg transform-gpu backface-hidden">
                         <img 
                           src={person.profile_path ? getTMDBImageUrl(person.profile_path) || undefined : `https://ui-avatars.com/api/?name=${encodeURIComponent(person.name)}&background=random`} 
                           alt={person.name}
@@ -486,7 +486,7 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
                         />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-sm md:text-base font-bold text-white truncate">{person.name}</p>
+                        <p className="text-sm font-semibold text-gray-200 truncate">{person.name}</p>
                         <p className="text-xs text-gray-500 truncate font-medium">{person.character}</p>
                       </div>
                     </div>
@@ -497,7 +497,7 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
           </div>
           
           <div className="space-y-8">
-            <div className="bg-white/5 p-8 rounded-3xl border border-white/5 space-y-6 shadow-xl">
+            <div className="bg-white/5 p-6 rounded-2xl border border-white/5 space-y-6 shadow-xl">
               <h4 className="text-xs font-bold text-gray-500 uppercase tracking-[0.2em] mb-6 border-b border-white/5 pb-4">Series Details</h4>
               
               <div className="flex items-center justify-between">

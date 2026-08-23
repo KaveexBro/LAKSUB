@@ -144,7 +144,7 @@ export const Home: React.FC = () => {
               <div 
                 className="flex-none w-64 md:w-80 h-40 md:h-48 relative group cursor-pointer snap-start flex items-end hover:z-50 transition-transform duration-300 hover:scale-105"
               >
-                <div className="absolute left-0 bottom-0 text-[120px] md:text-[200px] font-bold leading-[0.7] text-black stroke-white stroke-2 drop-shadow-[0_0_20px_rgba(255,255,255,0.2)] z-10 select-none opacity-80 group-hover:opacity-100 transition-opacity"
+                <div className="absolute left-0 bottom-0 text-[80px] md:text-[140px] font-bold leading-[0.7] text-black stroke-white stroke-2 drop-shadow-[0_0_20px_rgba(255,255,255,0.2)] z-10 select-none opacity-80 group-hover:opacity-100 transition-opacity"
                      style={{ WebkitTextStroke: '3px rgba(255,255,255,0.6)', color: 'transparent' }}>
                   {index + 1}
                 </div>
@@ -286,7 +286,7 @@ export const Home: React.FC = () => {
                     <span className="text-[10px] md:text-sm font-bold tracking-[0.2em] text-white/90 uppercase drop-shadow-md">Original</span>
                   </div>
                   
-                  <h1 className="text-4xl md:text-8xl font-bold mb-3 md:mb-6 drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)] uppercase tracking-tighter leading-[0.85] text-white">
+                  <h1 className="text-4xl md:text-6xl font-bold mb-3 drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)] uppercase tracking-tighter leading-[0.85] text-white">
                     {featured.movieTitle}
                   </h1>
 

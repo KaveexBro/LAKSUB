@@ -722,11 +722,11 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
 
 
   const renderDownloadCard = () => (
-    <div className="bg-[#181818] p-6 lg:p-8 rounded-3xl border border-white/5 shadow-xl relative isolate w-full">
-      <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row justify-between gap-6 mb-8 items-start sm:items-center lg:items-start xl:items-center">
+    <div className="bg-[#181818] p-5 lg:p-6 rounded-2xl border border-white/5 shadow-xl relative isolate w-full">
+      <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row justify-between gap-6 mb-5 items-start sm:items-center lg:items-start xl:items-center">
         <Link href={`/user/${subtitle.authorUid}`}>
-          <div className="flex items-center gap-4 cursor-pointer group">
-            <div className="w-14 h-14 rounded-full bg-gray-700 overflow-hidden border-2 border-netflix-red transition-transform group-hover:scale-110 transform-gpu backface-hidden">
+          <div className="flex items-center gap-3 cursor-pointer group">
+            <div className="w-9 h-9 rounded-full bg-gray-700 overflow-hidden border border-white/10 group-hover:border-netflix-red transition-transform group-hover:scale-110 transform-gpu backface-hidden">
               {authorPhoto ? (
                 <img src={authorPhoto || undefined} alt={authorName} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
               ) : (
@@ -736,9 +736,9 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
               )}
             </div>
             <div>
-              <p className="text-sm text-gray-400">Translated by</p>
+              <p className="text-[10px] text-gray-500 font-medium tracking-wide uppercase">Translated by</p>
               <div className="flex items-center gap-2">
-                <p className="font-bold text-white text-lg group-hover:text-netflix-red transition-colors">{authorName}</p>
+                <p className="font-semibold text-white text-sm group-hover:text-netflix-red transition-colors">{authorName}</p>
                 {authorUploadCount > 0 && <CreatorBadge uploadCount={authorUploadCount} />}
               </div>
             </div>
@@ -746,12 +746,12 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
         </Link>
 
         <div className="flex flex-col items-start sm:items-end lg:items-start xl:items-end w-full sm:w-auto lg:w-full xl:w-auto">
-          <p className="text-sm text-gray-400 mb-2">Rate this subtitle</p>
+          <p className="text-[10px] text-gray-500 font-medium tracking-wide uppercase mb-2">Rate this subtitle</p>
           <div className="flex gap-1">
             {[1, 2, 3, 4, 5].map((star) => (
               <Star 
                 key={star} 
-                className={`w-7 h-7 cursor-pointer transition-all hover:scale-110 ${star <= (showCommentInput ? selectedRating : userRating) ? 'fill-yellow-500 text-yellow-500' : 'text-gray-600 hover:text-yellow-500'}`}
+                className={`w-5 h-5 cursor-pointer transition-all hover:scale-110 ${star <= (showCommentInput ? selectedRating : userRating) ? 'fill-yellow-500 text-yellow-500' : 'text-gray-600 hover:text-yellow-500'}`}
                 onClick={() => handleRate(star)}
               />
             ))}
@@ -945,7 +945,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
         )}
         
         {!isPro && user && monetizationEnabled && (
-          <div className="text-xs font-semibold tracking-wide text-gray-500 mt-4 text-center sm:text-left lg:text-center leading-relaxed">
+          <div className="text-xs font-semibold tracking-wide text-gray-500 mt-4 text-center sm:text-left lg:text-center leading-normal">
             <p className="mb-1">Free users: 15s wait • 10 downloads/day</p>
             <Link href="/upgrade" className="text-netflix-red hover:underline">Upgrade to Pro for instant access</Link>
           </div>
@@ -991,7 +991,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
       </Helmet>
 
       {/* Hero Backdrop */}
-      <div className="relative h-[60vh] w-full overflow-hidden">
+      <div className="relative h-[45vh] w-full overflow-hidden">
         <div className="absolute top-28 left-4 md:left-12 z-40">
           <button 
             onClick={() => window.history.back()}
@@ -1011,8 +1011,8 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
         />
       </div>
       
-      <div className="max-w-7xl mx-auto px-4 md:px-8 xl:px-12 -mt-40 relative z-20">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 xl:gap-12">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 xl:px-12 -mt-24 relative z-20">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
           
             {/* Poster & Sidebar Info */}
             <div className="lg:col-span-4 xl:col-span-3 flex flex-col gap-6">
@@ -1092,21 +1092,21 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
           </div>
 
           {/* Details & Main Content */}
-          <div className="lg:col-span-8 xl:col-span-9 flex flex-col gap-8">
+          <div className="lg:col-span-8 xl:col-span-9 flex flex-col gap-6">
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
             >
-              <h1 className="text-4xl md:text-6xl font-bold mb-2 drop-shadow-lg tracking-tight leading-tight">
+              <h1 className="text-3xl md:text-5xl font-bold mb-2 drop-shadow-lg tracking-tight leading-tight">
                 {subtitle.movieTitle}
                 {subtitle.type === 'series' && subtitle.season && subtitle.episode && (
-                  <span className="block text-2xl md:text-4xl text-gray-500 mt-2 font-mono">
+                  <span className="block text-xl md:text-3xl text-gray-500 mt-2 font-mono">
                     S{subtitle.season.toString().padStart(2, '0')}E{subtitle.episode.toString().padStart(2, '0')}
                   </span>
                 )}
               </h1>
               
-              <div className="flex flex-wrap items-center gap-3 md:gap-6 flex flex-wrap items-center gap-3 md:gap-4 text-sm font-medium mb-8 text-gray-400">
+              <div className="flex flex-wrap items-center gap-3 md:gap-4 text-sm font-medium mb-5 text-gray-400">
                 {subtitle.averageRating > 0 ? (
                   <div className="flex items-center gap-1 bg-yellow-500/10 text-yellow-500 px-4 py-1.5 rounded-full bg-[#181818] border border-yellow-500/20 shadow-[0_0_10px_rgba(234,179,8,0.1)]">
                     {[1, 2, 3, 4, 5].map((star) => (
@@ -1158,11 +1158,11 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
 
             {/* Storyline */}
             {((subtitle.type === 'movie' && tmdbData?.overview) || (subtitle.type === 'series' && episodeData?.overview)) && (
-              <div className="mb-8">
+              <div className="mb-5">
                 <h2 className="text-xl font-bold mb-3 flex items-center gap-2 text-gray-100">
                   <Film className="w-5 h-5 text-netflix-red" /> Storyline
                 </h2>
-                <p className="text-gray-300 leading-loose text-lg italic">
+                <p className="text-gray-400 leading-normal text-base italic">
                   "{subtitle.type === 'movie' ? tmdbData.overview : episodeData.overview}"
                 </p>
               </div>
@@ -1170,7 +1170,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
 
             {/* Parents Guide */}
             {(subtitle.parentalRating || subtitle.parentsGuide) && (
-              <div className="mb-8 bg-[#181818] p-6 rounded-2xl border border-white/5 transform-gpu backface-hidden">
+              <div className="mb-5 bg-[#181818] p-6 rounded-2xl border border-white/5 transform-gpu backface-hidden">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-bold flex items-center gap-2 text-gray-100">
                     <ShieldCheck className="w-5 h-5 text-netflix-red" /> Parents Guide
@@ -1216,7 +1216,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                               </span>
                             </div>
                             {cat.data.description && (
-                              <p className="text-xs text-gray-400 ml-4.5 leading-relaxed">
+                              <p className="text-xs text-gray-400 ml-4.5 leading-normal">
                                 {cat.data.description}
                               </p>
                             )}
@@ -1233,7 +1233,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
 
             <div className="mb-10">
               <div 
-                className={`relative bg-[#181818] transition-colors rounded-2xl p-4 md:p-6 text-gray-200 font-sinhala-text leading-relaxed overflow-hidden text-lg md:text-xl ${!isDescExpanded ? 'max-h-48' : ''}`}
+                className={`relative bg-[#181818] transition-colors rounded-2xl p-4 md:p-6 text-gray-200 font-sinhala-text leading-normal overflow-hidden text-base md:text-lg ${!isDescExpanded ? 'max-h-48' : ''}`}
               >
                 {(() => {
                   const html = subtitle.description || 'No description available.';
@@ -1242,7 +1242,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                   if (!isDescExpanded) {
                     return (
                       <div 
-                        className="prose prose-invert max-w-none w-full break-words prose-p:mb-4 last:prose-p:mb-0 prose-a:text-blue-400 hover:prose-a:underline [&_a]:break-all text-lg md:text-xl text-gray-200 font-sinhala-text leading-relaxed"
+                        className="prose prose-invert max-w-none w-full break-words prose-p:mb-4 last:prose-p:mb-0 prose-a:text-blue-400 hover:prose-a:underline [&_a]:break-all text-base md:text-lg text-gray-300 font-sinhala-text leading-normal"
                         dangerouslySetInnerHTML={{ __html: cleanHtml }} 
                       />
                     );
@@ -1253,7 +1253,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                   if (paragraphs.length <= 2) {
                     return (
                       <div 
-                        className="prose prose-invert max-w-none w-full break-words prose-p:mb-4 last:prose-p:mb-0 prose-a:text-blue-400 hover:prose-a:underline [&_a]:break-all text-lg md:text-xl text-gray-200 font-sinhala-text leading-relaxed"
+                        className="prose prose-invert max-w-none w-full break-words prose-p:mb-4 last:prose-p:mb-0 prose-a:text-blue-400 hover:prose-a:underline [&_a]:break-all text-base md:text-lg text-gray-300 font-sinhala-text leading-normal"
                         dangerouslySetInnerHTML={{ __html: cleanHtml }} 
                       />
                     );
@@ -1278,7 +1278,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                       {chunks.map((chunk, index) => (
                         <React.Fragment key={index}>
                           <div 
-                            className="prose prose-invert max-w-none w-full break-words prose-p:mb-4 last:prose-p:mb-0 prose-a:text-blue-400 hover:prose-a:underline [&_a]:break-all text-lg md:text-xl text-gray-200 font-sinhala-text leading-relaxed"
+                            className="prose prose-invert max-w-none w-full break-words prose-p:mb-4 last:prose-p:mb-0 prose-a:text-blue-400 hover:prose-a:underline [&_a]:break-all text-base md:text-lg text-gray-300 font-sinhala-text leading-normal"
                             dangerouslySetInnerHTML={{ __html: chunk }} 
                           />
                           {index < chunks.length - 1 && index < 4 && (
@@ -1374,13 +1374,13 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
         </div>
 
         {/* Community Reviews Section */}
-        <div className="mt-16">
-          <h2 className="text-3xl font-bold tracking-tight mb-8 flex items-center gap-3">
+        <div className="mt-10">
+          <h2 className="text-3xl font-bold tracking-tight mb-5 flex items-center gap-3">
             <MessageSquare className="w-8 h-8 text-netflix-red" /> Community Reviews
           </h2>
           
           {ratings.length === 0 ? (
-            <div className="bg-[#181818] p-12 rounded-3xl border border-white/5 text-center">
+            <div className="bg-[#181818] p-8 rounded-2xl border border-white/5 text-center">
               <p className="text-gray-500 font-medium">No reviews yet. Be the first to rate this subtitle!</p>
             </div>
           ) : (
@@ -1390,12 +1390,12 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                   key={rating.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-[#181818] p-8 rounded-3xl border border-white/5 shadow-xl transform-gpu backface-hidden"
+                  className="bg-[#181818] p-6 rounded-2xl border border-white/5 shadow-xl transform-gpu backface-hidden"
                 >
                   <div className="flex items-center justify-between mb-4">
                     <Link href={`/user/${rating.userId}`}>
                       <div className="flex items-center gap-3 cursor-pointer group">
-                        <div className="w-10 h-10 rounded-full bg-gray-700 overflow-hidden border border-white/5 transition-transform group-hover:scale-110 transform-gpu backface-hidden">
+                        <div className="w-8 h-8 rounded-full bg-gray-700 overflow-hidden border border-white/5 transition-transform group-hover:scale-110 transform-gpu backface-hidden">
                           {rating.userPhoto ? (
                             <img src={rating.userPhoto} alt={rating.userName} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                           ) : (
@@ -1405,7 +1405,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                           )}
                         </div>
                         <div>
-                          <p className="font-bold text-sm group-hover:text-netflix-red transition-colors">{rating.userName}</p>
+                          <p className="font-semibold text-sm group-hover:text-netflix-red transition-colors">{rating.userName}</p>
                           <p className="text-[10px] text-gray-500 tracking-wide font-semibold text-xs">{new Date(rating.createdAt).toLocaleDateString()}</p>
                         </div>
                       </div>
@@ -1420,7 +1420,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                     </div>
                   </div>
                   {rating.comment && (
-                    <p className="text-gray-300 text-sm leading-relaxed italic">
+                    <p className="text-gray-300 text-sm leading-normal italic">
                       "{rating.comment}"
                     </p>
                   )}
@@ -1461,7 +1461,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                 </div>
               ) : (
                 <>
-                  <div className="flex items-center justify-between mb-8">
+                  <div className="flex items-center justify-between mb-5">
                     <h3 className="text-2xl font-bold tracking-tight flex items-center gap-3">
                       <Flag className="w-6 h-6 text-netflix-red" /> Report Subtitle
                     </h3>
@@ -1536,7 +1536,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               className="relative w-full max-w-md bg-[#181818] border border-white/5 rounded-3xl p-8 shadow-xl"
             >
-              <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center justify-between mb-5">
                 <h3 className="text-2xl font-bold tracking-tight flex items-center gap-3">
                   <Share2 className="w-6 h-6 text-netflix-red" /> Share Subtitle
                 </h3>
@@ -1617,12 +1617,12 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               className="relative w-full max-w-md bg-[#181818] border border-white/5 rounded-3xl p-10 shadow-xl text-center"
             >
-              <div className="w-20 h-20 bg-red-600/20 rounded-full flex items-center justify-center mx-auto mb-8 border border-red-600/30">
+              <div className="w-20 h-20 bg-red-600/20 rounded-full flex items-center justify-center mx-auto mb-5 border border-red-600/30">
                 <ShieldCheck className="w-10 h-10 text-red-600" />
               </div>
               
               <h3 className="text-3xl font-bold tracking-tight mb-4">Mature Content</h3>
-              <p className="text-gray-400 font-medium mb-8 leading-relaxed">
+              <p className="text-gray-400 font-medium mb-5 leading-normal">
                 This subtitle is for a movie or TV series that contains mature or adult content. You must be 18 years or older to view this content.
               </p>
 
@@ -1705,7 +1705,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                       <AdZone zoneName="download-popup" />
                     </div>
                     {/* Fallback content if AdZone is empty or loading */}
-                    <div className="text-center p-8 z-[-1] mt-16 max-w-2xl mx-auto bg-[#181818] border border-white/5 rounded-3xl">
+                    <div className="text-center p-8 z-[-1] mt-10 max-w-2xl mx-auto bg-[#181818] border border-white/5 rounded-3xl">
                       <Crown className="w-16 h-16 text-yellow-500 mx-auto mb-4 opacity-50" />
                       <h4 className="text-2xl font-bold tracking-tight text-white/50 mb-2">Upgrade to Pro</h4>
                       <p className="text-gray-500 font-medium">Get instant downloads without ads or waiting times.</p>
@@ -1740,11 +1740,11 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                 </button>
               </div>
               
-              <div className="space-y-4 mb-8">
-                <p className="text-gray-300 font-medium leading-relaxed font-sinhala-text text-left text-lg">
+              <div className="space-y-4 mb-5">
+                <p className="text-gray-300 font-medium leading-normal font-sinhala-text text-left text-lg">
                   මෙම 'Watch Online' සේවාව තෙවන පාර්ශවීය වෙබ් අඩවියක් මගින් ක්‍රියාත්මක වේ. එහි පළවන අධික දැන්වීම් (Ads) පාලනය කිරීමට අපට හැකියාවක් නොමැති බව කරුණාවෙන් සලකන්න.
                 </p>
-                <p className="text-gray-300 font-medium leading-relaxed font-sinhala-text text-left text-lg">
+                <p className="text-gray-300 font-medium leading-normal font-sinhala-text text-left text-lg">
                   සුමට අත්දැකීමක් සඳහා Ad-blocker එකක් හෝ Brave Shield සක්‍රීය කර ගන්න. ඔබ ඉදිරියට යාමට සූදානම්ද?
                 </p>
               </div>
