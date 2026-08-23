@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
 import { collection, query, getDocs, orderBy, updateDoc, doc, where, deleteDoc, writeBatch, getDoc, setDoc, increment } from 'firebase/firestore';
@@ -8,7 +8,7 @@ import {
   CheckCircle, XCircle, DollarSign, Crown, Users, FileText, Edit, Trash2, 
   Search, Filter, ChevronDown, ChevronUp, ArrowUpDown, Trash, Check,
   ChevronRight, MoreVertical, CheckSquare, Square, Flag, AlertTriangle, ExternalLink,
-  MessageSquare, Clock, CheckCircle2, Film, Tv, Plus, Activity
+  MessageSquare, Clock, CheckCircle2, Film, Tv, Plus, Image, Upload, Activity
 } from 'lucide-react';
 import { EditSubtitleModal } from '../components/EditSubtitleModal';
 import { AdManager } from '../components/AdManager';
@@ -28,6 +28,86 @@ export const AdminDashboard: React.FC = () => {
   const [adCampaigns, setAdCampaigns] = useState<AdCampaign[]>([]);
   const [monetizationEnabled, setMonetizationEnabled] = useState(false);
   const [popunderEnabled, setPopunderEnabled] = useState(true);
+
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [uploadingFavicon, setUploadingFavicon] = useState(false);
+  const [siteLogoUrl, setSiteLogoUrl] = useState('');
+  const [siteFaviconUrl, setSiteFaviconUrl] = useState('');
+  const logoInputRef = useRef<HTMLInputElement>(null);
+  const faviconInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const snap = await getDoc(doc(db, 'settings', 'general'));
+        if (snap.exists()) {
+          const data = snap.data();
+          if (data.logoUrl) setSiteLogoUrl(data.logoUrl);
+          if (data.faviconUrl) setSiteFaviconUrl(data.faviconUrl);
+        }
+      } catch (err) {
+        console.error('Failed to load settings', err);
+      }
+    };
+    fetchSettings();
+  }, []);
+
+  const handleUploadImageKit = async (file: File, type: 'logo' | 'favicon') => {
+    try {
+      if (type === 'logo') setUploadingLogo(true);
+      if (type === 'favicon') setUploadingFavicon(true);
+
+      const authRes = await fetch('/api/imagekit/auth');
+      if (!authRes.ok) throw new Error('Could not fetch ImageKit auth');
+      const authData = await authRes.json();
+      const { token, expire, signature, publicKey } = authData;
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('fileName', `${type}_${Date.now()}.${file.name.split('.').pop()}`);
+      formData.append('publicKey', publicKey);
+      formData.append('signature', signature);
+      formData.append('token', token);
+      formData.append('expire', expire.toString());
+
+      const response = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) throw new Error('Upload failed');
+      
+      const uploadResult = await response.json();
+      
+      // Update firestore
+      const settingsRef = doc(db, 'settings', 'general');
+      const settingsSnap = await getDoc(settingsRef);
+      if (settingsSnap.exists()) {
+        await updateDoc(settingsRef, {
+          [type === 'logo' ? 'logoUrl' : 'faviconUrl']: uploadResult.url
+        });
+      } else {
+        await setDoc(settingsRef, {
+          [type === 'logo' ? 'logoUrl' : 'faviconUrl']: uploadResult.url
+        });
+      }
+
+      if (type === 'logo') setSiteLogoUrl(uploadResult.url);
+      if (type === 'favicon') setSiteFaviconUrl(uploadResult.url);
+
+      alert(`${type === 'logo' ? 'Logo' : 'Favicon'} uploaded successfully!`);
+
+    } catch (err: any) {
+      console.error(err);
+      alert('Upload failed: ' + err.message);
+    } finally {
+      if (type === 'logo') setUploadingLogo(false);
+      if (type === 'favicon') setUploadingFavicon(false);
+      if (logoInputRef.current) logoInputRef.current.value = '';
+      if (faviconInputRef.current) faviconInputRef.current.value = '';
+    }
+  };
+
   const [socialBarEnabled, setSocialBarEnabled] = useState(true);
   const [smartlinkEnabled, setSmartlinkEnabled] = useState(true);
   const [vastVideoEnabled, setVastVideoEnabled] = useState(true);
@@ -911,7 +991,7 @@ export const AdminDashboard: React.FC = () => {
       </Helmet>
       <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold mb-8 flex items-center gap-3">
-          <img src="/logo.png" alt="LAKSUB" className="h-8 w-auto" referrerPolicy="no-referrer" />
+          <img src={siteLogoUrl || "/logo.png"} alt="LAKSUB" className="h-8 w-auto" referrerPolicy="no-referrer" />
           Admin Dashboard
         </h1>
 
@@ -1751,6 +1831,106 @@ export const AdminDashboard: React.FC = () => {
                   <strong className="text-yellow-500">Note:</strong> Disabling monetization will prevent creators from earning for new downloads and hide wallet features in their dashboards. Existing balances will be preserved.
                 </p>
               </div>
+
+
+              {/* Site Branding Controls */}
+              <div className="p-6 bg-white/5 rounded-xl border border-white/5 backdrop-blur-sm space-y-6">
+                <div>
+                  <h3 className="font-bold text-lg text-white">Site Branding</h3>
+                  <p className="text-sm text-gray-400 mt-1">Upload the global logo and favicon using ImageKit.</p>
+                </div>
+
+                <div className="space-y-4">
+                  {/* Logo Upload */}
+                  <div className="flex items-center justify-between p-4 bg-black/40 rounded-lg border border-white/5">
+                    <div className="flex items-center gap-4">
+                      {siteLogoUrl ? (
+                        <div className="w-16 h-16 bg-gray-900 rounded border border-gray-700 flex items-center justify-center p-2">
+                          <img src={siteLogoUrl} alt="Logo" className="w-full h-full object-contain" />
+                        </div>
+                      ) : (
+                        <div className="w-16 h-16 bg-gray-900 rounded border border-gray-700 flex items-center justify-center">
+                          <Image className="w-6 h-6 text-gray-600" />
+                        </div>
+                      )}
+                      <div>
+                        <h4 className="font-bold text-white">Main Logo (logo.png)</h4>
+                        <p className="text-xs text-gray-500 mt-1">Shown in the navigation bar.</p>
+                      </div>
+                    </div>
+                    <div>
+                      <input 
+                        type="file" 
+                        ref={logoInputRef} 
+                        className="hidden" 
+                        accept="image/png, image/jpeg, image/svg+xml, image/webp" 
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            handleUploadImageKit(e.target.files[0], 'logo');
+                          }
+                        }} 
+                      />
+                      <button 
+                        onClick={() => logoInputRef.current?.click()} 
+                        disabled={uploadingLogo}
+                        className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                      >
+                        {uploadingLogo ? (
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <Upload className="w-4 h-4" />
+                        )}
+                        Upload
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Favicon Upload */}
+                  <div className="flex items-center justify-between p-4 bg-black/40 rounded-lg border border-white/5">
+                    <div className="flex items-center gap-4">
+                      {siteFaviconUrl ? (
+                        <div className="w-12 h-12 bg-gray-900 rounded border border-gray-700 flex items-center justify-center p-2">
+                          <img src={siteFaviconUrl} alt="Favicon" className="w-full h-full object-contain" />
+                        </div>
+                      ) : (
+                        <div className="w-12 h-12 bg-gray-900 rounded border border-gray-700 flex items-center justify-center">
+                          <Image className="w-5 h-5 text-gray-600" />
+                        </div>
+                      )}
+                      <div>
+                        <h4 className="font-bold text-white">Favicon (favicon.png)</h4>
+                        <p className="text-xs text-gray-500 mt-1">Shown in the browser tab.</p>
+                      </div>
+                    </div>
+                    <div>
+                      <input 
+                        type="file" 
+                        ref={faviconInputRef} 
+                        className="hidden" 
+                        accept="image/png, image/jpeg, image/svg+xml, image/webp, image/x-icon" 
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            handleUploadImageKit(e.target.files[0], 'favicon');
+                          }
+                        }} 
+                      />
+                      <button 
+                        onClick={() => faviconInputRef.current?.click()} 
+                        disabled={uploadingFavicon}
+                        className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                      >
+                        {uploadingFavicon ? (
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <Upload className="w-4 h-4" />
+                        )}
+                        Upload
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
 
               {/* Global Ads Controls */}
               <div className="p-6 bg-white/5 rounded-xl border border-white/5 backdrop-blur-sm space-y-6">

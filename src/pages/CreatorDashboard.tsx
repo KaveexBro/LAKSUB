@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useSiteSettings } from '../contexts/SiteSettingsContext';
 import { db } from '../firebase';
 import { collection, addDoc, query, where, getDocs, orderBy, updateDoc, doc, deleteDoc, getDoc, writeBatch, increment } from 'firebase/firestore';
 import { Subtitle, Withdrawal, VideoDownloadOption } from '../types';
@@ -15,6 +16,7 @@ import { CreatorWallet } from '../components/CreatorWallet';
 import { Helmet } from 'react-helmet-async';
 
 export const CreatorDashboard: React.FC = () => {
+  const { settings } = useSiteSettings();
   const { user, userData } = useAuth();
   const [activeTab, setActiveTab] = useState<'upload' | 'wallet' | 'subtitles'>('subtitles');
   const [subtitles, setSubtitles] = useState<Subtitle[]>([]);
@@ -339,7 +341,7 @@ export const CreatorDashboard: React.FC = () => {
       </Helmet>
       <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold mb-8 flex items-center gap-3">
-          <img src="/logo.png" alt="LAKSUB" className="h-8 w-auto" referrerPolicy="no-referrer" />
+          <img src={settings.logoUrl || "/logo.png"} alt="LAKSUB" className="h-8 w-auto" referrerPolicy="no-referrer" />
           Creator Dashboard
         </h1>
         

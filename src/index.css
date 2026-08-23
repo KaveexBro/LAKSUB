@@ -18,9 +18,9 @@
   --spacing-component-md: 1rem;
   --spacing-component-lg: 1.5rem;
   --spacing-component-xl: 2rem;
-  --spacing-layout-sm: 2rem;
-  --spacing-layout-md: 4rem;
-  --spacing-layout-lg: 6rem;
+  --spacing-layout-sm: 1.5rem;
+  --spacing-layout-md: 2.5rem;
+  --spacing-layout-lg: 4rem;
 }
 
 body {
@@ -92,7 +92,7 @@ button.bg-netflix-red {
 }
 
 .text-responsive-body {
-  @apply text-base md:text-lg lg:text-xl leading-relaxed;
+  @apply text-base md:text-lg lg:text-lg leading-relaxed;
 }
 
 .text-responsive-sm {
@@ -100,15 +100,15 @@ button.bg-netflix-red {
 }
 
 .text-responsive-h1 {
-  @apply text-3xl md:text-4xl lg:text-5xl leading-tight;
+  @apply text-xl md:text-2xl lg:text-3xl leading-tight;
 }
 
 .text-responsive-h2 {
-  @apply text-2xl md:text-3xl lg:text-4xl leading-tight;
+  @apply text-xl md:text-2xl lg:text-3xl leading-tight;
 }
 
 .text-responsive-h3 {
-  @apply text-base md:text-lg lg:text-xl leading-tight whitespace-normal font-bold;
+  @apply text-base md:text-lg lg:text-lg leading-tight whitespace-normal font-bold;
 }
 
 /* Hide scrollbar for horizontal scrolling containers */

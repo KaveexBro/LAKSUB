@@ -722,11 +722,11 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
 
 
   const renderDownloadCard = () => (
-    <div className="bg-[#181818] p-5 lg:p-6 rounded-2xl border border-white/5 shadow-xl relative isolate w-full">
-      <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row justify-between gap-6 mb-5 items-start sm:items-center lg:items-start xl:items-center">
+    <div className="bg-[#181818] p-4 lg:p-5 rounded-2xl border border-white/5 shadow-xl relative isolate w-full">
+      <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row justify-between gap-4 mb-3 items-start sm:items-center lg:items-start xl:items-center">
         <Link href={`/user/${subtitle.authorUid}`}>
           <div className="flex items-center gap-3 cursor-pointer group">
-            <div className="w-9 h-9 rounded-full bg-gray-700 overflow-hidden border border-white/10 group-hover:border-netflix-red transition-transform group-hover:scale-110 transform-gpu backface-hidden">
+            <div className="w-7 h-7 rounded-full bg-gray-700 overflow-hidden border border-white/10 group-hover:border-netflix-red transition-transform group-hover:scale-110 transform-gpu backface-hidden">
               {authorPhoto ? (
                 <img src={authorPhoto || undefined} alt={authorName} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
               ) : (
@@ -736,9 +736,9 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
               )}
             </div>
             <div>
-              <p className="text-[10px] text-gray-500 font-medium tracking-wide uppercase">Translated by</p>
+              <p className="text-[9px] text-gray-500 font-medium tracking-wide uppercase">Translated by</p>
               <div className="flex items-center gap-2">
-                <p className="font-semibold text-white text-sm group-hover:text-netflix-red transition-colors">{authorName}</p>
+                <p className="font-semibold text-white text-xs group-hover:text-netflix-red transition-colors">{authorName}</p>
                 {authorUploadCount > 0 && <CreatorBadge uploadCount={authorUploadCount} />}
               </div>
             </div>
@@ -746,7 +746,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
         </Link>
 
         <div className="flex flex-col items-start sm:items-end lg:items-start xl:items-end w-full sm:w-auto lg:w-full xl:w-auto">
-          <p className="text-[10px] text-gray-500 font-medium tracking-wide uppercase mb-2">Rate this subtitle</p>
+          <p className="text-[9px] text-gray-500 font-medium tracking-wide uppercase mb-2">Rate this subtitle</p>
           <div className="flex gap-1">
             {[1, 2, 3, 4, 5].map((star) => (
               <Star 
@@ -1012,10 +1012,10 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
       </div>
       
       <div className="max-w-7xl mx-auto px-4 md:px-8 xl:px-12 -mt-24 relative z-20">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
           
             {/* Poster & Sidebar Info */}
-            <div className="lg:col-span-4 xl:col-span-3 flex flex-col gap-6">
+            <div className="lg:col-span-4 xl:col-span-3 flex flex-col gap-4">
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -1092,7 +1092,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
           </div>
 
           {/* Details & Main Content */}
-          <div className="lg:col-span-8 xl:col-span-9 flex flex-col gap-6">
+          <div className="lg:col-span-8 xl:col-span-9 flex flex-col gap-4">
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -1100,13 +1100,13 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
               <h1 className="text-3xl md:text-5xl font-bold mb-2 drop-shadow-lg tracking-tight leading-tight">
                 {subtitle.movieTitle}
                 {subtitle.type === 'series' && subtitle.season && subtitle.episode && (
-                  <span className="block text-xl md:text-3xl text-gray-500 mt-2 font-mono">
+                  <span className="block text-lg md:text-xl text-gray-500 mt-2 font-mono">
                     S{subtitle.season.toString().padStart(2, '0')}E{subtitle.episode.toString().padStart(2, '0')}
                   </span>
                 )}
               </h1>
               
-              <div className="flex flex-wrap items-center gap-3 md:gap-4 text-sm font-medium mb-5 text-gray-400">
+              <div className="flex flex-wrap items-center gap-3 md:gap-4 text-sm font-medium mb-3 text-gray-400">
                 {subtitle.averageRating > 0 ? (
                   <div className="flex items-center gap-1 bg-yellow-500/10 text-yellow-500 px-4 py-1.5 rounded-full bg-[#181818] border border-yellow-500/20 shadow-[0_0_10px_rgba(234,179,8,0.1)]">
                     {[1, 2, 3, 4, 5].map((star) => (
@@ -1374,8 +1374,8 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
         </div>
 
         {/* Community Reviews Section */}
-        <div className="mt-10">
-          <h2 className="text-3xl font-bold tracking-tight mb-5 flex items-center gap-3">
+        <div className="mt-8">
+          <h2 className="text-3xl font-bold tracking-tight mb-4 flex items-center gap-3">
             <MessageSquare className="w-8 h-8 text-netflix-red" /> Community Reviews
           </h2>
           
@@ -1705,7 +1705,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                       <AdZone zoneName="download-popup" />
                     </div>
                     {/* Fallback content if AdZone is empty or loading */}
-                    <div className="text-center p-8 z-[-1] mt-10 max-w-2xl mx-auto bg-[#181818] border border-white/5 rounded-3xl">
+                    <div className="text-center p-8 z-[-1] mt-8 max-w-2xl mx-auto bg-[#181818] border border-white/5 rounded-3xl">
                       <Crown className="w-16 h-16 text-yellow-500 mx-auto mb-4 opacity-50" />
                       <h4 className="text-2xl font-bold tracking-tight text-white/50 mb-2">Upgrade to Pro</h4>
                       <p className="text-gray-500 font-medium">Get instant downloads without ads or waiting times.</p>

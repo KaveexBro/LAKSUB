@@ -8,6 +8,7 @@ import { Route, Switch, useLocation } from 'wouter';
 import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider } from './contexts/AuthContext';
 import { Navbar } from './components/Navbar';
+import { SiteSettingsProvider } from "./contexts/SiteSettingsContext";
 import { Footer } from './components/Footer';
 import { Home } from './pages/Home';
 import { SubtitleDetails } from './pages/SubtitleDetails';
@@ -130,13 +131,15 @@ export default function App() {
   return (
     <HelmetProvider>
       <ErrorBoundary>
-        <AuthProvider>
+        <SiteSettingsProvider>
+          <AuthProvider>
           <AdBlockDetector>
             <GlobalAds />
             <ScrollToTop />
             <AppContent />
           </AdBlockDetector>
         </AuthProvider>
+        </SiteSettingsProvider>
       </ErrorBoundary>
     </HelmetProvider>
   );

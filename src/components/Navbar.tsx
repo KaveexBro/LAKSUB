@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'wouter';
 import { useAuth } from '../contexts/AuthContext';
+import { useSiteSettings } from '../contexts/SiteSettingsContext';
 import { Search, User, LogOut, Crown, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { NotificationBell } from './NotificationBell';
@@ -27,6 +28,7 @@ const Tooltip: React.FC<{ text: string; children: React.ReactNode }> = ({ text, 
 };
 
 export const Navbar: React.FC = () => {
+  const { settings } = useSiteSettings();
   const { user, userData, isPro, signIn, signOut } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -56,7 +58,7 @@ export const Navbar: React.FC = () => {
         <Link href="/">
           <div className="flex flex-col cursor-pointer group">
             <img 
-              src="/logo.png" 
+              src={settings.logoUrl || "/logo.png"} 
               alt="LAKSUB" 
               className="h-8 md:h-10 w-auto object-contain group-hover:scale-105 transition-transform origin-left" 
             />
@@ -198,7 +200,7 @@ export const Navbar: React.FC = () => {
               <div className="mb-12">
                 <div className="flex flex-col">
                   <img 
-                    src="/logo.png" 
+                    src={settings.logoUrl || "/logo.png"} 
                     alt="LAKSUB" 
                     className="h-12 w-auto object-contain self-start" 
                   />

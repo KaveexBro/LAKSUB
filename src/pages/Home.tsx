@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { collection, query, orderBy, limit, getDocs, where } from 'firebase/firestore';
+import { useSiteSettings } from "../contexts/SiteSettingsContext";
 import { db } from '../firebase';
 import { Link } from 'wouter';
 import { Play, Info, Volume2, X, MessageCircle } from 'lucide-react';
@@ -11,6 +12,7 @@ import { Helmet } from 'react-helmet-async';
 import { AdZone } from '../components/AdZone';
 
 export const Home: React.FC = () => {
+  const { settings } = useSiteSettings();
   const [featured, setFeatured] = useState<Subtitle | null>(null);
   const [latestReleases, setLatestReleases] = useState<Subtitle[]>([]);
   const [trendingNow, setTrendingNow] = useState<Subtitle[]>([]);
@@ -122,7 +124,7 @@ export const Home: React.FC = () => {
         >
           <div className="w-16 h-16 border-4 border-netflix-red border-t-transparent rounded-full animate-spin shadow-[0_0_20px_rgba(229,9,20,0.4)]"></div>
           <img 
-            src="/logo.png" 
+            src={settings.logoUrl || "/logo.png"} 
             alt="LAKSUB"
             className="h-12 w-auto object-contain" 
           />
@@ -243,12 +245,12 @@ export const Home: React.FC = () => {
         <meta property="og:description" content="Download the best high-quality Sinhala subtitles (Sinhala sub) for English movies, TV series, Netflix originals, Korean dramas, and Anime at LAKSUB." />
         <meta property="og:url" content="https://www.laksub.com/" />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://www.laksub.com/logo.png" />
+        <meta property="og:image" content={settings.logoUrl || "https://www.laksub.com/logo.png"} />
         
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Sinhala Subtitles & Sinhala Sub | LAKSUB" />
         <meta name="twitter:description" content="Download the best high-quality Sinhala subtitles (Sinhala sub) for English movies, TV series, Netflix originals, Korean dramas, and Anime at LAKSUB." />
-        <meta name="twitter:image" content="https://www.laksub.com/logo.png" />
+        <meta name="twitter:image" content={settings.logoUrl || "https://www.laksub.com/logo.png"} />
       </Helmet>
       <AnimatePresence mode="wait">
         <motion.div
@@ -282,7 +284,7 @@ export const Home: React.FC = () => {
                   transition={{ delay: 0.2, duration: 0.8 }}
                 >
                   <div className="flex items-center gap-2 mb-2 md:mb-4">
-                    <img src="/logo.png" alt="LAKSUB" className="h-6 md:h-8 w-auto drop-shadow-md" referrerPolicy="no-referrer" />
+                    <img src={settings.logoUrl || "/logo.png"} alt="LAKSUB" className="h-6 md:h-8 w-auto drop-shadow-md" referrerPolicy="no-referrer" />
                     <span className="text-[10px] md:text-sm font-bold tracking-[0.2em] text-white/90 uppercase drop-shadow-md">Original</span>
                   </div>
                   
