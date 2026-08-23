@@ -11,6 +11,7 @@ import {
   MessageSquare, Clock, CheckCircle2, Film, Tv, Plus, Image, Upload, Activity
 } from 'lucide-react';
 import { EditSubtitleModal } from '../components/EditSubtitleModal';
+import { SiteLogo } from '../components/SiteLogo';
 import { AdManager } from '../components/AdManager';
 import { motion, AnimatePresence } from 'motion/react';
 import { Helmet } from 'react-helmet-async';
@@ -995,7 +996,7 @@ export const AdminDashboard: React.FC = () => {
       </Helmet>
       <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold mb-8 flex items-center gap-3">
-          <img src={siteLogoUrl || "/logo.png"} alt="LAKSUB" className="h-8 w-auto" referrerPolicy="no-referrer" />
+          <SiteLogo className="h-8 w-auto" />
           Admin Dashboard
         </h1>
 
@@ -1850,7 +1851,7 @@ export const AdminDashboard: React.FC = () => {
                     <div className="flex items-center gap-4">
                       {siteLogoUrl ? (
                         <div className="w-16 h-16 bg-gray-900 rounded border border-gray-700 flex items-center justify-center p-2">
-                          <img src={siteLogoUrl} alt="Logo" className="w-full h-full object-contain" />
+                          <img src={siteLogoUrl} alt="Logo" className="w-full h-full object-contain" style={{ color: "transparent" }} />
                         </div>
                       ) : (
                         <div className="w-16 h-16 bg-gray-900 rounded border border-gray-700 flex items-center justify-center">
@@ -1894,7 +1895,7 @@ export const AdminDashboard: React.FC = () => {
                     <div className="flex items-center gap-4">
                       {siteFaviconUrl ? (
                         <div className="w-12 h-12 bg-gray-900 rounded border border-gray-700 flex items-center justify-center p-2">
-                          <img src={siteFaviconUrl} alt="Favicon" className="w-full h-full object-contain" />
+                          <img src={siteFaviconUrl} alt="Favicon" className="w-full h-full object-contain" style={{ color: "transparent" }} />
                         </div>
                       ) : (
                         <div className="w-12 h-12 bg-gray-900 rounded border border-gray-700 flex items-center justify-center">

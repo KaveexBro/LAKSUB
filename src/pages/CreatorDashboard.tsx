@@ -341,7 +341,7 @@ export const CreatorDashboard: React.FC = () => {
       </Helmet>
       <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold mb-8 flex items-center gap-3">
-          <img src={settings.logoUrl || "/logo.png"} alt="LAKSUB" className="h-8 w-auto" referrerPolicy="no-referrer" />
+          <SiteLogo className="h-8 w-auto" />
           Creator Dashboard
         </h1>
         

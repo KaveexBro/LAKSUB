@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'wouter';
 import { useAuth } from '../contexts/AuthContext';
 import { useSiteSettings } from '../contexts/SiteSettingsContext';
+import { SiteLogo } from './SiteLogo';
 import { Search, User, LogOut, Crown, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { NotificationBell } from './NotificationBell';
@@ -57,11 +58,7 @@ export const Navbar: React.FC = () => {
 
         <Link href="/">
           <div className="flex flex-col cursor-pointer group">
-            <img 
-              src={settings.logoUrl || "/logo.png"} 
-              alt="LAKSUB" 
-              className="h-8 md:h-10 w-auto object-contain group-hover:scale-105 transition-transform origin-left" 
-            />
+            <SiteLogo className="h-8 md:h-10 w-auto object-contain group-hover:scale-105 transition-transform origin-left" />
             <span className="text-[8px] md:text-[10px] font-medium text-white/40 tracking-[0.2em] leading-none mt-1">
               Sinhala Subtitles
             </span>
@@ -199,11 +196,7 @@ export const Navbar: React.FC = () => {
             >
               <div className="mb-12">
                 <div className="flex flex-col">
-                  <img 
-                    src={settings.logoUrl || "/logo.png"} 
-                    alt="LAKSUB" 
-                    className="h-12 w-auto object-contain self-start" 
-                  />
+                  <SiteLogo className="h-12 w-auto object-contain self-start" />
                   <span className="text-[10px] font-bold text-white/40 uppercase tracking-[0.3em] leading-none mt-2">
                     Sinhala Subtitles
                   </span>

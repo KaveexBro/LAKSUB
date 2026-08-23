@@ -3,6 +3,7 @@ import { collection, query, orderBy, limit, getDocs, where } from 'firebase/fire
 import { useSiteSettings } from "../contexts/SiteSettingsContext";
 import { db } from '../firebase';
 import { Link } from 'wouter';
+import { SiteLogo } from '../components/SiteLogo';
 import { Play, Info, Volume2, X, MessageCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Subtitle } from '../types';
@@ -123,11 +124,7 @@ export const Home: React.FC = () => {
           className="flex flex-col items-center gap-4"
         >
           <div className="w-16 h-16 border-4 border-netflix-red border-t-transparent rounded-full animate-spin shadow-[0_0_20px_rgba(229,9,20,0.4)]"></div>
-          <img 
-            src={settings.logoUrl || "/logo.png"} 
-            alt="LAKSUB"
-            className="h-12 w-auto object-contain" 
-          />
+          <SiteLogo className="h-12 w-auto object-contain" />
         </motion.div>
       </div>
     );
@@ -284,7 +281,7 @@ export const Home: React.FC = () => {
                   transition={{ delay: 0.2, duration: 0.8 }}
                 >
                   <div className="flex items-center gap-2 mb-2 md:mb-4">
-                    <img src={settings.logoUrl || "/logo.png"} alt="LAKSUB" className="h-6 md:h-8 w-auto drop-shadow-md" referrerPolicy="no-referrer" />
+                    <SiteLogo className="h-6 md:h-8 w-auto drop-shadow-md" />
                     <span className="text-[10px] md:text-sm font-bold tracking-[0.2em] text-white/90 uppercase drop-shadow-md">Original</span>
                   </div>
                   
