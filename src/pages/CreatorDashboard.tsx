@@ -11,6 +11,7 @@ import { EditSubtitleModal } from '../components/EditSubtitleModal';
 import { searchTMDB, getTMDBImageUrl, TMDBMovie } from '../services/tmdbService';
 import { handleFirestoreError, OperationType } from '../utils/errorHandlers';
 import { generateSlug, generateUniqueSlug } from '../utils/slugify';
+import { SiteLogo } from "../components/SiteLogo";
 
 import { CreatorWallet } from '../components/CreatorWallet';
 import { Helmet } from 'react-helmet-async';
