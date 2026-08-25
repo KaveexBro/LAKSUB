@@ -39,7 +39,6 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
   const [downloading, setDownloading] = useState(false);
   const [telegramCountdown, setTelegramCountdown] = useState<number | null>(null);
   const [canDownloadTelegram, setCanDownloadTelegram] = useState(false);
-  const [isDescExpanded, setIsDescExpanded] = useState(false);
   const [error, setError] = useState('');
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [reportReason, setReportReason] = useState<'broken_link' | 'inappropriate' | 'wrong_content' | 'other'>('broken_link');
@@ -1232,86 +1231,20 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
             <div className="w-full mx-auto"><AdZone zoneName="subtitle-details-top" /></div>
 
             <div className="mb-10">
-              <div 
-                className={`relative bg-[#181818] transition-colors rounded-2xl p-4 md:p-6 text-gray-200 font-sinhala-text leading-normal overflow-hidden text-base md:text-lg ${!isDescExpanded ? 'max-h-48' : ''}`}
-              >
-                {(() => {
-                  const html = subtitle.description || 'No description available.';
-                  const cleanHtml = DOMPurify.sanitize(html.replace(/&nbsp;|\u00A0/g, ' '));
-                  
-                  if (!isDescExpanded) {
-                    return (
-                      <div 
-                        className="prose prose-invert max-w-none w-full break-words prose-p:mb-4 last:prose-p:mb-0 prose-a:text-blue-400 hover:prose-a:underline [&_a]:break-all text-base md:text-lg text-gray-300 font-sinhala-text leading-normal"
-                        dangerouslySetInnerHTML={{ __html: cleanHtml }} 
-                      />
-                    );
-                  }
-
-                  const paragraphs = cleanHtml.split('</p>');
-                  
-                  if (paragraphs.length <= 2) {
-                    return (
-                      <div 
-                        className="prose prose-invert max-w-none w-full break-words prose-p:mb-4 last:prose-p:mb-0 prose-a:text-blue-400 hover:prose-a:underline [&_a]:break-all text-base md:text-lg text-gray-300 font-sinhala-text leading-normal"
-                        dangerouslySetInnerHTML={{ __html: cleanHtml }} 
-                      />
-                    );
-                  }
-
-                  const chunks = [];
-                  let currentChunk = '';
-                  
-                  for (let i = 0; i < paragraphs.length; i++) {
-                    currentChunk += paragraphs[i] + (i < paragraphs.length - 1 ? '</p>' : '');
-                    
-                    if ((i + 1) % 2 === 0 || i === paragraphs.length - 1) {
-                      if (currentChunk.trim()) {
-                        chunks.push(currentChunk);
-                      }
-                      currentChunk = '';
-                    }
-                  }
-
-                  return (
-                    <div className="flex flex-col gap-4">
-                      {chunks.map((chunk, index) => (
-                        <React.Fragment key={index}>
-                          <div 
-                            className="prose prose-invert max-w-none w-full break-words prose-p:mb-4 last:prose-p:mb-0 prose-a:text-blue-400 hover:prose-a:underline [&_a]:break-all text-base md:text-lg text-gray-300 font-sinhala-text leading-normal"
-                            dangerouslySetInnerHTML={{ __html: chunk }} 
-                          />
-                          {index < chunks.length - 1 && index < 4 && (
-                            <div className="my-2">
-                              <AdZone zoneName={`subtitle-details-content-${index + 1}`} />
-                            </div>
-                          )}
-                        </React.Fragment>
-                      ))}
-                    </div>
-                  );
-                })()}
-                
-                {!isDescExpanded ? (
-                  <div 
-                    className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#272727] via-[#272727]/90 to-transparent flex items-end p-4 md:p-6 rounded-b-xl cursor-pointer"
-                    onClick={() => setIsDescExpanded(true)}
-                  >
-                    <span className="text-white font-bold text-sm hover:underline">Show more</span>
-                  </div>
-                ) : (
-                  <div 
-                    className="mt-6 pt-4 border-t border-white/5 cursor-pointer"
-                    onClick={() => setIsDescExpanded(false)}
-                  >
-                    <span className="text-white font-bold text-sm hover:underline">Show less</span>
-                  </div>
-                )}
+              <div className="text-gray-200 font-sinhala-text leading-normal text-base md:text-lg">
+                <div 
+                  className="prose prose-invert max-w-none w-full break-words prose-p:mb-4 last:prose-p:mb-0 prose-a:text-blue-400 hover:prose-a:underline [&_a]:break-all text-base md:text-lg text-gray-300 font-sinhala-text leading-normal"
+                  dangerouslySetInnerHTML={{ 
+                    __html: DOMPurify.sanitize(
+                      (subtitle.description || 'No description available.').replace(/&nbsp;|\u00A0/g, ' ')
+                    )
+                  }} 
+                />
               </div>
             </div>
             
             <div className="w-full mx-auto"><AdZone zoneName="subtitle-details-middle" /></div>
-
+            
             {/* Cast Section - Only for movies */}
             {subtitle.type === 'movie' && tmdbData?.credits?.cast && tmdbData.credits.cast.length > 0 && (
               <div className="mb-10">
