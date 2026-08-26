@@ -11,6 +11,7 @@ import { getTMDBImageUrl } from '../services/tmdbService';
 import TMDBLanguageBadge from '../components/TMDBLanguageBadge';
 import { Helmet } from 'react-helmet-async';
 import { AdZone } from '../components/AdZone';
+import { getSeriesBadge, SeriesBadgeInfo } from '../services/badgeService';
 
 export const Home: React.FC = () => {
   const { settings } = useSiteSettings();
@@ -20,6 +21,7 @@ export const Home: React.FC = () => {
   const [top10, setTop10] = useState<Subtitle[]>([]);
   const [actionMovies, setActionMovies] = useState<Subtitle[]>([]);
   const [tvSeries, setTvSeries] = useState<Subtitle[]>([]);
+  const [seriesBadges, setSeriesBadges] = useState<Record<string, SeriesBadgeInfo>>({});
   const [loading, setLoading] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   const [showWaBanner, setShowWaBanner] = useState(false);
@@ -47,7 +49,7 @@ export const Home: React.FC = () => {
           collection(db, 'subtitles'), 
           where('status', '==', 'approved'),
           orderBy('createdAt', 'desc'), 
-          limit(15)
+          limit(50)
         );
         
         // Fetch top 10 (most downloaded)
@@ -63,7 +65,7 @@ export const Home: React.FC = () => {
           collection(db, 'subtitles'), 
           where('status', '==', 'approved'),
           orderBy('averageRating', 'desc'), 
-          limit(12)
+          limit(15)
         );
 
         // Fetch Action movies
@@ -71,7 +73,7 @@ export const Home: React.FC = () => {
           collection(db, 'subtitles'), 
           where('status', '==', 'approved'),
           where('genres', 'array-contains', 'Action'), 
-          limit(12)
+          limit(15)
         );
 
         // Fetch TV Series
@@ -79,7 +81,7 @@ export const Home: React.FC = () => {
           collection(db, 'subtitles'), 
           where('status', '==', 'approved'),
           where('type', '==', 'series'), 
-          limit(12)
+          limit(50)
         );
 
         // Execute all queries in parallel
@@ -103,7 +105,28 @@ export const Home: React.FC = () => {
         setTop10(top10Snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Subtitle)));
         setTrendingNow(trendingSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Subtitle)));
         setActionMovies(actionSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Subtitle)));
-        setTvSeries(seriesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Subtitle)));
+        const tvSeriesData = seriesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Subtitle));
+        setTvSeries(tvSeriesData);
+
+        // Fetch badges for unique series
+        const allSeries = [...latestSubs, ...top10Snap.docs.map(doc => doc.data() as Subtitle), ...trendingSnap.docs.map(doc => doc.data() as Subtitle), ...tvSeriesData].filter(s => s.type === 'series');
+        const uniqueSeries = new Map<string, number | undefined>();
+        allSeries.forEach(s => {
+          if (!uniqueSeries.has(s.movieTitle)) {
+            uniqueSeries.set(s.movieTitle, s.tmdbId);
+          }
+        });
+
+        const newBadges: Record<string, SeriesBadgeInfo> = {};
+        await Promise.all(
+          Array.from(uniqueSeries.entries()).map(async ([title, tmdbId]) => {
+            const badge = await getSeriesBadge(title, tmdbId);
+            if (badge) {
+              newBadges[title] = badge;
+            }
+          })
+        );
+        setSeriesBadges(newBadges);
 
       } catch (error) {
         console.error("Error fetching content:", error);
@@ -170,25 +193,66 @@ export const Home: React.FC = () => {
   const renderRow = (title: string, subtitles: Subtitle[]) => {
     if (subtitles.length === 0) return null;
 
-    const groupedContent: (Subtitle & { isGroup?: boolean })[] = [];
-    const seriesTitles = new Set();
+    const groupedContent: (Subtitle & { isGroup?: boolean; groupBadge?: string; isGroupCompleted?: boolean })[] = [];
+    const seriesMap = new Map<string, { count: number; maxSeason: number; maxEpisode: number; minSeason: number; minEpisode: number }>();
 
     subtitles.forEach(sub => {
       if (sub.type === 'series') {
-        if (!seriesTitles.has(sub.movieTitle)) {
-          seriesTitles.add(sub.movieTitle);
-          groupedContent.push({ ...sub, isGroup: true });
+        const title = sub.movieTitle;
+        const s = sub.season || 1;
+        const e = sub.episode || 1;
+        if (!seriesMap.has(title)) {
+          seriesMap.set(title, { count: 1, maxSeason: s, maxEpisode: e, minSeason: s, minEpisode: e });
+        } else {
+          const data = seriesMap.get(title)!;
+          data.count++;
+          data.maxSeason = Math.max(data.maxSeason, s);
+          data.maxEpisode = Math.max(data.maxEpisode, e);
+          data.minSeason = Math.min(data.minSeason, s);
+          data.minEpisode = Math.min(data.minEpisode, e);
+        }
+      }
+    });
+
+    const addedSeries = new Set<string>();
+
+    subtitles.forEach(sub => {
+      if (sub.type === 'series') {
+        if (!addedSeries.has(sub.movieTitle)) {
+          addedSeries.add(sub.movieTitle);
+          const data = seriesMap.get(sub.movieTitle)!;
+          
+          let groupBadge = '';
+          let isGroupCompleted = false;
+          
+          const fetchedBadge = seriesBadges[sub.movieTitle];
+          if (fetchedBadge) {
+            groupBadge = fetchedBadge.text;
+            isGroupCompleted = fetchedBadge.isCompleted;
+          } else {
+            // Fallback while loading TMDB info
+            if (data.count === 1) {
+              groupBadge = `New: S${String(sub.season || 1).padStart(2, '0')} E${String(sub.episode || 1).padStart(2, '0')}`;
+            } else if (data.maxSeason === data.minSeason) {
+              groupBadge = `New: S${String(data.maxSeason).padStart(2, '0')} E${String(data.minEpisode).padStart(2, '0')}-E${String(data.maxEpisode).padStart(2, '0')}`;
+            } else {
+              groupBadge = `${data.count} New Eps`;
+            }
+          }
+          groupedContent.push({ ...sub, isGroup: true, groupBadge, isGroupCompleted });
         }
       } else {
         groupedContent.push(sub);
       }
     });
 
+    const displayContent = groupedContent.slice(0, 15);
+
     return (
       <section className="mb-12 relative z-30">
         <h2 className="text-2xl md:text-3xl font-bold mb-4 text-white px-4 md:px-12 uppercase tracking-tighter">{title}</h2>
         <div className="flex gap-4 overflow-x-auto pb-8 pt-4 px-4 md:px-12 scrollbar-hide snap-x">
-          {groupedContent.map((sub) => (
+          {displayContent.map((sub) => (
             <Link 
               key={sub.id} 
               href={sub.isGroup ? `/series/${encodeURIComponent(sub.movieTitle)}` : (sub.slug ? `/subtitles/${sub.slug}` : `/subtitles/${sub.id}`)}
@@ -217,6 +281,11 @@ export const Home: React.FC = () => {
                     )}
                   </div>
                 </div>
+                {sub.isGroup && sub.groupBadge && (
+                  <div className={`absolute top-2 left-2 backdrop-blur-md text-white text-[9px] md:text-[10px] font-bold px-2 py-1 rounded-sm uppercase tracking-wider shadow-md z-20 border border-white/20 ${sub.isGroupCompleted ? 'bg-green-600/90' : 'bg-blue-600/90'}`}>
+                    {sub.groupBadge}
+                  </div>
+                )}
                 {sub.proOnlyUntil && new Date(sub.proOnlyUntil) > new Date() && (
                   <div className="absolute top-2 right-2 bg-netflix-red text-white text-[8px] font-bold px-1.5 py-0.5 rounded-sm uppercase tracking-wider shadow-md z-20">
                     PRO

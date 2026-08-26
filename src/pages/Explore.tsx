@@ -8,12 +8,14 @@ import { getTMDBImageUrl, getTMDBLanguage } from '../services/tmdbService';
 import TMDBLanguageBadge from '../components/TMDBLanguageBadge';
 import { Helmet } from 'react-helmet-async';
 import { AdZone } from '../components/AdZone';
+import { getSeriesBadge, SeriesBadgeInfo } from '../services/badgeService';
 
 export const Explore: React.FC<{ initialType?: 'movie' | 'series' | 'all', initialGenre?: string }> = ({ initialType = 'all', initialGenre = '' }) => {
   const searchString = useSearch();
   const [subtitles, setSubtitles] = useState<Subtitle[]>([]);
   const [filteredSubtitles, setFilteredSubtitles] = useState<Subtitle[]>([]);
   const [tmdbLanguages, setTmdbLanguages] = useState<Record<string, string>>({});
+  const [seriesBadges, setSeriesBadges] = useState<Record<string, SeriesBadgeInfo>>({});
   const [loading, setLoading] = useState(true);
   
   // Filters
@@ -80,6 +82,27 @@ export const Explore: React.FC<{ initialType?: 'movie' | 'series' | 'all', initi
         }
         
         setTmdbLanguages(langMap);
+
+        // Fetch badges for unique series
+        const allSeries = subs.filter(s => s.type === 'series');
+        const uniqueSeries = new Map<string, number | undefined>();
+        allSeries.forEach(s => {
+          if (!uniqueSeries.has(s.movieTitle)) {
+            uniqueSeries.set(s.movieTitle, s.tmdbId);
+          }
+        });
+
+        const newBadges: Record<string, SeriesBadgeInfo> = {};
+        await Promise.all(
+          Array.from(uniqueSeries.entries()).map(async ([title, tmdbId]) => {
+            const badge = await getSeriesBadge(title, tmdbId);
+            if (badge) {
+              newBadges[title] = badge;
+            }
+          })
+        );
+        setSeriesBadges(newBadges);
+
       } catch (err) {
         console.error("Error fetching explore data:", err);
       } finally {
@@ -150,14 +173,53 @@ export const Explore: React.FC<{ initialType?: 'movie' | 'series' | 'all', initi
   };
 
   // Group series by title for a cleaner look
-  const groupedResults: (Subtitle & { isGroup?: boolean })[] = [];
-  const seriesTitles = new Set();
+  const groupedResults: (Subtitle & { isGroup?: boolean; groupBadge?: string; isGroupCompleted?: boolean })[] = [];
+  const seriesMap = new Map<string, { count: number; maxSeason: number; maxEpisode: number; minSeason: number; minEpisode: number }>();
 
   filteredSubtitles.forEach(sub => {
     if (sub.type === 'series') {
-      if (!seriesTitles.has(sub.movieTitle)) {
-        seriesTitles.add(sub.movieTitle);
-        groupedResults.push({ ...sub, isGroup: true });
+      const title = sub.movieTitle;
+      const s = sub.season || 1;
+      const e = sub.episode || 1;
+      if (!seriesMap.has(title)) {
+        seriesMap.set(title, { count: 1, maxSeason: s, maxEpisode: e, minSeason: s, minEpisode: e });
+      } else {
+        const data = seriesMap.get(title)!;
+        data.count++;
+        data.maxSeason = Math.max(data.maxSeason, s);
+        data.maxEpisode = Math.max(data.maxEpisode, e);
+        data.minSeason = Math.min(data.minSeason, s);
+        data.minEpisode = Math.min(data.minEpisode, e);
+      }
+    }
+  });
+
+  const addedSeries = new Set<string>();
+
+  filteredSubtitles.forEach(sub => {
+    if (sub.type === 'series') {
+      if (!addedSeries.has(sub.movieTitle)) {
+        addedSeries.add(sub.movieTitle);
+        const data = seriesMap.get(sub.movieTitle)!;
+        
+        let groupBadge = '';
+        let isGroupCompleted = false;
+        
+        const fetchedBadge = seriesBadges[sub.movieTitle];
+        if (fetchedBadge) {
+          groupBadge = fetchedBadge.text;
+          isGroupCompleted = fetchedBadge.isCompleted;
+        } else {
+          // Fallback while loading TMDB info
+          if (data.count === 1) {
+            groupBadge = `New: S${String(sub.season || 1).padStart(2, '0')} E${String(sub.episode || 1).padStart(2, '0')}`;
+          } else if (data.maxSeason === data.minSeason) {
+            groupBadge = `New: S${String(data.maxSeason).padStart(2, '0')} E${String(data.minEpisode).padStart(2, '0')}-E${String(data.maxEpisode).padStart(2, '0')}`;
+          } else {
+            groupBadge = `${data.count} New Eps`;
+          }
+        }
+        groupedResults.push({ ...sub, isGroup: true, groupBadge, isGroupCompleted });
       }
     } else {
       groupedResults.push(sub);
@@ -317,6 +379,12 @@ export const Explore: React.FC<{ initialType?: 'movie' | 'series' | 'all', initi
                         referrerPolicy="no-referrer"
                         loading="lazy"
                       />
+
+                      {sub.isGroup && sub.groupBadge && (
+                        <div className={`absolute top-2 left-2 backdrop-blur-md text-white text-[9px] md:text-[10px] font-bold px-2 py-1 rounded-sm uppercase tracking-wider shadow-md z-20 border border-white/20 ${sub.isGroupCompleted ? 'bg-green-600/90' : 'bg-blue-600/90'}`}>
+                          {sub.groupBadge}
+                        </div>
+                      )}
                       
                       {/* Gradient Overlay */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-300" />
