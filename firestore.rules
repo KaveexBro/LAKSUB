@@ -38,13 +38,13 @@ service cloud.firestore {
     function isValidUser(data) {
       return data.uid is string && data.uid.size() > 0 &&
              data.email is string && data.email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$") &&
-             data.role in ['admin', 'creator', 'user'] &&
-             data.walletBalance is number && data.walletBalance >= 0 &&
-             data.dailyDownloadCount is number && data.dailyDownloadCount >= 0 &&
-             data.totalUploads is number && data.totalUploads >= 0 &&
-             data.totalDownloads is number && data.totalDownloads >= 0 &&
-             data.isEligibleForMonetization is bool &&
-             data.monetizationStatus in ['locked', 'pending_review', 'approved'] &&
+             data.get('role', 'user') in ['admin', 'creator', 'user'] &&
+             data.get('walletBalance', 0) is number && data.get('walletBalance', 0) >= 0 &&
+             data.get('dailyDownloadCount', 0) is number && data.get('dailyDownloadCount', 0) >= 0 &&
+             data.get('totalUploads', 0) is number && data.get('totalUploads', 0) >= 0 &&
+             data.get('totalDownloads', 0) is number && data.get('totalDownloads', 0) >= 0 &&
+             data.get('isEligibleForMonetization', false) is bool &&
+             data.get('monetizationStatus', 'locked') in ['locked', 'pending_review', 'approved'] &&
              (!('watchlist' in data) || data.watchlist is list) &&
              (!('watched' in data) || data.watched is list) &&
              (!('seriesWatchlist' in data) || data.seriesWatchlist is list) &&
@@ -188,12 +188,12 @@ service cloud.firestore {
                       request.resource.data.isEligibleForMonetization == false &&
                       request.resource.data.monetizationStatus == 'locked') || isAdmin());
       allow update: if (isOwner(userId) && isValidUser(request.resource.data) && 
-                        request.resource.data.role == resource.data.role && 
-                        request.resource.data.walletBalance == resource.data.walletBalance &&
-                        request.resource.data.proExpiry == resource.data.proExpiry &&
-                        request.resource.data.totalUploads == resource.data.totalUploads &&
-                        request.resource.data.totalDownloads == resource.data.totalDownloads &&
-                        request.resource.data.isEligibleForMonetization == resource.data.isEligibleForMonetization) || 
+                        request.resource.data.get('role', 'user') == resource.data.get('role', 'user') && 
+                        request.resource.data.get('walletBalance', 0) == resource.data.get('walletBalance', 0) &&
+                        request.resource.data.get('proExpiry', null) == resource.data.get('proExpiry', null) &&
+                        request.resource.data.get('totalUploads', 0) == resource.data.get('totalUploads', 0) &&
+                        request.resource.data.get('totalDownloads', 0) == resource.data.get('totalDownloads', 0) &&
+                        request.resource.data.get('isEligibleForMonetization', false) == resource.data.get('isEligibleForMonetization', false)) || 
                        isAdmin() ||
                        // Allow creators to apply for monetization
                        (isOwner(userId) && 

@@ -242,7 +242,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
           }
 
           // If adult content and user not verified, show age modal
-          if (subData.isAdult && !userData?.isAdultVerified) {
+          if (subData.isAdult && !userData?.isAdultVerified && localStorage.getItem('laksub_adult_verified') !== 'true') {
             setIsAgeModalOpen(true);
           }
 
@@ -1567,7 +1567,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                 >
                   {verifyingAge ? 'Verifying...' : 'I am 18 or older'}
                 </button>
-                <Link href="/home" className="block w-full text-gray-500 hover:text-white py-2 font-bold transition-colors">
+                <Link href="/" className="block w-full text-gray-500 hover:text-white py-2 font-bold transition-colors">
                   Go back to Home
                 </Link>
               </div>

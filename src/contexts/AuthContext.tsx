@@ -247,14 +247,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const verifyAge = async () => {
-    if (!user) return;
     try {
-      await updateDoc(doc(db, 'users', user.uid), {
-        isAdultVerified: true
-      });
+      localStorage.setItem('laksub_adult_verified', 'true');
+      if (user) {
+        await updateDoc(doc(db, 'users', user.uid), {
+          isAdultVerified: true
+        });
+      }
     } catch (error) {
       console.error("Error verifying age:", error);
-      throw error;
+      // We do not throw the error here, so the UI can proceed gracefully
     }
   };
 
