@@ -1182,7 +1182,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                 </div>
 
                 {subtitle.parentalDescription && (
-                  <p className="text-gray-400 text-sm italic mb-6 border-b border-white/5 pb-4">
+                  <p className="text-gray-300 text-sm md:text-base leading-relaxed mb-6 border-b border-white/10 pb-5 font-medium">
                     {subtitle.parentalDescription}
                   </p>
                 )}
@@ -1215,7 +1215,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                               </span>
                             </div>
                             {cat.data.description && (
-                              <p className="text-xs text-gray-400 ml-4.5 leading-normal">
+                              <p className="text-sm text-gray-300 ml-[26px] leading-relaxed bg-black/40 p-2.5 rounded-lg border border-white/5 mt-1.5 font-medium">
                                 {cat.data.description}
                               </p>
                             )}
