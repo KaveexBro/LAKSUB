@@ -5,7 +5,7 @@ import { db } from '../firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { Subtitle, Rating } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
-import { Download, Star, Clock, AlertCircle, Crown, Users, Calendar, Film, Play, Info, ThumbsUp, MessageSquare, Share2, Flag, CheckCircle2, ArrowRight, ChevronRight, Heart, Award, ShieldCheck, Zap, X, ArrowLeft, Copy, Send, Bookmark, CheckCircle, Video } from 'lucide-react';
+import { Download, Star, Clock, AlertCircle, Crown, Users, Calendar, Film, Play, Info, ThumbsUp, MessageSquare, Share2, Flag, CheckCircle2, ArrowRight, ChevronRight, ChevronDown, ChevronUp, Heart, Award, ShieldCheck, Zap, X, ArrowLeft, Copy, Send, Bookmark, CheckCircle, Video } from 'lucide-react';
 import DOMPurify from 'dompurify';
 import { Helmet } from 'react-helmet-async';
 import { getTMDBDetails, getTMDBImageUrl, getTMDBEpisodeDetails } from '../services/tmdbService';
@@ -69,6 +69,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
   const [authorUploadCount, setAuthorUploadCount] = useState<number>(0);
   const [authorPhoto, setAuthorPhoto] = useState<string>('');
   const [authorName, setAuthorName] = useState<string>('');
+  const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchGlobalAds = async () => {
@@ -1197,9 +1198,13 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                       { label: 'Frightening & Intense Scenes', data: subtitle.parentsGuide.frightening },
                     ].map((cat) => (
                       <div key={cat.label} className="group">
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-1">
+                        <div className="flex flex-col gap-2">
+                          <button 
+                            onClick={() => setExpandedCategories(prev => prev.includes(cat.label) ? prev.filter(c => c !== cat.label) : [...prev, cat.label])}
+                            className={`flex items-center justify-between gap-4 w-full text-left focus:outline-none rounded-lg p-2 -mx-2 transition-colors ${cat.data.description ? 'hover:bg-white/5 cursor-pointer' : 'cursor-default'}`}
+                            disabled={!cat.data.description}
+                          >
+                            <div className="flex items-center gap-3">
                               <div className={`w-1.5 h-6 rounded-full ${
                                 cat.data.severity === 'Severe' ? 'bg-red-600' :
                                 cat.data.severity === 'Moderate' ? 'bg-orange-500' :
@@ -1215,11 +1220,26 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                               </span>
                             </div>
                             {cat.data.description && (
-                              <p className="text-sm text-gray-300 ml-[26px] leading-relaxed bg-black/40 p-2.5 rounded-lg border border-white/5 mt-1.5 font-medium">
-                                {cat.data.description}
-                              </p>
+                              <div className="text-gray-400 mr-2">
+                                {expandedCategories.includes(cat.label) ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                              </div>
                             )}
-                          </div>
+                          </button>
+                          
+                          <AnimatePresence>
+                            {cat.data.description && expandedCategories.includes(cat.label) && (
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: 'auto', opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                className="overflow-hidden"
+                              >
+                                <p className="text-base md:text-lg text-gray-200 ml-4 leading-relaxed bg-black/40 p-3.5 rounded-xl border border-white/10 font-medium">
+                                  {cat.data.description}
+                                </p>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
                         </div>
                       </div>
                     ))}
