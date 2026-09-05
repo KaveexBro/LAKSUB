@@ -15,6 +15,7 @@ import { VastPlayer } from '../components/VastPlayer';
 import { CreatorBadge } from '../components/CreatorBadge';
 import { SchemaInjector } from '../components/SchemaInjector';
 import { SubtitleComments } from '../components/SubtitleComments';
+import { SoftDownloadButton } from '../components/SoftDownloadButton';
 
 export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string } }> = ({ params }) => {
   const [matchId, paramsId] = useRoute<{ id: string }>('/subtitle/:id');
@@ -396,16 +397,6 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
 
     if (subtitle?.proOnlyUntil && new Date(subtitle.proOnlyUntil) > new Date() && !isPro) {
       setError("This subtitle is currently exclusive to Pro members.");
-      return;
-    }
-
-    if (!isPro && !canDownload) {
-      if (vastVideoEnabled) {
-        setShowAdModal(true);
-        setAdCountdown(5); // fallback if not vast
-      } else {
-        setStartTimer(true);
-      }
       return;
     }
 
@@ -822,16 +813,19 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
               Available for Free users on: {new Date(subtitle.proOnlyUntil!).toLocaleString()}
             </p>
           </div>
-        ) : isPro || canDownload || (!isPreparing && !startTimer) ? (
+        ) : (
           <div className="flex flex-col w-full sm:w-auto lg:w-full gap-4">
             <div className="flex flex-col sm:flex-row lg:flex-col w-full gap-4">
-              <button 
-                onClick={handleDownload} 
-                disabled={downloading}
-                className="btn-primary w-full sm:w-auto lg:w-full"
-              >
-                <Download className="w-5 h-5" /> {downloading ? 'Preparing...' : 'Download Subtitle'}
-              </button>
+              {downloading ? (
+                <button disabled className="btn-primary w-full sm:w-auto lg:w-full">
+                  <Download className="w-5 h-5" /> Preparing...
+                </button>
+              ) : (
+                <SoftDownloadButton 
+                  onDownloadComplete={handleDownload} 
+                  isPro={isPro} 
+                />
+              )}
               {subtitle.watchOnlineLink && (
                 <button 
                   onClick={() => setShowWatchOnlineModal(true)}
@@ -849,18 +843,6 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
               </Link>
             )}
           </div>
-        ) : isPreparing ? (
-          <div className="w-full max-w-2xl mx-auto aspect-video rounded-2xl border border-white/5 shadow-xl relative overflow-hidden bg-black">
-            <VastPlayer 
-              vastUrl="https://scrawnyslice.com/d.mLFsz/d/GhNpvAZZGeUJ/RetmA9buuZhUbl/k/PuT/c/xNMUDsESx/N/D/UltoNXzdE-wOMZTxE/0/OiQN"
-              onFinished={() => setCountdown(0)}
-              onSkip={() => setCountdown(0)}
-            />
-          </div>
-        ) : (
-          <button disabled className="btn-secondary w-full sm:w-auto lg:w-full opacity-70">
-            <Clock className="w-5 h-5" /> Wait {countdown}s
-          </button>
         )}
 
         <button 
