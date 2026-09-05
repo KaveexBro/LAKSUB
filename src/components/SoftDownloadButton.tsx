@@ -10,7 +10,7 @@ interface SoftDownloadButtonProps {
 
 export const SoftDownloadButton: React.FC<SoftDownloadButtonProps> = ({ 
   onDownloadComplete, 
-  adsterraDirectLink = 'https://pl30103765.effectivecpmnetwork.com/3e/97/30/3e973068a48f3d9e8db012fdd60ea471.js', // Fallback example
+  adsterraDirectLink = 'https://elementalconsessionconsession.com/auymixv5?key=8420b1fc07ee9c8e8df17949358221b7', // Adsterra Smart Link
   isPro = false
 }) => {
   const [countdown, setCountdown] = useState<number | null>(null);
