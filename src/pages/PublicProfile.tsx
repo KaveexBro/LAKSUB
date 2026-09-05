@@ -114,28 +114,21 @@ export const PublicProfile: React.FC = () => {
         </div>
 
         {/* Profile Header */}
-        <div className="flex flex-col md:flex-row items-center gap-8 mb-12 bg-white/5 p-8 rounded-3xl border border-white/10 backdrop-blur-xl relative overflow-hidden">
-          {/* Decorative background element */}
-          <div className="absolute -top-24 -right-24 w-64 h-64 bg-netflix-red/10 rounded-full blur-3xl pointer-events-none" />
-          
-          <div className="relative">
-            <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-netflix-red shadow-[0_0_30px_rgba(229,9,20,0.3)]">
+        <div className="flex flex-col md:flex-row items-start gap-8 md:gap-12 mb-16 pt-8">
+          <div className="relative group shrink-0">
+            <div className="w-32 h-32 md:w-44 md:h-44 rounded-full overflow-hidden bg-[#121212] border border-white/10">
               <img 
                 src={targetUser.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(targetUser.displayName)}&background=random`} 
                 alt={targetUser.displayName}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
             </div>
-            {targetUser.role !== 'user' && (
-              <div className="absolute -bottom-2 -right-2 bg-netflix-red p-2 rounded-full border-2 border-netflix-bg shadow-xl">
-                <ShieldCheck className="w-5 h-5 text-white" />
-              </div>
-            )}
           </div>
 
-          <div className="text-center md:text-left flex-1">
-            <div className="flex flex-col md:flex-row md:items-center gap-3 mb-2">
-              <h1 className="text-4xl md:text-5xl font-bold tracking-tighter uppercase">{targetUser.displayName}</h1>              <div className="flex flex-wrap gap-2">
+          <div className="flex-1 w-full md:pt-4">
+            <div className="flex flex-col md:flex-row md:items-center gap-4 mb-3">
+              <h1 className="text-4xl md:text-5xl font-black tracking-tight">{targetUser.displayName}</h1>
+              <div className="flex items-center gap-2">
                 {targetUser.role === 'admin' && (
                   <span className="bg-netflix-red text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-widest flex items-center gap-1">
                     <ShieldCheck className="w-3 h-3" /> Admin
@@ -156,25 +149,28 @@ export const PublicProfile: React.FC = () => {
             </div>
             
             {targetUser.bio && (
-              <p className="text-gray-300 font-medium mb-6 italic max-w-xl leading-loose">"{targetUser.bio}"</p>
-            )}            
-            <div className="flex flex-wrap justify-center md:justify-start gap-4">
-              <div className="bg-white/5 px-4 py-2 rounded-xl border border-white/5">
-                <p className="text-[10px] text-gray-500 font-bold tracking-wide mb-1">Total Uploads</p>
-                <p className="text-xl font-bold font-mono">{uploads.length}</p>
+              <p className="text-gray-300 font-medium mb-8 leading-relaxed max-w-2xl">
+                {targetUser.bio}
+              </p>
+            )}
+            
+            <div className="flex flex-wrap items-center gap-6 md:gap-12">
+              <div className="flex flex-col">
+                <span className="text-[10px] text-gray-500 font-bold tracking-widest uppercase mb-1">Total Uploads</span>
+                <span className="text-xl font-bold">{uploads.length}</span>
               </div>
-              <div className="bg-white/5 px-4 py-2 rounded-xl border border-white/5">
-                <p className="text-[10px] text-gray-500 font-bold tracking-wide mb-1">Total Downloads</p>
-                <p className="text-xl font-bold font-mono">
+              <div className="flex flex-col">
+                <span className="text-[10px] text-gray-500 font-bold tracking-widest uppercase mb-1">Total Downloads</span>
+                <span className="text-xl font-bold">
                   {targetUser.totalDownloads || 0}
-                </p>
+                </span>
               </div>
               {creatorAvgRating > 0 && (
-                <div className="bg-white/5 px-4 py-2 rounded-xl border border-white/5">
-                  <p className="text-[10px] text-gray-500 font-bold tracking-wide mb-1">Avg. Rating</p>
-                  <div className="flex items-center gap-2">
-                    <p className="text-xl font-bold font-mono text-yellow-500">{creatorAvgRating.toFixed(1)}</p>
-                    <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                <div className="flex flex-col">
+                  <span className="text-[10px] text-gray-500 font-bold tracking-widest uppercase mb-1">Avg. Rating</span>
+                  <div className="flex items-center gap-1">
+                    <span className="text-xl font-bold text-yellow-500">{creatorAvgRating.toFixed(1)}</span>
+                    <Star className="w-4 h-4 text-yellow-500 fill-current mb-0.5" />
                   </div>
                 </div>
               )}

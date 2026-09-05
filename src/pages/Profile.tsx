@@ -215,115 +215,121 @@ export const Profile: React.FC = () => {
 
       <div className="max-w-6xl mx-auto">
         {/* Profile Header */}
-        <div className="flex flex-col md:flex-row items-center gap-8 mb-12 bg-white/5 p-8 rounded-3xl border border-white/10 backdrop-blur-xl">
-          <div className="relative group">
-            <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-netflix-red shadow-[0_0_30px_rgba(229,9,20,0.3)]">
-              <img 
-                src={userData.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.displayName)}&background=random`} 
-                alt={userData.displayName}
-                className="w-full h-full object-cover"
-              />
+          <div className="flex flex-col md:flex-row items-start gap-8 md:gap-12 mb-16 pt-8">
+            <div className="relative group shrink-0">
+              <div className="w-32 h-32 md:w-44 md:h-44 rounded-full overflow-hidden bg-[#121212] border border-white/10">
+                <img 
+                  src={userData.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.displayName)}&background=random`} 
+                  alt={userData.displayName}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+              </div>
+              <button 
+                onClick={() => setActiveTab('settings')}
+                className="absolute bottom-2 right-2 bg-white text-black p-3 rounded-full shadow-xl hover:scale-105 transition-transform"
+              >
+                <Camera className="w-5 h-5" />
+              </button>
             </div>
-            <button 
-              onClick={() => setActiveTab('settings')}
-              className="absolute bottom-2 right-2 bg-netflix-red p-2 rounded-full shadow-lg hover:scale-110 transition-transform"
-            >
-              <Camera className="w-5 h-5" />
-            </button>
-          </div>
 
-          <div className="text-center md:text-left flex-1">
-            <div className="flex flex-col md:flex-row md:items-center gap-3 mb-2">
-              <h1 className="text-4xl md:text-5xl font-bold tracking-tighter uppercase">{userData.displayName}</h1>
-              {userData.role === 'admin' && (
-                <span className="bg-netflix-red text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-widest self-start md:self-center flex items-center gap-1">
-                  <ShieldCheck className="w-3 h-3" /> Admin
-                </span>
-              )}
-              {userData.role === 'creator' && (
-                <span className="bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-widest self-start md:self-center flex items-center gap-1">
-                  <Star className="w-3 h-3 fill-current" /> Creator
-                </span>
-              )}
-              {(userData.totalUploads || 0) > 0 && <CreatorBadge uploadCount={userData.totalUploads || 0} />}
-            </div>
-            <p className="text-gray-400 font-medium mb-2">{userData.email}</p>
-            {userData.bio && (
-              <p className="text-gray-300 font-medium mb-6 italic max-w-xl line-clamp-2">"{userData.bio}"</p>
-            )}
-            
-            <div className="flex flex-wrap justify-center md:justify-start gap-4">
-              {userData.proExpiry && new Date(userData.proExpiry) > new Date() && (
-                <div className="bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 px-4 py-2 rounded-xl border border-yellow-500/30">
-                  <p className="text-[10px] text-yellow-500 font-bold tracking-wide mb-1 flex items-center gap-1">
-                    <Crown className="w-3 h-3" /> Pro Expiry
-                  </p>
-                  <p className="text-xl font-bold font-mono text-yellow-500">
-                    {userData.proExpiry ? new Date(userData.proExpiry).toLocaleDateString() : ''}
-                  </p>
+            <div className="flex-1 w-full md:pt-4">
+              <div className="flex flex-col md:flex-row md:items-center gap-4 mb-3">
+                <h1 className="text-4xl md:text-5xl font-black tracking-tight">{userData.displayName}</h1>
+                <div className="flex items-center gap-2">
+                  {userData.role === 'admin' && (
+                    <span className="bg-netflix-red text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-widest flex items-center gap-1">
+                      <ShieldCheck className="w-3 h-3" /> Admin
+                    </span>
+                  )}
+                  {userData.role === 'creator' && (
+                    <span className="bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-widest flex items-center gap-1">
+                      <Star className="w-3 h-3 fill-current" /> Creator
+                    </span>
+                  )}
+                  {(userData.totalUploads || 0) > 0 && <CreatorBadge uploadCount={userData.totalUploads || 0} />}
                 </div>
-              )}
-              <div className="bg-white/5 px-4 py-2 rounded-xl border border-white/5">
-                <p className="text-[10px] text-gray-500 font-bold tracking-wide mb-1">Uploads</p>
-                <p className="text-xl font-bold font-mono">{userData.totalUploads || 0}</p>
               </div>
-              <div className="bg-white/5 px-4 py-2 rounded-xl border border-white/5">
-                <p className="text-[10px] text-gray-500 font-bold tracking-wide mb-1">Downloads</p>
-                <p className="text-xl font-bold font-mono">
-                  {userData.totalDownloads || 0}
+              <p className="text-gray-400 font-medium mb-4">{userData.email}</p>
+              {userData.bio && (
+                <p className="text-gray-300 font-medium mb-8 leading-relaxed max-w-2xl">
+                  {userData.bio}
                 </p>
-              </div>
-              <div className="bg-white/5 px-4 py-2 rounded-xl border border-white/5">
-                <p className="text-[10px] text-gray-500 font-bold tracking-wide mb-1">Balance</p>
-                <p className="text-xl font-bold font-mono text-green-500">${typeof userData.walletBalance === 'number' ? userData.walletBalance.toFixed(2) : '0.00'}</p>
+              )}
+              
+              <div className="flex flex-wrap items-center gap-4 md:gap-8">
+                {userData.proExpiry && new Date(userData.proExpiry) > new Date() && (
+                  <div className="flex flex-col">
+                    <span className="text-[10px] text-yellow-500/80 font-bold tracking-widest uppercase mb-1 flex items-center gap-1">
+                      <Crown className="w-3 h-3" /> Pro Expiry
+                    </span>
+                    <span className="text-xl font-bold text-yellow-500">
+                      {userData.proExpiry ? new Date(userData.proExpiry).toLocaleDateString() : ''}
+                    </span>
+                  </div>
+                )}
+                <div className="flex flex-col">
+                  <span className="text-[10px] text-gray-500 font-bold tracking-widest uppercase mb-1">Uploads</span>
+                  <span className="text-xl font-bold">{userData.totalUploads || 0}</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[10px] text-gray-500 font-bold tracking-widest uppercase mb-1">Downloads</span>
+                  <span className="text-xl font-bold">
+                    {userData.totalDownloads || 0}
+                  </span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[10px] text-gray-500 font-bold tracking-widest uppercase mb-1">Balance</span>
+                  <span className="text-xl font-bold text-green-500">${typeof userData.walletBalance === 'number' ? userData.walletBalance.toFixed(2) : '0.00'}</span>
+                </div>
+
+                <div className="md:ml-auto mt-4 md:mt-0">
+                  <button 
+                    onClick={logout}
+                    className="flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-white transition-colors"
+                  >
+                    <LogOut className="w-4 h-4" /> Logout
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-
-          <button 
-            onClick={logout}
-            className="flex items-center gap-2 bg-white/5 hover:bg-white/10 text-white px-6 py-3 rounded-xl font-bold transition-all border border-white/10"
-          >
-            <LogOut className="w-5 h-5" /> Logout
-          </button>
-        </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-white/10 mb-8 overflow-x-auto scrollbar-hide">
+        <div className="flex gap-2 border-b border-white/10 mb-8 overflow-x-auto scrollbar-hide pb-px">
           <button 
             onClick={() => setActiveTab('uploads')}
-            className={`px-6 py-3 text-sm font-bold tracking-wide transition-all relative ${activeTab === 'uploads' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+            className={`px-5 py-3 text-sm font-medium tracking-wide transition-colors relative ${activeTab === 'uploads' ? 'text-white' : 'text-gray-500 hover:text-white'}`}
           >
             <span className="flex items-center gap-2"><Upload className="w-4 h-4" /> Uploads</span>
-            {activeTab === 'uploads' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-1 bg-netflix-red" />}
+            {activeTab === 'uploads' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-[2px] bg-white" />}
           </button>
           <button 
             onClick={() => setActiveTab('history')}
-            className={`px-6 py-3 text-sm font-bold tracking-wide transition-all relative ${activeTab === 'history' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+            className={`px-5 py-3 text-sm font-medium tracking-wide transition-colors relative ${activeTab === 'history' ? 'text-white' : 'text-gray-500 hover:text-white'}`}
           >
             <span className="flex items-center gap-2"><History className="w-4 h-4" /> History</span>
-            {activeTab === 'history' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-1 bg-netflix-red" />}
+            {activeTab === 'history' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-[2px] bg-white" />}
           </button>
           <button 
             onClick={() => setActiveTab('watchlist')}
-            className={`px-6 py-3 text-sm font-bold tracking-wide transition-all relative ${activeTab === 'watchlist' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+            className={`px-5 py-3 text-sm font-medium tracking-wide transition-colors relative ${activeTab === 'watchlist' ? 'text-white' : 'text-gray-500 hover:text-white'}`}
           >
             <span className="flex items-center gap-2"><Bookmark className="w-4 h-4" /> Watchlist</span>
-            {activeTab === 'watchlist' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-1 bg-netflix-red" />}
+            {activeTab === 'watchlist' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-[2px] bg-white" />}
           </button>
           <button 
             onClick={() => setActiveTab('watched')}
-            className={`px-6 py-3 text-sm font-bold tracking-wide transition-all relative ${activeTab === 'watched' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+            className={`px-5 py-3 text-sm font-medium tracking-wide transition-colors relative ${activeTab === 'watched' ? 'text-white' : 'text-gray-500 hover:text-white'}`}
           >
             <span className="flex items-center gap-2"><CheckCircle className="w-4 h-4" /> Watched</span>
-            {activeTab === 'watched' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-1 bg-netflix-red" />}
+            {activeTab === 'watched' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-[2px] bg-white" />}
           </button>
           <button 
             onClick={() => setActiveTab('settings')}
-            className={`px-6 py-3 text-sm font-bold tracking-wide transition-all relative ${activeTab === 'settings' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+            className={`px-5 py-3 text-sm font-medium tracking-wide transition-colors relative ${activeTab === 'settings' ? 'text-white' : 'text-gray-500 hover:text-white'}`}
           >
             <span className="flex items-center gap-2"><Settings className="w-4 h-4" /> Settings</span>
-            {activeTab === 'settings' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-1 bg-netflix-red" />}
+            {activeTab === 'settings' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-[2px] bg-white" />}
           </button>
         </div>
 
@@ -398,38 +404,38 @@ export const Profile: React.FC = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
-                  className="space-y-4"
+                  className="flex flex-col"
                 >
                   {history.length > 0 ? (
-                    history.map((record) => (
+                    history.map((record, index) => (
                       <Link key={record.id} href={`/subtitles/${record.subtitleId}`}>
-                        <div className="group bg-white/5 p-6 rounded-2xl border border-white/5 hover:bg-white/10 transition-all flex items-center justify-between cursor-pointer">
-                          <div className="flex items-center gap-6">
-                            <div className="w-12 h-12 bg-netflix-red/10 rounded-xl flex items-center justify-center border border-netflix-red/20">
-                              <Download className="w-6 h-6 text-netflix-red" />
+                        <div className={`group flex items-center justify-between py-5 -mx-4 px-4 transition-colors hover:bg-white/[0.02] cursor-pointer ${index !== history.length - 1 ? 'border-b border-white/5' : ''}`}>
+                          <div className="flex items-center gap-5">
+                            <div className="w-12 h-12 bg-[#141414] rounded-lg border border-white/10 flex items-center justify-center text-gray-500 group-hover:text-white transition-colors">
+                              <Download className="w-5 h-5" />
                             </div>
                             <div>
-                              <h3 className="font-bold text-lg uppercase tracking-tighter group-hover:text-netflix-red transition-colors">{record.subtitleTitle}</h3>
-                              <p className="text-sm text-gray-500 font-medium flex items-center gap-2">
-                                <Clock className="w-3 h-3" /> {record.downloadedAt ? new Date(record.downloadedAt).toLocaleDateString() : ''} at {record.downloadedAt ? new Date(record.downloadedAt).toLocaleTimeString() : ''}
+                              <h3 className="font-bold text-lg leading-tight mb-1 group-hover:text-white transition-colors text-gray-200">{record.subtitleTitle}</h3>
+                              <p className="text-xs text-gray-500 font-medium flex items-center gap-1">
+                                <Clock className="w-3 h-3" /> {record.downloadedAt ? new Date(record.downloadedAt).toLocaleDateString() : ''} 
                               </p>
                             </div>
                           </div>
                           <div className="flex items-center gap-4">
                             {record.isProDownload && (
-                              <span className="bg-netflix-red text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-widest">PRO</span>
+                              <span className="bg-white/10 text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-widest border border-white/10">PRO</span>
                             )}
-                            <ChevronRight className="w-5 h-5 text-gray-600 group-hover:text-netflix-red transition-colors" />
+                            <ChevronRight className="w-5 h-5 text-gray-600 group-hover:text-white transition-colors" />
                           </div>
                         </div>
                       </Link>
                     ))
                   ) : (
-                    <div className="text-center py-20 bg-white/5 rounded-3xl border border-white/5 border-dashed">
-                      <History className="w-12 h-12 text-gray-700 mx-auto mb-4" />
-                      <p className="text-gray-500 font-bold">Your download history is empty.</p>
+                    <div className="text-center py-24 bg-[#141414]/50 rounded-2xl border border-white/5">
+                      <History className="w-10 h-10 text-gray-600 mx-auto mb-4" />
+                      <p className="text-gray-400 font-medium text-lg">Your download history is empty.</p>
                       <Link href="/explore">
-                        <button className="mt-4 bg-netflix-red text-white px-6 py-2 rounded font-bold">Explore Subtitles</button>
+                        <button className="mt-6 bg-white text-black px-6 py-2.5 rounded-full font-medium hover:bg-gray-200 transition-colors">Explore Subtitles</button>
                       </Link>
                     </div>
                   )}
@@ -549,45 +555,55 @@ export const Profile: React.FC = () => {
                   exit={{ opacity: 0, y: -20 }}
                   className="max-w-2xl mx-auto"
                 >
-                  <form onSubmit={handleUpdateProfile} className="bg-white/5 p-8 rounded-3xl border border-white/10 space-y-6">
-                    <h2 className="text-2xl font-bold tracking-tight mb-8 flex items-center gap-3">
-                      <ShieldCheck className="w-6 h-6 text-netflix-red" /> Account Settings
-                    </h2>
+                  <form onSubmit={handleUpdateProfile} className="space-y-8">
+                    <div>
+                      <h2 className="text-2xl font-medium tracking-tight mb-1">Account Settings</h2>
+                      <p className="text-sm text-gray-500 mb-8">Update your personal information and profile appearance.</p>
+                    </div>
 
                     {successMessage && (
-                      <div className="bg-green-500/10 border border-green-500/20 text-green-500 p-4 rounded-xl flex items-center gap-3 animate-bounce">
-                        <CheckCircle2 className="w-5 h-5" /> {successMessage}
+                      <div className="bg-white/5 border border-white/10 text-white p-4 rounded-lg flex items-center gap-3">
+                        <CheckCircle2 className="w-5 h-5 text-green-500" /> {successMessage}
                       </div>
                     )}
 
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Display Name</label>
-                      <input 
-                        type="text" 
-                        value={displayName}
-                        onChange={(e) => setDisplayName(e.target.value)}
-                        className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-netflix-red transition-colors font-medium"
-                        placeholder="Your Name"
-                        required
-                      />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="space-y-2">
+                        <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest block">Display Name</label>
+                        <input 
+                          type="text" 
+                          value={displayName}
+                          onChange={(e) => setDisplayName(e.target.value)}
+                          className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-white focus:outline-none focus:border-white transition-colors font-medium text-lg"
+                          placeholder="Your Name"
+                          required
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest block">Custom Photo URL</label>
+                        <input 
+                          type="url" 
+                          value={photoURL}
+                          onChange={(e) => setPhotoURL(e.target.value)}
+                          className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-white focus:outline-none focus:border-white transition-colors font-medium text-lg"
+                          placeholder="https://example.com/photo.jpg"
+                        />
+                      </div>
                     </div>
 
                     <div className="space-y-4">
-                      <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1 block">Profile Photo (ImageKit.io Upload)</label>
-                      
-                      <div className="flex flex-col md:flex-row items-center gap-6 p-5 rounded-2xl bg-black/40 border border-white/10">
-                        {/* Preview */}
-                        <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-netflix-red flex-shrink-0 bg-gray-800 flex items-center justify-center shadow-lg">
+                      <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest block">Upload Photo</label>
+                      <div className="flex flex-col md:flex-row items-center gap-6">
+                        <div className="w-20 h-20 rounded-full overflow-hidden bg-[#141414] border border-white/10 flex-shrink-0 flex items-center justify-center">
                           {photoURL ? (
                             <img src={photoURL} alt="Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                           ) : (
-                            <User className="w-10 h-10 text-gray-600" />
+                            <User className="w-8 h-8 text-gray-600" />
                           )}
                         </div>
-
-                        {/* Drag & Drop Zone */}
                         <div 
-                          className={`flex-1 w-full border-2 border-dashed rounded-xl p-5 flex flex-col items-center justify-center cursor-pointer transition-colors relative ${uploading ? 'border-netflix-red bg-netflix-red/5' : 'border-white/10 hover:border-netflix-red/50 bg-black/20'}`}
+                          className={`flex-1 w-full border border-dashed rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-colors ${uploading ? 'border-white/40 bg-white/5' : 'border-white/10 hover:border-white/30 bg-transparent'}`}
                           onDragOver={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
@@ -612,52 +628,40 @@ export const Profile: React.FC = () => {
                               }
                             }}
                           />
-                          <Upload className={`w-6 h-6 mb-2 ${uploading ? 'text-netflix-red animate-bounce' : 'text-gray-500'}`} />
-                          <p className="text-xs font-bold text-gray-300 text-center">
-                            {uploading ? 'Uploading to ImageKit...' : 'Drag & drop your photo, or click to upload'}
+                          <Upload className={`w-5 h-5 mb-2 ${uploading ? 'text-white animate-bounce' : 'text-gray-500'}`} />
+                          <p className="text-sm font-medium text-gray-300 text-center">
+                            {uploading ? 'Uploading...' : 'Drag & drop photo, or click to browse'}
                           </p>
-                          <p className="text-[10px] text-gray-500 mt-1">Supports PNG, JPG, JPEG, GIF up to 5MB</p>
+                          <p className="text-xs text-gray-600 mt-1">Supports PNG, JPG, JPEG, GIF up to 5MB</p>
                         </div>
                       </div>
-
+                      
                       {uploadError && (
-                        <div className="text-xs text-red-500 font-bold bg-red-500/10 border border-red-500/20 p-3 rounded-xl flex flex-col gap-1">
-                          <p>⚠️ ImageKit Upload Failed</p>
-                          <p className="font-normal text-gray-400">{uploadError}</p>
+                        <div className="text-xs text-red-400 mt-2">
+                          {uploadError}
                         </div>
                       )}
-
-                      <div className="space-y-2 pt-2">
-                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Or paste a custom Photo URL</label>
-                        <input 
-                          type="url" 
-                          value={photoURL}
-                          onChange={(e) => setPhotoURL(e.target.value)}
-                          className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-netflix-red transition-colors font-medium text-sm"
-                          placeholder="https://example.com/photo.jpg"
-                        />
-                      </div>
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Bio</label>
+                      <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest block">Bio</label>
                       <textarea 
                         value={bio}
                         onChange={(e) => setBio(e.target.value)}
-                        className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-netflix-red transition-colors font-medium h-32 resize-none"
+                        className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-white focus:outline-none focus:border-white transition-colors font-medium text-lg h-24 resize-none"
                         placeholder="Tell us about yourself..."
                         maxLength={200}
                       />
-                      <p className="text-[10px] text-gray-600 text-right font-bold tracking-wide">{bio.length}/200</p>
+                      <p className="text-xs text-gray-600 text-right">{bio.length}/200</p>
                     </div>
 
-                    <div className="pt-4">
+                    <div className="pt-6">
                       <button 
                         type="submit"
                         disabled={updating}
-                        className="w-full bg-netflix-red text-white py-3 rounded-xl font-bold tracking-wide hover:bg-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl"
+                        className="bg-white text-black px-8 py-3 rounded-full font-bold tracking-wide hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        {updating ? 'Updating...' : 'Save Changes'}
+                        {updating ? 'Saving...' : 'Save Changes'}
                       </button>
                     </div>
                   </form>
