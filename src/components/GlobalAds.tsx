@@ -11,6 +11,9 @@ export const GlobalAds: React.FC = () => {
   const [socialBarEnabled, setSocialBarEnabled] = useState(true);
   const [displayFrequency, setDisplayFrequency] = useState(1);
   const [pageLoadCount, setPageLoadCount] = useState(1);
+  const [socialBarDismissed, setSocialBarDismissed] = useState(() => {
+    return sessionStorage.getItem('laksub_socialbar_dismissed') === 'true';
+  });
 
   useEffect(() => {
     const fetchGlobalAdSettings = async () => {
@@ -41,8 +44,6 @@ export const GlobalAds: React.FC = () => {
   useEffect(() => {
     if (isAdFree) return;
     
-    const shouldDisplay = pageLoadCount % displayFrequency === 0;
-    
     // Using simple document script injection ensures Adsterra scripts aren't stripped by React
     const injectScript = (src: string, id: string) => {
       if (!document.getElementById(id)) {
@@ -65,17 +66,57 @@ export const GlobalAds: React.FC = () => {
     // Removed popunder to reduce annoyances as requested by the user
     removeScript('adsterra-popunder');
     
-    if (shouldDisplay && socialBarEnabled) {
+    const shouldDisplay = pageLoadCount % displayFrequency === 0;
+
+    if (shouldDisplay && socialBarEnabled && !socialBarDismissed) {
       injectScript('https://pl30103765.effectivecpmnetwork.com/3e/97/30/3e973068a48f3d9e8db012fdd60ea471.js', 'adsterra-socialbar');
-    } else {
-      removeScript('adsterra-socialbar');
     }
 
+    // We implement a MutationObserver to detect when the Adsterra social bar is closed by the user
+    // Adsterra typically injects a high z-index container into the body and hides/removes it when closed
+    const observer = new MutationObserver((mutations) => {
+      if (socialBarDismissed) return;
+      
+      for (const mutation of mutations) {
+        // Check for removed nodes
+        if (mutation.type === 'childList') {
+          mutation.removedNodes.forEach((node) => {
+            if (node instanceof HTMLElement) {
+              // Adsterra containers often have inline styles with max z-index
+              if (node.style.zIndex === '2147483647' || node.id.startsWith('adsterra') || node.tagName === 'IFRAME') {
+                sessionStorage.setItem('laksub_socialbar_dismissed', 'true');
+                setSocialBarDismissed(true);
+                removeScript('adsterra-socialbar');
+              }
+            }
+          });
+        }
+        
+        // Check for nodes that got hidden via display: none
+        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+          const node = mutation.target;
+          if (node instanceof HTMLElement && node.style.display === 'none') {
+            if (node.style.zIndex === '2147483647' || node.id.startsWith('adsterra')) {
+              sessionStorage.setItem('laksub_socialbar_dismissed', 'true');
+              setSocialBarDismissed(true);
+              removeScript('adsterra-socialbar');
+            }
+          }
+        }
+      }
+    });
+
+    observer.observe(document.body, { 
+      childList: true, 
+      attributes: true, 
+      attributeFilter: ['style'],
+      subtree: false // Adsterra usually appends directly to body
+    });
+
     return () => {
-      // It's hard to remove injected inner nodes from Adsterra scripts
-      // We rely on the outermost script removal for future requests
+      observer.disconnect();
     };
-  }, [isAdFree, popunderEnabled, socialBarEnabled, displayFrequency, pageLoadCount]);
+  }, [isAdFree, popunderEnabled, socialBarEnabled, displayFrequency, pageLoadCount, socialBarDismissed]);
 
   return null;
 };
