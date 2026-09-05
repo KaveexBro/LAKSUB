@@ -1,6 +1,33 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains; preload"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pagead2.googlesyndication.com https://www.googletagmanager.com https://*.firebaseio.com https://*.firebaseapp.com https://*.adsterra.com https://adservice.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://image.tmdb.org https://pagead2.googlesyndication.com https://adservice.google.com https://*.adsterra.com https://firebasestorage.googleapis.com; connect-src 'self' https://api.themoviedb.org https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://googleads.g.doubleclick.net https://*.firebaseapp.com https://*.adsterra.com;"
+        }
+      ]
+    }
+  ],
   "rewrites": [
     { "source": "/sitemap.xml", "destination": "/api/sitemap" },
     { "source": "/subtitles/:slug", "destination": "/api/seo?type=subtitle&slug=:slug" },

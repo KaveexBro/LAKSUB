@@ -9,7 +9,6 @@ import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider } from './contexts/AuthContext';
 import { Navbar } from './components/Navbar';
 import { SiteSettingsProvider } from "./contexts/SiteSettingsContext";
-import { Footer } from './components/Footer';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { AdBlockDetector } from './components/AdBlockDetector';
 import { GlobalAds } from './components/GlobalAds';
@@ -17,6 +16,8 @@ import { AdZone } from './components/AdZone';
 import { Breadcrumbs } from './components/Breadcrumbs';
 import { db } from './firebase';
 import { doc, getDocFromServer } from 'firebase/firestore';
+
+const Footer = lazy(() => import('./components/Footer').then(module => ({ default: module.Footer })));
 
 // Lazy loaded pages
 const Home = lazy(() => import('./pages/Home').then(m => ({ default: m.Home })));
@@ -126,7 +127,9 @@ function AppContent() {
           <div className="max-w-7xl mx-auto px-4 md:px-12 w-full">
             <AdZone zoneName="global-footer" />
           </div>
-          <Footer />
+          <Suspense fallback={<div className="h-40 w-full animate-pulse bg-[#181818]" />}>
+            <Footer />
+          </Suspense>
         </>
       )}
     </div>

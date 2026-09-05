@@ -14,8 +14,9 @@ import { AdZone } from '../components/AdZone';
 import { VastPlayer } from '../components/VastPlayer';
 import { CreatorBadge } from '../components/CreatorBadge';
 import { SchemaInjector } from '../components/SchemaInjector';
-import { SubtitleComments } from '../components/SubtitleComments';
 import { SoftDownloadButton } from '../components/SoftDownloadButton';
+
+const SubtitleComments = React.lazy(() => import('../components/SubtitleComments').then(module => ({ default: module.SubtitleComments })));
 
 export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string } }> = ({ params }) => {
   const [matchId, paramsId] = useRoute<{ id: string }>('/subtitle/:id');
@@ -1366,7 +1367,11 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
         </div>
         
         {/* Discussion Section */}
-        {subtitle && <SubtitleComments subtitleId={subtitle.id} uploaderId={subtitle.authorUid} subtitleTitle={subtitle.movieTitle} />}
+        {subtitle && (
+          <React.Suspense fallback={<div className="animate-pulse bg-white/5 rounded-2xl h-48 w-full"></div>}>
+            <SubtitleComments subtitleId={subtitle.id} uploaderId={subtitle.authorUid} subtitleTitle={subtitle.movieTitle} />
+          </React.Suspense>
+        )}
       </div>
 
       {/* Report Modal */}
