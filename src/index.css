@@ -142,3 +142,4 @@ button.bg-netflix-red {
 a, button, input, textarea, select, [tabindex]:not([tabindex="-1"]) {
   @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-netflix-red focus-visible:ring-offset-2 focus-visible:ring-offset-netflix-bg;
 }
+@keyframes shimmer { 100% { transform: translateX(100%); } }

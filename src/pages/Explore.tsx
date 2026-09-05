@@ -9,6 +9,7 @@ import TMDBLanguageBadge from '../components/TMDBLanguageBadge';
 import { Helmet } from 'react-helmet-async';
 import { AdZone } from '../components/AdZone';
 import { getSeriesBadge, SeriesBadgeInfo } from '../services/badgeService';
+import { MovieSkeleton } from '../components/MovieSkeleton';
 
 export const Explore: React.FC<{ initialType?: 'movie' | 'series' | 'all', initialGenre?: string }> = ({ initialType = 'all', initialGenre = '' }) => {
   const searchString = useSearch();
@@ -226,7 +227,7 @@ export const Explore: React.FC<{ initialType?: 'movie' | 'series' | 'all', initi
     }
   });
 
-  if (loading) return <div className="min-h-screen bg-netflix-bg flex items-center justify-center"><div className="w-12 h-12 border-4 border-netflix-red border-t-transparent rounded-full animate-spin"></div></div>;
+  if (loading) return <MovieSkeleton />;
 
   return (
     <main className="min-h-screen bg-netflix-bg text-white pb-12">
