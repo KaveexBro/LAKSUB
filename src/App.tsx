@@ -14,6 +14,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { AdBlockDetector } from './components/AdBlockDetector';
 import { GlobalAds } from './components/GlobalAds';
 import { AdZone } from './components/AdZone';
+import { Breadcrumbs } from './components/Breadcrumbs';
 import { db } from './firebase';
 import { doc, getDocFromServer } from 'firebase/firestore';
 
@@ -78,9 +79,10 @@ function AppContent() {
   return (
     <div className="min-h-screen bg-netflix-bg text-white font-sans selection:bg-netflix-red selection:text-white">
       {!isStandalonePage && <Navbar />}
+      {!isStandalonePage && <Breadcrumbs />}
       {!isStandalonePage && (
         <div className="max-w-7xl mx-auto px-4 md:px-12 w-full relative z-40">
-          <AdZone zoneName="global-header" className="pt-24 pb-4" />
+          <AdZone zoneName="global-header" className={`${location === '/' ? 'pt-24' : 'pt-2'} pb-4`} />
         </div>
       )}
       <Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="w-8 h-8 border-4 border-netflix-red border-t-transparent rounded-full animate-spin"></div></div>}>
