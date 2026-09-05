@@ -68,7 +68,7 @@ export const AdZone: React.FC<AdZoneProps> = ({ zoneName, className = '' }) => {
   if (adsToDisplay.length === 0) return null;
 
   return (
-    <div className={`w-full my-4 md:my-6 lg:my-8 flex flex-col gap-4 md:gap-6 lg:gap-8 items-center justify-center ${className}`}>
+    <div className={`w-full my-4 md:my-6 lg:my-8 flex flex-col gap-4 md:gap-6 lg:gap-8 items-center justify-center px-0 md:px-0 ${className}`}>
       {adsToDisplay.map(ad => {
         const getAdsterraConfig = () => {
           if (ad.type === 'direct') return null;
@@ -87,21 +87,18 @@ export const AdZone: React.FC<AdZoneProps> = ({ zoneName, className = '' }) => {
         return (
           <div 
             key={ad.id} 
-            className={`group relative flex-col overflow-hidden rounded-xl border border-white/10 bg-black/80 shadow-2xl transition-all duration-500 hover:border-white/20 hover:shadow-[0_0_30px_rgba(255,255,255,0.05)] w-full max-w-[1000px] ${ad.deviceTargeting === 'desktop' ? 'hidden md:flex' : ad.deviceTargeting === 'mobile' ? 'flex md:hidden' : 'flex'}`}
+            className={`group relative flex-col overflow-hidden rounded-xl md:rounded-2xl border border-white/5 bg-[#141414] shadow-lg backdrop-blur-md transition-all duration-300 hover:bg-[#1a1a1a] hover:border-white/10 hover:shadow-2xl w-full max-w-[1000px] ${ad.deviceTargeting === 'desktop' ? 'hidden md:flex' : ad.deviceTargeting === 'mobile' ? 'flex md:hidden' : 'flex'}`}
           >
-            {/* Decorative background glow */}
-            <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-700" />
-            
-            <div className="w-full bg-[#111]/90 py-2 px-4 flex justify-between items-center text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] border-b border-white/5 z-10 backdrop-blur-md">
+            {/* Elegant header for the ad */}
+            <div className="w-full bg-white/[0.02] py-1.5 px-4 flex justify-between items-center text-[10px] font-medium text-gray-400/80 uppercase tracking-[0.2em] border-b border-white/5">
               <span className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-yellow-500/80 animate-pulse shadow-[0_0_8px_rgba(234,179,8,0.6)]" />
                 Advertisement
               </span>
-              {isDirect && <span className="text-netflix-red/90 drop-shadow-md">Sponsored</span>}
+              {isDirect && <span className="text-gray-400">Sponsored</span>}
             </div>
 
             <div 
-              className={`w-full flex items-center justify-center relative ${isDirect ? 'p-0' : 'p-4'}`}
+              className={`w-full flex items-center justify-center relative ${isDirect ? 'p-0' : 'p-2 md:p-6'}`}
               style={{ minHeight: isDirect ? 'auto' : (adConfig?.height || '250px') }}
             >
               {isDirect ? (
@@ -111,27 +108,29 @@ export const AdZone: React.FC<AdZoneProps> = ({ zoneName, className = '' }) => {
                   rel="noopener noreferrer"
                   className="w-full block relative overflow-hidden"
                 >
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500 z-10 pointer-events-none" />
                   <img 
                     src={ad.imageUrl} 
                     alt={ad.campaignName} 
-                    className="w-full h-auto max-h-[400px] object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                    className="w-full h-auto max-h-[300px] md:max-h-[400px] object-cover transition-transform duration-500 ease-in-out group-hover:scale-[1.02]"
                     loading="lazy"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
                 </a>
               ) : adConfig ? (
-                <div className="flex justify-center items-center overflow-x-auto w-full custom-scrollbar">
-                  <iframe
-                    title={`Advertisement ${ad.format || 'native'}`}
-                    name={iframeId}
-                    src={adConfig.src}
-                    width={adConfig.width}
-                    height={adConfig.height}
-                    frameBorder="0"
-                    scrolling="no"
-                    className="border-none rounded-lg max-w-full"
-                    style={{ minWidth: adConfig.width === '100%' ? 'auto' : adConfig.width }}
-                  />
+                <div className="flex justify-center items-center w-full overflow-hidden custom-scrollbar">
+                  <div className="max-w-full overflow-x-auto md:overflow-visible">
+                    <iframe
+                      title={`Advertisement ${ad.format || 'native'}`}
+                      name={iframeId}
+                      src={adConfig.src}
+                      width={adConfig.width}
+                      height={adConfig.height}
+                      frameBorder="0"
+                      scrolling="no"
+                      className="border-none rounded md:rounded-lg max-w-full"
+                      style={{ minWidth: adConfig.width === '100%' ? '100%' : adConfig.width }}
+                    />
+                  </div>
                 </div>
               ) : null}
             </div>
