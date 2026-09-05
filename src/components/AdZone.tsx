@@ -14,6 +14,13 @@ export const AdZone: React.FC<AdZoneProps> = ({ zoneName, className = '' }) => {
   const [loading, setLoading] = useState(true);
   const [iframeHeights, setIframeHeights] = useState<Record<string, number>>({});
   const { isAdFree } = useAuth();
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
@@ -72,7 +79,22 @@ export const AdZone: React.FC<AdZoneProps> = ({ zoneName, className = '' }) => {
       {adsToDisplay.map(ad => {
         const getAdsterraConfig = () => {
           if (ad.type === 'direct') return null;
-          const format = ad.format || 'native';
+          
+          let format = ad.format || 'native';
+          
+          // Responsive ad slot switching
+          if (isMobile) {
+            if (format === '728x90' || format === '468x60') {
+              format = '320x50'; // Swap horizontal banners to mobile-friendly size
+            } else if (format === '160x600' || format === '160x300') {
+              format = '300x250'; // Swap vertical banners to mobile-friendly square
+            }
+          } else {
+            if (format === '320x50') {
+              format = '728x90'; // Upgrade mobile banners to desktop size
+            }
+          }
+
           if (format === 'native') {
             return { src: '/ad.html', width: '100%', height: iframeHeights[`ad-iframe-${ad.id}`] || 300 };
           }
