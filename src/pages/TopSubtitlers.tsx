@@ -3,14 +3,16 @@ import { collection, query, getDocs, orderBy, where, limit } from 'firebase/fire
 import { db } from '../firebase';
 import { Link } from 'wouter';
 import { UserData } from '../types';
-import { Trophy, Star, Medal, Info } from 'lucide-react';
+import { Trophy, Star, Medal, Info, X, CheckCircle2, TrendingUp, Award, Wallet } from 'lucide-react';
 import { CreatorBadge } from '../components/CreatorBadge';
 import { Helmet } from 'react-helmet-async';
 import { AdZone } from '../components/AdZone';
+import { motion, AnimatePresence } from 'motion/react';
 
 export const TopSubtitlers: React.FC = () => {
   const [topCreators, setTopCreators] = useState<(UserData & { avgRating?: number })[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showInfoModal, setShowInfoModal] = useState(false);
 
   useEffect(() => {
     const fetchTopCreators = async () => {
@@ -124,23 +126,17 @@ export const TopSubtitlers: React.FC = () => {
         </div>
 
         {/* Header & Description */}
-        <div className="flex flex-col items-center text-center mb-16">
-          <h1 className="text-4xl md:text-6xl font-black tracking-tight mb-6">Leaderboard</h1>
+        <div className="flex flex-col items-center text-center mb-16 relative">
+          <h1 className="text-4xl md:text-6xl font-black tracking-tight mb-4 text-white">Leaderboard</h1>
+          <p className="text-gray-400 max-w-lg mx-auto text-lg mb-6">Discover the top-ranked Sinhala subtitlers and translators on LAKSUB based on their contributions.</p>
           
-          <div className="bg-[#141414] border border-white/10 rounded-2xl p-6 md:p-8 max-w-2xl w-full text-left flex flex-col sm:flex-row items-start gap-4 shadow-xl">
-            <div className="bg-white/10 p-2.5 rounded-full shrink-0">
-              <Info className="w-5 h-5 text-gray-300" />
-            </div>
-            <div>
-              <h2 className="text-lg font-bold text-white mb-2 tracking-wide">How to become a Top Subtitler?</h2>
-              <p className="text-gray-400 text-sm leading-relaxed mb-3">
-                Ranks are determined by the <strong>total number of published subtitles</strong>. The more quality translations you upload, the higher you climb.
-              </p>
-              <p className="text-gray-400 text-sm leading-relaxed">
-                <strong>Tie-breaker:</strong> If multiple creators have the exact same number of uploads, they are ranked based on their <strong>average user rating</strong>. Quality matters just as much as quantity!
-              </p>
-            </div>
-          </div>
+          <button 
+            onClick={() => setShowInfoModal(true)}
+            className="flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 px-5 py-2.5 rounded-full transition-all border border-white/5 shadow-sm group"
+          >
+            <Info className="w-4 h-4 group-hover:scale-110 transition-transform" />
+            How to become a Top Subtitler?
+          </button>
         </div>
 
         {topCreators.length > 0 ? (
@@ -211,6 +207,122 @@ export const TopSubtitlers: React.FC = () => {
           <AdZone zoneName="top-subtitlers-bottom" />
         </div>
       </section>
+
+      {/* Info Modal */}
+      <AnimatePresence>
+        {showInfoModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="bg-[#141414] border border-white/10 rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl relative max-h-[90vh] flex flex-col"
+            >
+              {/* Modal Header */}
+              <div className="flex items-center justify-between p-6 sm:p-8 border-b border-white/5 shrink-0">
+                <div className="flex items-center gap-3">
+                  <div className="bg-netflix-red/10 p-2.5 rounded-full">
+                    <Trophy className="w-6 h-6 text-netflix-red" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-black text-white tracking-tight">Top Subtitler Program</h2>
+                    <p className="text-gray-400 text-sm font-medium mt-1">Ranking Criteria & Benefits</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowInfoModal(false)}
+                  className="p-2 bg-white/5 hover:bg-white/10 rounded-full transition-colors group"
+                >
+                  <X className="w-5 h-5 text-gray-400 group-hover:text-white" />
+                </button>
+              </div>
+
+              {/* Modal Content */}
+              <div className="p-6 sm:p-8 overflow-y-auto custom-scrollbar flex-1">
+                <div className="space-y-8">
+                  
+                  {/* Criteria Section */}
+                  <section>
+                    <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                      <TrendingUp className="w-5 h-5 text-gray-400" /> 
+                      How the Ranking Works
+                    </h3>
+                    <div className="bg-[#0a0a0a] border border-white/5 rounded-2xl p-5 space-y-4">
+                      <div className="flex gap-4">
+                        <div className="shrink-0 mt-0.5">
+                          <CheckCircle2 className="w-5 h-5 text-green-500" />
+                        </div>
+                        <div>
+                          <h4 className="text-white font-bold mb-1">Total Published Subtitles</h4>
+                          <p className="text-gray-400 text-sm leading-relaxed">
+                            Ranks are primarily determined by the volume of approved subtitles you have uploaded. Consistent contributions directly increase your rank on the leaderboard.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex gap-4">
+                        <div className="shrink-0 mt-0.5">
+                          <CheckCircle2 className="w-5 h-5 text-green-500" />
+                        </div>
+                        <div>
+                          <h4 className="text-white font-bold mb-1">The Tie-Breaker: User Ratings</h4>
+                          <p className="text-gray-400 text-sm leading-relaxed">
+                            If multiple creators tie with the exact same number of uploads, they are dynamically ranked based on their <strong>average user rating</strong>. Quality is just as important as quantity.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+
+                  {/* Benefits Section */}
+                  <section>
+                    <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                      <Award className="w-5 h-5 text-gray-400" /> 
+                      Creator Benefits
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="bg-[#0a0a0a] border border-white/5 rounded-2xl p-5 flex flex-col gap-3">
+                        <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center">
+                          <Star className="w-5 h-5 text-blue-500" />
+                        </div>
+                        <div>
+                          <h4 className="text-white font-bold mb-1">Exclusive Badges</h4>
+                          <p className="text-gray-400 text-xs leading-relaxed">
+                            Unlock prestige Creator Badges on your profile and beside your name across the platform based on your upload milestones.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="bg-[#0a0a0a] border border-white/5 rounded-2xl p-5 flex flex-col gap-3">
+                        <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center">
+                          <Wallet className="w-5 h-5 text-green-500" />
+                        </div>
+                        <div>
+                          <h4 className="text-white font-bold mb-1">Earning Potential</h4>
+                          <p className="text-gray-400 text-xs leading-relaxed">
+                            Top creators accumulate a wallet balance through their contributions. Premium exposure means more downloads and better returns.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+
+                </div>
+              </div>
+              
+              {/* Modal Footer */}
+              <div className="p-6 sm:p-8 border-t border-white/5 bg-[#1a1a1a] shrink-0 text-center">
+                <button
+                  onClick={() => setShowInfoModal(false)}
+                  className="w-full sm:w-auto bg-white text-black hover:bg-gray-200 px-8 py-3 rounded-full font-bold transition-colors"
+                >
+                  Got it, thanks!
+                </button>
+              </div>
+
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </main>
   );
 };
