@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+const fs = require('fs');
+
+const content = `import React, { useState, useEffect } from 'react';
 import { collection, query, getDocs, orderBy, where, limit } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Link } from 'wouter';
 import { UserData } from '../types';
-import { Trophy, Star, Medal, Info } from 'lucide-react';
+import { Trophy, Info, Star, Medal } from 'lucide-react';
 import { CreatorBadge } from '../components/CreatorBadge';
 import { Helmet } from 'react-helmet-async';
 import { AdZone } from '../components/AdZone';
@@ -70,7 +72,7 @@ export const TopSubtitlers: React.FC = () => {
               const ratingB = b.avgRating || 0;
               return ratingB - ratingA;
             }
-            return uploadsB - uploadsA;
+            return uploadsB - uploadsA; // fallback (already sorted by this, but just in case)
           });
         }
 
@@ -95,10 +97,10 @@ export const TopSubtitlers: React.FC = () => {
 
   const getRankStyle = (index: number) => {
     switch(index) {
-      case 0: return "border-[#FFD700] bg-[#FFD700]/5 hover:bg-[#FFD700]/10 shadow-[0_0_30px_rgba(255,215,0,0.15)]"; // Gold
-      case 1: return "border-[#C0C0C0] bg-[#C0C0C0]/5 hover:bg-[#C0C0C0]/10 shadow-[0_0_30px_rgba(192,192,192,0.1)]"; // Silver
-      case 2: return "border-[#CD7F32] bg-[#CD7F32]/5 hover:bg-[#CD7F32]/10 shadow-[0_0_30px_rgba(205,127,50,0.1)]"; // Bronze
-      default: return "border-white/10 bg-[#141414] hover:bg-white/[0.02]";
+      case 0: return "border-[#FFD700] bg-[#FFD700]/5 text-[#FFD700] shadow-[0_0_30px_rgba(255,215,0,0.15)]"; // Gold
+      case 1: return "border-[#C0C0C0] bg-[#C0C0C0]/5 text-[#C0C0C0] shadow-[0_0_30px_rgba(192,192,192,0.1)]"; // Silver
+      case 2: return "border-[#CD7F32] bg-[#CD7F32]/5 text-[#CD7F32] shadow-[0_0_30px_rgba(205,127,50,0.1)]"; // Bronze
+      default: return "border-white/5 bg-[#121212] text-white hover:bg-[#1a1a1a]";
     }
   };
 
@@ -127,8 +129,8 @@ export const TopSubtitlers: React.FC = () => {
         <div className="flex flex-col items-center text-center mb-16">
           <h1 className="text-4xl md:text-6xl font-black tracking-tight mb-6">Leaderboard</h1>
           
-          <div className="bg-[#141414] border border-white/10 rounded-2xl p-6 md:p-8 max-w-2xl w-full text-left flex flex-col sm:flex-row items-start gap-4 shadow-xl">
-            <div className="bg-white/10 p-2.5 rounded-full shrink-0">
+          <div className="bg-[#141414] border border-white/10 rounded-2xl p-6 max-w-2xl w-full text-left flex items-start gap-4">
+            <div className="bg-white/10 p-2 rounded-full shrink-0 mt-1">
               <Info className="w-5 h-5 text-gray-300" />
             </div>
             <div>
@@ -149,15 +151,15 @@ export const TopSubtitlers: React.FC = () => {
               const isTop3 = index < 3;
               return (
                 <Link key={creator.uid} href={`/user/${creator.uid}`}>
-                  <div className={`rounded-2xl p-5 md:p-6 flex items-center gap-4 sm:gap-6 transition-all duration-300 cursor-pointer group border ${getRankStyle(index)} ${isTop3 ? 'md:scale-[1.02]' : ''}`}>
+                  <div className={`rounded-2xl p-5 md:p-6 flex items-center gap-6 transition-all duration-300 cursor-pointer group border ${getRankStyle(index)} ${isTop3 ? 'md:scale-[1.02]' : 'hover:border-white/20'}`}>
                     
                     {/* Rank Badge */}
-                    <div className="w-12 h-12 shrink-0 flex items-center justify-center bg-black/40 rounded-full border border-white/5 shadow-inner">
+                    <div className="w-12 h-12 shrink-0 flex items-center justify-center bg-black/40 rounded-full border border-white/5">
                       {getRankIcon(index)}
                     </div>
 
                     {/* Avatar */}
-                    <div className={`shrink-0 rounded-full overflow-hidden bg-[#0a0a0a] border ${isTop3 ? 'border-current border-2 w-16 h-16 sm:w-20 sm:h-20' : 'border-white/10 w-12 h-12 sm:w-16 sm:h-16'}`}>
+                    <div className={`shrink-0 rounded-full overflow-hidden bg-[#141414] border ${isTop3 ? 'border-current border-2 w-16 h-16 md:w-20 md:h-20' : 'border-white/10 w-14 h-14'}`}>
                       {creator.photoURL ? (
                         <img src={creator.photoURL} alt={creator.displayName} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" referrerPolicy="no-referrer" />
                       ) : (
@@ -168,14 +170,14 @@ export const TopSubtitlers: React.FC = () => {
                     </div>
                     
                     {/* Info */}
-                    <div className="flex-1 min-w-0 flex flex-col justify-center">
-                      <h3 className={`font-bold truncate mb-2 transition-colors ${isTop3 ? 'text-xl sm:text-2xl text-white' : 'text-lg text-gray-200 group-hover:text-white'}`}>
+                    <div className="flex-1 min-w-0">
+                      <h3 className={`font-bold truncate mb-1.5 transition-colors ${isTop3 ? 'text-xl md:text-2xl text-white' : 'text-lg text-gray-200 group-hover:text-white'}`}>
                         {creator.displayName}
                       </h3>
-                      <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+                      <div className="flex flex-wrap items-center gap-2 md:gap-4">
                          <CreatorBadge uploadCount={creator.totalUploads || 0} />
                          {creator.avgRating !== undefined && creator.avgRating > 0 && (
-                            <div className="flex items-center gap-1 text-[11px] font-bold text-yellow-500 bg-yellow-500/10 px-2 py-1 rounded border border-yellow-500/20">
+                            <div className="flex items-center gap-1 text-[11px] font-bold text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded-full border border-yellow-500/20">
                               <Star className="w-3 h-3 fill-current" />
                               {creator.avgRating.toFixed(1)} Avg
                             </div>
@@ -184,11 +186,11 @@ export const TopSubtitlers: React.FC = () => {
                     </div>
                     
                     {/* Stats */}
-                    <div className="shrink-0 text-right pr-2">
-                      <div className={`text-2xl sm:text-3xl font-black ${isTop3 ? 'text-current' : 'text-gray-300 group-hover:text-white transition-colors'}`}>
+                    <div className="shrink-0 text-right hidden xs:block">
+                      <div className={`text-2xl md:text-3xl font-black ${isTop3 ? 'text-current' : 'text-gray-300'}`}>
                         {creator.totalUploads}
                       </div>
-                      <div className="text-[9px] sm:text-[10px] uppercase tracking-widest font-bold text-gray-500 mt-1">
+                      <div className="text-[10px] uppercase tracking-widest font-bold text-gray-500 mt-1">
                         Uploads
                       </div>
                     </div>
@@ -198,7 +200,7 @@ export const TopSubtitlers: React.FC = () => {
             })}
           </div>
         ) : (
-          <div className="py-24 text-center bg-[#141414] rounded-3xl border border-white/5">
+          <div className="py-24 text-center bg-[#121212] rounded-3xl border border-white/5">
             <Trophy className="w-16 h-16 mx-auto mb-6 text-gray-600" />
             <h3 className="text-2xl font-bold text-white mb-2 tracking-tight">No Subtitlers Found</h3>
             <p className="text-gray-400 max-w-md mx-auto">
@@ -214,4 +216,6 @@ export const TopSubtitlers: React.FC = () => {
     </main>
   );
 };
+`
 
+fs.writeFileSync('src/pages/TopSubtitlers.tsx', content);
