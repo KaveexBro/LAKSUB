@@ -150,10 +150,11 @@ export const TopSubtitlers: React.FC = () => {
               const isTop3 = index < 3;
               return (
                 <Link key={creator.uid} href={`/user/${creator.uid}`}>
-                  <div className={`rounded-2xl p-5 md:p-6 flex items-center gap-4 sm:gap-6 transition-all duration-300 cursor-pointer group border ${getRankStyle(index)} ${isTop3 ? 'md:scale-[1.02]' : ''}`}>
+                  <div className={`rounded-2xl p-5 md:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-5 sm:gap-6 transition-all duration-300 cursor-pointer group border ${getRankStyle(index)} ${isTop3 ? 'md:scale-[1.02]' : ''}`}>
                     
-                    {/* Rank Badge */}
-                    <div className="w-12 h-12 shrink-0 flex items-center justify-center bg-black/40 rounded-full border border-white/5 shadow-inner">
+                    <div className="flex items-center gap-4 sm:gap-6 flex-1 min-w-0 w-full">
+                      {/* Rank Badge */}
+                      <div className="w-12 h-12 shrink-0 flex items-center justify-center bg-black/40 rounded-full border border-white/5 shadow-inner">
                       {getRankIcon(index)}
                     </div>
 
@@ -183,10 +184,11 @@ export const TopSubtitlers: React.FC = () => {
                          )}
                       </div>
                     </div>
+                    </div>
                     
                     {/* Stats */}
-                    <div className="shrink-0 flex items-center gap-4 sm:gap-6 text-right pr-2">
-                      <div className="flex flex-col items-center sm:items-end">
+                    <div className="shrink-0 flex items-center justify-around sm:justify-end gap-4 sm:gap-6 text-right sm:pr-2 w-full sm:w-auto bg-black/20 sm:bg-transparent p-3 sm:p-0 rounded-xl sm:rounded-none mt-2 sm:mt-0">
+                      <div className="flex flex-col items-center sm:items-end flex-1 sm:flex-auto">
                         <div className={`text-xl sm:text-2xl font-black ${isTop3 ? 'text-current' : 'text-gray-300 group-hover:text-white transition-colors'}`}>
                           {creator.totalDownloads || 0}
                         </div>
@@ -194,8 +196,8 @@ export const TopSubtitlers: React.FC = () => {
                           Downloads
                         </div>
                       </div>
-                      <div className="w-px h-8 bg-white/10 hidden sm:block"></div>
-                      <div className="flex flex-col items-center sm:items-end">
+                      <div className="w-px h-10 sm:h-8 bg-white/10"></div>
+                      <div className="flex flex-col items-center sm:items-end flex-1 sm:flex-auto">
                         <div className={`text-xl sm:text-2xl font-black ${isTop3 ? 'text-current' : 'text-gray-300 group-hover:text-white transition-colors'}`}>
                           {creator.totalUploads || 0}
                         </div>
