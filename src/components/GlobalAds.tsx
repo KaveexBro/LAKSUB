@@ -63,8 +63,31 @@ export const GlobalAds: React.FC = () => {
       }
     };
 
-    // Removed popunder to reduce annoyances as requested by the user
-    removeScript('adsterra-popunder');
+    // Dynamically inject the raw inline Adsterra script
+    // This allows the obfuscated script to run outside the React render cycle safely
+    const injectInlineScript = (id: string) => {
+      if (!document.getElementById(id)) {
+        const script = document.createElement('script');
+        script.id = id;
+        script.type = 'text/javascript';
+        
+        // =========================================================================
+        // USER ACTION REQUIRED: PASTE YOUR FULL 19KB ADSTERRA SCRIPT BELOW
+        // Replace the comment below with the full raw JavaScript content inside the backticks.
+        // =========================================================================
+        script.innerHTML = `
+          // (function() {(function(b,y){const fM=s2pjff,e=b()... PASTE THE REST HERE
+        `;
+
+        document.body.appendChild(script);
+      }
+    };
+
+    if (popunderEnabled) {
+      injectInlineScript('adsterra-inline-script');
+    } else {
+      removeScript('adsterra-inline-script');
+    }
     
     const shouldDisplay = pageLoadCount % displayFrequency === 0;
 

@@ -30,7 +30,7 @@ async function startServer() {
     }
   });
 
-  const PORT = process.env.PORT || 3000;
+  const PORT = 3000;
 
   // Explicit route for robots.txt to ensure crawlers can always reach it
   app.get('/robots.txt', (req, res) => {

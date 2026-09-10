@@ -208,16 +208,20 @@ export const Profile: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-netflix-bg text-white pt-24 pb-12 px-4 md:px-12">
+    <div className="min-h-screen bg-[#0a0a0a] text-white pt-28 pb-12 px-4 md:px-12 font-sans selection:bg-white/20">
       <Helmet>
         <title>{userData.displayName} - Profile - LAKSUB</title>
       </Helmet>
 
       <div className="max-w-6xl mx-auto">
         {/* Profile Header */}
-          <div className="flex flex-col md:flex-row items-start gap-8 md:gap-12 mb-16 pt-8">
+        <div className="bg-[#141414] border border-white/5 rounded-3xl p-8 md:p-12 mb-12 shadow-2xl relative overflow-hidden">
+          {/* Subtle Background Glow */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 blur-[100px] rounded-full pointer-events-none -translate-y-1/2 translate-x-1/4"></div>
+
+          <div className="flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-12 relative z-10">
             <div className="relative group shrink-0">
-              <div className="w-32 h-32 md:w-44 md:h-44 rounded-full overflow-hidden bg-[#121212] border border-white/10">
+              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden bg-[#0a0a0a] border-4 border-white/5 shadow-2xl">
                 <img 
                   src={userData.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.displayName)}&background=random`} 
                   alt={userData.displayName}
@@ -226,66 +230,67 @@ export const Profile: React.FC = () => {
               </div>
               <button 
                 onClick={() => setActiveTab('settings')}
-                className="absolute bottom-2 right-2 bg-white text-black p-3 rounded-full shadow-xl hover:scale-105 transition-transform"
+                className="absolute bottom-2 right-2 bg-white text-black p-3 rounded-full shadow-xl hover:scale-105 transition-all hover:bg-gray-200"
               >
-                <Camera className="w-5 h-5" />
+                <Camera className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="flex-1 w-full md:pt-4">
-              <div className="flex flex-col md:flex-row md:items-center gap-4 mb-3">
-                <h1 className="text-4xl md:text-5xl font-black tracking-tight">{userData.displayName}</h1>
-                <div className="flex items-center gap-2">
+            <div className="flex-1 w-full text-center md:text-left pt-2">
+              <div className="flex flex-col md:flex-row md:items-center justify-center md:justify-start gap-4 mb-2">
+                <h1 className="text-3xl md:text-5xl font-black tracking-tight">{userData.displayName}</h1>
+                <div className="flex flex-wrap justify-center md:justify-start items-center gap-2">
                   {userData.role === 'admin' && (
-                    <span className="bg-netflix-red text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-widest flex items-center gap-1">
+                    <span className="bg-white text-black text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-widest flex items-center gap-1 shadow-sm">
                       <ShieldCheck className="w-3 h-3" /> Admin
                     </span>
                   )}
                   {userData.role === 'creator' && (
-                    <span className="bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-widest flex items-center gap-1">
+                    <span className="bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-widest flex items-center gap-1">
                       <Star className="w-3 h-3 fill-current" /> Creator
                     </span>
                   )}
                   {(userData.totalUploads || 0) > 0 && <CreatorBadge uploadCount={userData.totalUploads || 0} />}
                 </div>
               </div>
-              <p className="text-gray-400 font-medium mb-4">{userData.email}</p>
+              <p className="text-gray-500 font-medium tracking-wide text-sm mb-6">{userData.email}</p>
+              
               {userData.bio && (
-                <p className="text-gray-300 font-medium mb-8 leading-relaxed max-w-2xl">
+                <p className="text-gray-300 font-medium mb-8 leading-relaxed max-w-2xl mx-auto md:mx-0">
                   {userData.bio}
                 </p>
               )}
               
-              <div className="flex flex-wrap items-center gap-4 md:gap-8">
+              <div className="flex flex-wrap justify-center md:justify-start items-center gap-6 md:gap-10 pt-6 border-t border-white/5">
                 {userData.proExpiry && new Date(userData.proExpiry) > new Date() && (
-                  <div className="flex flex-col">
+                  <div className="flex flex-col items-center md:items-start">
                     <span className="text-[10px] text-yellow-500/80 font-bold tracking-widest uppercase mb-1 flex items-center gap-1">
                       <Crown className="w-3 h-3" /> Pro Expiry
                     </span>
-                    <span className="text-xl font-bold text-yellow-500">
+                    <span className="text-xl font-black text-yellow-500">
                       {userData.proExpiry ? new Date(userData.proExpiry).toLocaleDateString() : ''}
                     </span>
                   </div>
                 )}
-                <div className="flex flex-col">
+                <div className="flex flex-col items-center md:items-start">
                   <span className="text-[10px] text-gray-500 font-bold tracking-widest uppercase mb-1">Uploads</span>
-                  <span className="text-xl font-bold">{userData.totalUploads || 0}</span>
+                  <span className="text-2xl font-black text-white">{userData.totalUploads || 0}</span>
                 </div>
-                <div className="flex flex-col">
+                <div className="flex flex-col items-center md:items-start">
                   <span className="text-[10px] text-gray-500 font-bold tracking-widest uppercase mb-1">Downloads</span>
-                  <span className="text-xl font-bold">
+                  <span className="text-2xl font-black text-white">
                     {userData.totalDownloads || 0}
                   </span>
                 </div>
-                <div className="flex flex-col">
+                <div className="flex flex-col items-center md:items-start">
                   <span className="text-[10px] text-gray-500 font-bold tracking-widest uppercase mb-1">Balance</span>
-                  <span className="text-xl font-bold text-green-500">${typeof userData.walletBalance === 'number' ? userData.walletBalance.toFixed(2) : '0.00'}</span>
+                  <span className="text-2xl font-black text-green-400">${typeof userData.walletBalance === 'number' ? userData.walletBalance.toFixed(2) : '0.00'}</span>
                 </div>
 
-                <div className="md:ml-auto mt-4 md:mt-0">
+                <div className="md:ml-auto w-full md:w-auto mt-2 md:mt-0 flex justify-center md:justify-end">
                   <button 
                     onClick={logout}
-                    className="flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-white transition-colors"
+                    className="flex items-center gap-2 text-xs font-bold text-gray-500 hover:text-white bg-white/5 hover:bg-white/10 px-4 py-2 rounded-full transition-all border border-white/5"
                   >
                     <LogOut className="w-4 h-4" /> Logout
                   </button>
@@ -293,43 +298,44 @@ export const Profile: React.FC = () => {
               </div>
             </div>
           </div>
+        </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 border-b border-white/10 mb-8 overflow-x-auto scrollbar-hide pb-px">
+        <div className="flex gap-2 border-b border-white/5 mb-10 overflow-x-auto scrollbar-hide pb-0">
           <button 
             onClick={() => setActiveTab('uploads')}
-            className={`px-5 py-3 text-sm font-medium tracking-wide transition-colors relative ${activeTab === 'uploads' ? 'text-white' : 'text-gray-500 hover:text-white'}`}
+            className={`px-6 py-4 text-sm font-bold tracking-wide transition-colors relative whitespace-nowrap ${activeTab === 'uploads' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
           >
             <span className="flex items-center gap-2"><Upload className="w-4 h-4" /> Uploads</span>
-            {activeTab === 'uploads' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-[2px] bg-white" />}
+            {activeTab === 'uploads' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-t-full" />}
           </button>
           <button 
             onClick={() => setActiveTab('history')}
-            className={`px-5 py-3 text-sm font-medium tracking-wide transition-colors relative ${activeTab === 'history' ? 'text-white' : 'text-gray-500 hover:text-white'}`}
+            className={`px-6 py-4 text-sm font-bold tracking-wide transition-colors relative whitespace-nowrap ${activeTab === 'history' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
           >
             <span className="flex items-center gap-2"><History className="w-4 h-4" /> History</span>
-            {activeTab === 'history' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-[2px] bg-white" />}
+            {activeTab === 'history' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-t-full" />}
           </button>
           <button 
             onClick={() => setActiveTab('watchlist')}
-            className={`px-5 py-3 text-sm font-medium tracking-wide transition-colors relative ${activeTab === 'watchlist' ? 'text-white' : 'text-gray-500 hover:text-white'}`}
+            className={`px-6 py-4 text-sm font-bold tracking-wide transition-colors relative whitespace-nowrap ${activeTab === 'watchlist' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
           >
             <span className="flex items-center gap-2"><Bookmark className="w-4 h-4" /> Watchlist</span>
-            {activeTab === 'watchlist' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-[2px] bg-white" />}
+            {activeTab === 'watchlist' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-t-full" />}
           </button>
           <button 
             onClick={() => setActiveTab('watched')}
-            className={`px-5 py-3 text-sm font-medium tracking-wide transition-colors relative ${activeTab === 'watched' ? 'text-white' : 'text-gray-500 hover:text-white'}`}
+            className={`px-6 py-4 text-sm font-bold tracking-wide transition-colors relative whitespace-nowrap ${activeTab === 'watched' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
           >
             <span className="flex items-center gap-2"><CheckCircle className="w-4 h-4" /> Watched</span>
-            {activeTab === 'watched' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-[2px] bg-white" />}
+            {activeTab === 'watched' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-t-full" />}
           </button>
           <button 
             onClick={() => setActiveTab('settings')}
-            className={`px-5 py-3 text-sm font-medium tracking-wide transition-colors relative ${activeTab === 'settings' ? 'text-white' : 'text-gray-500 hover:text-white'}`}
+            className={`px-6 py-4 text-sm font-bold tracking-wide transition-colors relative whitespace-nowrap ${activeTab === 'settings' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
           >
             <span className="flex items-center gap-2"><Settings className="w-4 h-4" /> Settings</span>
-            {activeTab === 'settings' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-[2px] bg-white" />}
+            {activeTab === 'settings' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-t-full" />}
           </button>
         </div>
 
