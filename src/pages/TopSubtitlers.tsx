@@ -63,13 +63,18 @@ export const TopSubtitlers: React.FC = () => {
             avgRating: avgRatings[c.uid] || 0
           }));
 
-          // Sort tied users based on avgRating
+          // Sort tied users based on avgRating and then totalDownloads
           creators.sort((a, b) => {
             const uploadsA = a.totalUploads || 0;
             const uploadsB = b.totalUploads || 0;
-            if (uploadsA === uploadsB && tiedUploads.includes(uploadsA)) {
+            if (uploadsA === uploadsB) {
               const ratingA = a.avgRating || 0;
               const ratingB = b.avgRating || 0;
+              if (ratingA === ratingB) {
+                const downloadsA = a.totalDownloads || 0;
+                const downloadsB = b.totalDownloads || 0;
+                return downloadsB - downloadsA;
+              }
               return ratingB - ratingA;
             }
             return uploadsB - uploadsA;
@@ -180,12 +185,23 @@ export const TopSubtitlers: React.FC = () => {
                     </div>
                     
                     {/* Stats */}
-                    <div className="shrink-0 text-right pr-2">
-                      <div className={`text-2xl sm:text-3xl font-black ${isTop3 ? 'text-current' : 'text-gray-300 group-hover:text-white transition-colors'}`}>
-                        {creator.totalUploads}
+                    <div className="shrink-0 flex items-center gap-4 sm:gap-6 text-right pr-2">
+                      <div className="flex flex-col items-center sm:items-end">
+                        <div className={`text-xl sm:text-2xl font-black ${isTop3 ? 'text-current' : 'text-gray-300 group-hover:text-white transition-colors'}`}>
+                          {creator.totalDownloads || 0}
+                        </div>
+                        <div className="text-[9px] sm:text-[10px] uppercase tracking-widest font-bold text-gray-500 mt-1">
+                          Downloads
+                        </div>
                       </div>
-                      <div className="text-[9px] sm:text-[10px] uppercase tracking-widest font-bold text-gray-500 mt-1">
-                        Uploads
+                      <div className="w-px h-8 bg-white/10 hidden sm:block"></div>
+                      <div className="flex flex-col items-center sm:items-end">
+                        <div className={`text-xl sm:text-2xl font-black ${isTop3 ? 'text-current' : 'text-gray-300 group-hover:text-white transition-colors'}`}>
+                          {creator.totalUploads || 0}
+                        </div>
+                        <div className="text-[9px] sm:text-[10px] uppercase tracking-widest font-bold text-gray-500 mt-1">
+                          Uploads
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -265,9 +281,9 @@ export const TopSubtitlers: React.FC = () => {
                           <CheckCircle2 className="w-5 h-5 text-green-500" />
                         </div>
                         <div>
-                          <h4 className="text-white font-bold mb-1">The Tie-Breaker: User Ratings</h4>
+                          <h4 className="text-white font-bold mb-1">The Tie-Breakers: User Ratings & Downloads</h4>
                           <p className="text-gray-400 text-sm leading-relaxed">
-                            If multiple creators tie with the exact same number of uploads, they are dynamically ranked based on their <strong>average user rating</strong>. Quality is just as important as quantity.
+                            If multiple creators tie with the exact same number of uploads, they are dynamically ranked based on their <strong>average user rating</strong>. If the rating is also tied, the total <strong>number of downloads</strong> determines the final rank!
                           </p>
                         </div>
                       </div>
