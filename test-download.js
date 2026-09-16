@@ -1,4 +1,4 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore, doc, updateDoc, increment } from 'firebase/firestore';
+import { getFirestore, doc, updateDoc, increment, getDoc, writeBatch } from 'firebase/firestore';
 
-// Need to test rule behavior. Wait, we don't have the auth credentials in the script.
+// Not gonna run because no auth
