@@ -444,7 +444,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
             subtitleId: subtitle.id,
             creatorId: subtitle.authorUid,
             downloadedAt: new Date().toISOString(),
-            isProDownload: isPro, // Track if it was a Pro user for Revenue Pool
+            isProDownload: isPro || false, // Track if it was a Pro user for Revenue Pool
             adPaidStatus: 'unpaid',
             proPaidStatus: 'unpaid'
           });
@@ -462,6 +462,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
 
           
           await batch.commit();
+          setSubtitle(prev => prev ? { ...prev, downloadCount: (prev.downloadCount || 0) + 1 } : prev);
         }
       } catch (err) {
         console.error("Error tracking download:", err);
