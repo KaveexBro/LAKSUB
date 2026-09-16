@@ -403,14 +403,14 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
 
     if (!isPro) {
       const today = new Date().toISOString().split('T')[0];
-      let newCount = userData.dailyDownloadCount;
+      let newCount = userData.dailyDownloadCount || 0;
       
       if (userData.lastDownloadResetDate !== today) {
         newCount = 0;
       }
       
-      if (newCount >= 10) {
-        setError("You have reached your daily download limit of 10. Upgrade to Pro for unlimited downloads.");
+      if (newCount >= 50) {
+        setError("You have reached your daily download limit of 50. Upgrade to Pro for unlimited downloads.");
         return;
       }
       
