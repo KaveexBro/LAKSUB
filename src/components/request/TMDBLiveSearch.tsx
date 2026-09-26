@@ -20,6 +20,7 @@ interface TMDBLiveSearchProps {
   } | null;
   onClear: () => void;
   disabled?: boolean;
+  initialSearchTerm?: string;
 }
 
 export const TMDBLiveSearch: React.FC<TMDBLiveSearchProps> = ({
@@ -27,13 +28,21 @@ export const TMDBLiveSearch: React.FC<TMDBLiveSearchProps> = ({
   selectedMedia,
   onClear,
   disabled = false,
+  initialSearchTerm = '',
 }) => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
   const [results, setResults] = useState<TMDBMovie[]>([]);
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [filterType, setFilterType] = useState<'all' | 'movie' | 'tv'>('all');
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Sync initialSearchTerm if changed
+  useEffect(() => {
+    if (initialSearchTerm && !selectedMedia) {
+      setSearchTerm(initialSearchTerm);
+    }
+  }, [initialSearchTerm, selectedMedia]);
 
   // Close dropdown on click outside
   useEffect(() => {
