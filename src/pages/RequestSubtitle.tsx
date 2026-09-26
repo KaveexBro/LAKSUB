@@ -35,6 +35,7 @@ import { SubtitleRequest } from '../types';
 import { TMDBLiveSearch } from '../components/request/TMDBLiveSearch';
 import { TierPointBadge } from '../components/request/TierPointBadge';
 import { TrendingRequestsBoard } from '../components/request/TrendingRequestsBoard';
+import { PointManager } from '../services/PointManager';
 
 export const RequestSubtitle: React.FC = () => {
   const { user, userData, isPro, signIn } = useAuth();
@@ -143,11 +144,14 @@ export const RequestSubtitle: React.FC = () => {
           return;
         }
 
-        // User hasn't upvoted yet: Deduct points (if Free) and append upvote
+        // User hasn't upvoted yet: Deduct points (if Free) and append upvote via PointManager
         if (!isPro) {
-          await updateDoc(userRef, {
-            points: Math.max(0, currentPoints - REQUIRED_FREE_POINTS),
-          });
+          await PointManager.deductPointsForRequest(
+            user.uid,
+            isPro,
+            REQUIRED_FREE_POINTS,
+            existingData.title
+          );
         }
 
         const requestDocRef = doc(db, 'requests', existingDocSnap.id);
@@ -165,9 +169,12 @@ export const RequestSubtitle: React.FC = () => {
       } else {
         // NEW REQUEST ENTRY
         if (!isPro) {
-          await updateDoc(userRef, {
-            points: Math.max(0, currentPoints - REQUIRED_FREE_POINTS),
-          });
+          await PointManager.deductPointsForRequest(
+            user.uid,
+            isPro,
+            REQUIRED_FREE_POINTS,
+            title.trim()
+          );
         }
 
         await addDoc(collection(db, 'requests'), {

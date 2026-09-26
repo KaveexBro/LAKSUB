@@ -16,6 +16,7 @@ import { CreatorBadge } from '../components/CreatorBadge';
 import { SchemaInjector } from '../components/SchemaInjector';
 import { SoftDownloadButton } from '../components/SoftDownloadButton';
 import { triggerPointsBonusToast } from '../utils/pointsAndReferrals';
+import { PointManager } from '../services/PointManager';
 
 const SubtitleComments = React.lazy(() => import('../components/SubtitleComments').then(module => ({ default: module.SubtitleComments })));
 
@@ -466,6 +467,18 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
             batch.update(doc(db, 'users', user.uid), {
               points: increment(2)
             });
+            const txRef = doc(collection(db, 'point_transactions'));
+            batch.set(txRef, {
+              id: txRef.id,
+              userId: user.uid,
+              type: 'subtitle_download',
+              points: 2,
+              description: `Downloaded: ${subtitle.movieTitle}`,
+              referenceId: subtitle.id,
+              isDuplicateFlagged: false,
+              balanceAfter: (userData?.points ?? 100) + 2,
+              createdAt: new Date().toISOString(),
+            });
             triggerPointsBonusToast({
               amount: 2,
               reason: 'First-time Subtitle Download',
@@ -536,17 +549,17 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
         ratingCount: newCount
       });
 
-      // Award +1 POINT to FREE member for rating a subtitle (first-time rating)
+      // Award +1 POINT to FREE member for rating a subtitle (first-time rating) via PointManager
       if (isNewRating && !isPro) {
         try {
-          await updateDoc(doc(db, 'users', user.uid), {
-            points: increment(1)
-          });
-          triggerPointsBonusToast({
-            amount: 1,
-            reason: 'Subtitle Rating Contribution',
-            type: 'subtitle_rating',
-          });
+          await PointManager.handleRating(
+            user.uid,
+            subtitle.id,
+            subtitle.movieTitle,
+            selectedRating,
+            isPro,
+            isNewRating
+          );
         } catch (ptsErr) {
           console.error("Error awarding rating points:", ptsErr);
         }

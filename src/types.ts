@@ -127,10 +127,12 @@ export interface ReferralRecord {
 export interface PointTransaction {
   id: string;
   userId: string;
-  type: 'daily_visit' | 'subtitle_download' | 'subtitle_rating' | 'referral_bonus' | 'request_spent' | 'welcome_bonus';
+  type: 'daily_login' | 'daily_visit' | 'subtitle_download' | 'subtitle_rating' | 'verified_referral' | 'referral_bonus' | 'request_spent' | 'welcome_bonus';
   points: number;
   description: string;
   referenceId?: string;
+  isDuplicateFlagged?: boolean;
+  balanceAfter?: number;
   createdAt: string;
 }
 

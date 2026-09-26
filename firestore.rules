@@ -193,6 +193,14 @@ service cloud.firestore {
              data.createdAt is string;
     }
 
+    function isValidPointTransaction(data) {
+      return data.userId is string && data.userId.size() > 0 &&
+             data.type is string &&
+             data.points is number &&
+             data.description is string && data.description.size() < 500 &&
+             data.createdAt is string;
+    }
+
     // ===============================================================
     // Rules
     // ===============================================================
@@ -366,6 +374,13 @@ service cloud.firestore {
       allow create: if isAuthenticated() && 
                     referralId == request.resource.data.referrerUid + '_' + request.auth.uid &&
                     isValidReferral(request.resource.data);
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /point_transactions/{transactionId} {
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() && isValidPointTransaction(request.resource.data);
       allow update: if isAdmin();
       allow delete: if isAdmin();
     }

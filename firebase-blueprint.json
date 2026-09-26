@@ -158,6 +158,21 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["referrerUid", "referredUid", "status", "pointsAwarded", "isRealReferral", "createdAt"]
+    },
+    "PointTransaction": {
+      "title": "PointTransaction",
+      "description": "User point earnings and expenditures history ledger.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "type": { "type": "string" },
+        "points": { "type": "number" },
+        "description": { "type": "string" },
+        "referenceId": { "type": "string" },
+        "balanceAfter": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "type", "points", "description", "createdAt"]
     }
   },
   "firestore": {
@@ -192,6 +207,10 @@
     "/referrals/{referralId}": {
       "schema": { "$ref": "#/entities/Referral" },
       "description": "Stores referral records with anti-fraud tracking."
+    },
+    "/point_transactions/{transactionId}": {
+      "schema": { "$ref": "#/entities/PointTransaction" },
+      "description": "Stores history of point earnings and expenditures."
     }
   }
 }

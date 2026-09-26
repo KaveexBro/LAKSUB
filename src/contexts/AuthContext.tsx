@@ -3,7 +3,7 @@ import { User, onAuthStateChanged, signInWithPopup } from 'firebase/auth';
 import { doc, getDoc, setDoc, onSnapshot, updateDoc, collection, query, where, getDocs, writeBatch } from 'firebase/firestore';
 import { auth, db, googleProvider } from '../firebase';
 import { UserData } from '../types';
-import { checkAndAwardDailyVisitBonus, processReferral } from '../utils/pointsAndReferrals';
+import { PointManager } from '../services/PointManager';
 
 interface AuthContextType {
   user: User | null;
@@ -78,10 +78,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             }
           }
 
-          // Check and award +10 Daily Visit points for Free members
+          // Check and award +10 Daily Visit points for Free members via PointManager
           const userIsPro = data.proExpiry ? new Date(data.proExpiry) > new Date() : false;
           if (!userIsPro && data.lastDailyBonusDate !== today) {
-            checkAndAwardDailyVisitBonus(currentUser.uid, data, userIsPro);
+            PointManager.handleDailyLogin(currentUser.uid, userIsPro, data);
           }
           
           setUserData(data);
@@ -114,17 +114,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             await setDoc(userRef, newUserData);
             setUserData(newUserData);
 
-            // Process referral if user signed up via an invite link
+            // Process referral if user signed up via an invite link via PointManager
             const pendingReferralCode = localStorage.getItem('laksub_referred_by_code');
             if (pendingReferralCode) {
-              processReferral(
+              PointManager.handleReferral(
                 currentUser.uid,
+                pendingReferralCode,
                 {
                   displayName: newUserData.displayName,
                   email: newUserData.email,
                   photoURL: newUserData.photoURL,
-                },
-                pendingReferralCode
+                }
               ).then(() => {
                 localStorage.removeItem('laksub_referred_by_code');
               }).catch((e) => {

@@ -29,6 +29,7 @@ import { Helmet } from 'react-helmet-async';
 import { AdZone } from '../components/AdZone';
 import { CreatorBadge } from '../components/CreatorBadge';
 import { ReferralHub } from '../components/ReferralHub';
+import { PointsWallet } from '../components/PointsWallet';
 
 export const Profile: React.FC = () => {
   const { user, userData, logout, updateProfile } = useAuth();
@@ -339,8 +340,10 @@ export const Profile: React.FC = () => {
           >
             <span className="flex items-center gap-2">
               <Coins className="w-4 h-4 text-cyan-400" />
-              <span>Points & Referrals</span>
-              <span className="text-[10px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.5 rounded-full font-bold">+50 PTS</span>
+              <span>Points Wallet</span>
+              <span className="text-[10px] bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded-full font-bold">
+                {userData?.points ?? 100} PTS
+              </span>
             </span>
             {activeTab === 'points' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-cyan-400 rounded-t-full" />}
           </button>
@@ -695,7 +698,7 @@ export const Profile: React.FC = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                 >
-                  <ReferralHub isModal={false} />
+                  <PointsWallet />
                 </motion.div>
               )}
             </AnimatePresence>
