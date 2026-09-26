@@ -113,6 +113,7 @@ function AppContent() {
           <Route path="/user/:uid" component={PublicProfile} />
           <Route path="/upgrade" component={UpgradePro} />
           <Route path="/request" component={RequestSubtitle} />
+          <Route path="/request-subtitle" component={RequestSubtitle} />
           <Route path="/privacy" component={Privacy} />
           <Route path="/terms" component={Terms} />
           <Route path="/dmca" component={DMCA} />

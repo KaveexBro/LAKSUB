@@ -21,6 +21,7 @@
         "watchlist": { "type": "array", "items": { "type": "string" } },
         "watched": { "type": "array", "items": { "type": "string" } },
         "seriesWatchlist": { "type": "array", "items": { "type": "string" } },
+        "points": { "type": "number" },
         "lastActiveAt": { "type": "string" }
       },
       "required": ["uid", "email", "role", "walletBalance", "dailyDownloadCount", "totalUploads", "totalDownloads", "isEligibleForMonetization", "monetizationStatus"]
@@ -120,20 +121,27 @@
     },
     "SubtitleRequest": {
       "title": "SubtitleRequest",
-      "description": "A request for a subtitle from a Pro member.",
+      "description": "A request for a subtitle with upvotes and live progress tracking.",
       "type": "object",
       "properties": {
+        "tmdbId": { "type": "number" },
         "userId": { "type": "string" },
         "userName": { "type": "string" },
+        "userPhoto": { "type": "string" },
         "isPro": { "type": "boolean" },
         "title": { "type": "string" },
-        "type": { "type": "string", "enum": ["movie", "series"] },
+        "type": { "type": "string", "enum": ["movie", "tv", "series"] },
         "year": { "type": "number" },
+        "poster_path": { "type": "string" },
+        "overview": { "type": "string" },
         "additionalInfo": { "type": "string" },
-        "status": { "type": "string", "enum": ["pending", "in_progress", "completed", "rejected"] },
-        "createdAt": { "type": "string", "format": "date-time" }
+        "status": { "type": "string", "enum": ["pending", "translating", "completed", "in_progress", "rejected"] },
+        "upvotes": { "type": "number" },
+        "upvoted_by": { "type": "array", "items": { "type": "string" } },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["userId", "userName", "isPro", "title", "type", "status", "createdAt"]
+      "required": ["userId", "userName", "title", "type", "status", "createdAt"]
     }
   },
   "firestore": {

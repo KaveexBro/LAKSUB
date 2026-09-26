@@ -99,6 +99,7 @@ export interface UserData {
   watchlist?: string[];
   watched?: string[];
   seriesWatchlist?: string[];
+  points?: number;
 }
 
 export interface DownloadRecord {
@@ -142,15 +143,22 @@ export interface AdCampaign {
 
 export interface SubtitleRequest {
   id: string;
+  tmdbId?: number | null;
   userId: string;
   userName: string;
+  userPhoto?: string | null;
   isPro: boolean;
   title: string;
-  type: 'movie' | 'series';
-  year?: number;
+  type: 'movie' | 'series' | 'tv';
+  year?: number | null;
+  poster_path?: string | null;
+  overview?: string;
   additionalInfo?: string;
-  status: 'pending' | 'in_progress' | 'completed' | 'rejected';
+  status: 'pending' | 'translating' | 'completed' | 'in_progress' | 'rejected';
+  upvotes: number;
+  upvoted_by: string[];
   createdAt: string;
+  updatedAt?: string;
 }
 
 export interface AppNotification {

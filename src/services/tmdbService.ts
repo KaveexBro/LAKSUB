@@ -17,6 +17,7 @@ export interface TMDBMovie {
   overview: string;
   genre_ids: number[];
   original_language?: string;
+  media_type?: 'movie' | 'tv' | 'person';
 }
 
 export const searchTMDB = async (query: string, type: 'movie' | 'tv' = 'movie') => {
@@ -28,6 +29,22 @@ export const searchTMDB = async (query: string, type: 'movie' | 'tv' = 'movie') 
     return data.results as TMDBMovie[];
   } catch (error) {
     console.error('TMDB Search Error:', error);
+    return [];
+  }
+};
+
+export const searchTMDBMulti = async (query: string): Promise<TMDBMovie[]> => {
+  if (!query || !query.trim()) return [];
+  try {
+    const response = await fetch(
+      `${TMDB_BASE_URL}/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}`
+    );
+    const data = await response.json();
+    return (data.results || []).filter(
+      (item: any) => item.media_type === 'movie' || item.media_type === 'tv'
+    ) as TMDBMovie[];
+  } catch (error) {
+    console.error('TMDB Multi Search Error:', error);
     return [];
   }
 };

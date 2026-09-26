@@ -80,6 +80,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             totalDownloads: 0,
             isEligibleForMonetization: false,
             monetizationStatus: 'locked',
+            points: 100,
           };
           try {
             await setDoc(userRef, newUserData);
