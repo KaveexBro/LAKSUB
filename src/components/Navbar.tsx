@@ -3,9 +3,10 @@ import { Link } from 'wouter';
 import { useAuth } from '../contexts/AuthContext';
 import { useSiteSettings } from '../contexts/SiteSettingsContext';
 import { SiteLogo } from './SiteLogo';
-import { Search, User, LogOut, Crown, Menu, X } from 'lucide-react';
+import { Search, User, LogOut, Crown, Menu, X, Coins, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { NotificationBell } from './NotificationBell';
+import { ReferralHub } from './ReferralHub';
 
 const Tooltip: React.FC<{ text: string; children: React.ReactNode }> = ({ text, children }) => {
   const [show, setShow] = useState(false);
@@ -33,6 +34,7 @@ export const Navbar: React.FC = () => {
   const { user, userData, isPro, signIn, signOut } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isReferralModalOpen, setIsReferralModalOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -84,12 +86,24 @@ export const Navbar: React.FC = () => {
         {user && <NotificationBell />}
         
         {user ? (
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             {isPro ? (
-              <span className="flex items-center gap-1 text-[10px] font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 text-black px-2 py-1 rounded-sm uppercase tracking-tighter">
-                <Crown className="w-3 h-3" /> Pro
+              <span className="flex items-center gap-1 text-[10px] font-bold bg-gradient-to-r from-amber-400 to-amber-600 text-black px-2.5 py-1 rounded-md uppercase tracking-tight shadow">
+                <Crown className="w-3 h-3" /> Pro • Unlimited PTS
               </span>
             ) : (
+              <button
+                type="button"
+                onClick={() => setIsReferralModalOpen(true)}
+                className="flex items-center gap-1.5 text-[11px] font-bold bg-zinc-800/90 hover:bg-zinc-700 text-cyan-400 border border-cyan-500/30 px-2.5 py-1 rounded-md transition-all shadow"
+                title="Your Points Balance. Click to view earning methods & invite friends!"
+              >
+                <Coins className="w-3.5 h-3.5 text-cyan-400" />
+                <span>{userData?.points ?? 100} PTS</span>
+              </button>
+            )}
+
+            {!isPro && (
               <Link 
                 href="/upgrade" 
                 className="hidden sm:block text-[10px] font-bold bg-netflix-red text-white px-3 py-1.5 rounded-sm hover:bg-red-700 transition-colors uppercase tracking-widest"
@@ -122,15 +136,26 @@ export const Navbar: React.FC = () => {
                       <div className="px-4 py-3 border-b border-white/5 mb-2">
                         <p className="text-sm font-bold text-white truncate uppercase tracking-tighter">{userData?.displayName}</p>
                         <p className="text-[10px] text-gray-500 truncate font-mono">{userData?.email}</p>
-                        {isPro && userData?.proExpiry && (
-                          <p className="text-[9px] text-yellow-500 font-bold tracking-tight mt-1 flex items-center gap-1">
-                            <Crown className="w-2 h-2" /> Expires: {new Date(userData.proExpiry).toLocaleDateString()}
+                        {isPro ? (
+                          <p className="text-[9px] text-amber-400 font-bold tracking-tight mt-1 flex items-center gap-1">
+                            <Crown className="w-2.5 h-2.5" /> PRO Member • Unlimited PTS
+                          </p>
+                        ) : (
+                          <p className="text-[9px] text-cyan-400 font-bold tracking-tight mt-1 flex items-center gap-1">
+                            <Coins className="w-2.5 h-2.5" /> Balance: {userData?.points ?? 100} PTS
                           </p>
                         )}
                       </div>
 
                       <Link href="/profile">
                         <span onClick={() => setIsMenuOpen(false)} className="block px-4 py-2 text-xs font-bold text-gray-400 hover:text-white hover:bg-white/5 cursor-pointer uppercase tracking-widest transition-colors">My Profile</span>
+                      </Link>
+
+                      <Link href="/referrals">
+                        <span onClick={() => setIsMenuOpen(false)} className="block px-4 py-2 text-xs font-bold text-cyan-400 hover:text-cyan-300 hover:bg-white/5 cursor-pointer uppercase tracking-widest transition-colors flex items-center justify-between">
+                          <span>Earn Points</span>
+                          <span className="text-[9px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.5 rounded font-extrabold">+50 PTS</span>
+                        </span>
                       </Link>
                       
                       {userData?.role === 'admin' && (
@@ -209,6 +234,7 @@ export const Navbar: React.FC = () => {
                 <Link href="/explore"><span onClick={() => setIsMobileMenuOpen(false)} className="hover:text-netflix-red transition-colors">Explore</span></Link>
                 <Link href="/top-subtitlers"><span onClick={() => setIsMobileMenuOpen(false)} className="hover:text-netflix-red transition-colors">Top Subtitlers</span></Link>
                 <Link href="/request"><span onClick={() => setIsMobileMenuOpen(false)} className="hover:text-netflix-red transition-colors">Request</span></Link>
+                <Link href="/referrals"><span onClick={() => setIsMobileMenuOpen(false)} className="text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-2"><span>Refer & Earn</span><span className="text-[10px] bg-cyan-500/20 px-2 py-0.5 rounded-full text-cyan-300 font-extrabold">+50 PTS</span></span></Link>
               </div>
               
               <div className="mt-auto pt-8 border-t border-white/5">
@@ -236,6 +262,13 @@ export const Navbar: React.FC = () => {
           </>
         )}
       </AnimatePresence>
+
+      {/* Referral Hub Modal */}
+      <ReferralHub
+        isModal={true}
+        isOpen={isReferralModalOpen}
+        onClose={() => setIsReferralModalOpen(false)}
+      />
     </nav>
   );
 };

@@ -15,6 +15,7 @@ import { VastPlayer } from '../components/VastPlayer';
 import { CreatorBadge } from '../components/CreatorBadge';
 import { SchemaInjector } from '../components/SchemaInjector';
 import { SoftDownloadButton } from '../components/SoftDownloadButton';
+import { triggerPointsBonusToast } from '../utils/pointsAndReferrals';
 
 const SubtitleComments = React.lazy(() => import('../components/SubtitleComments').then(module => ({ default: module.SubtitleComments })));
 
@@ -460,7 +461,18 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
             downloadCount: increment(1)
           });
 
-          
+          // Award +2 POINTS to FREE user for downloading subtitle (first-time only)
+          if (!isPro) {
+            batch.update(doc(db, 'users', user.uid), {
+              points: increment(2)
+            });
+            triggerPointsBonusToast({
+              amount: 2,
+              reason: 'First-time Subtitle Download',
+              type: 'subtitle_download',
+            });
+          }
+
           await batch.commit();
           setSubtitle(prev => prev ? { ...prev, downloadCount: (prev.downloadCount || 0) + 1 } : prev);
         }
@@ -523,6 +535,22 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
         averageRating: newAverage,
         ratingCount: newCount
       });
+
+      // Award +1 POINT to FREE member for rating a subtitle (first-time rating)
+      if (isNewRating && !isPro) {
+        try {
+          await updateDoc(doc(db, 'users', user.uid), {
+            points: increment(1)
+          });
+          triggerPointsBonusToast({
+            amount: 1,
+            reason: 'Subtitle Rating Contribution',
+            type: 'subtitle_rating',
+          });
+        } catch (ptsErr) {
+          console.error("Error awarding rating points:", ptsErr);
+        }
+      }
       
       // Notify the creator
       if (subtitle.authorUid && subtitle.authorUid !== user.uid) {

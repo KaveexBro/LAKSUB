@@ -20,16 +20,19 @@ import {
   Crown,
   Bookmark,
   CheckCircle,
-  Film
+  Film,
+  Coins,
+  Users
 } from 'lucide-react';
 import { Link } from 'wouter';
 import { Helmet } from 'react-helmet-async';
 import { AdZone } from '../components/AdZone';
 import { CreatorBadge } from '../components/CreatorBadge';
+import { ReferralHub } from '../components/ReferralHub';
 
 export const Profile: React.FC = () => {
   const { user, userData, logout, updateProfile } = useAuth();
-  const [activeTab, setActiveTab] = useState<'uploads' | 'history' | 'watchlist' | 'watched' | 'settings'>('uploads');
+  const [activeTab, setActiveTab] = useState<'uploads' | 'history' | 'watchlist' | 'watched' | 'points' | 'settings'>('uploads');
   const [uploads, setUploads] = useState<Subtitle[]>([]);
   const [history, setHistory] = useState<DownloadRecord[]>([]);
   const [watchlist, setWatchlist] = useState<Subtitle[]>([]);
@@ -329,6 +332,17 @@ export const Profile: React.FC = () => {
           >
             <span className="flex items-center gap-2"><CheckCircle className="w-4 h-4" /> Watched</span>
             {activeTab === 'watched' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-t-full" />}
+          </button>
+          <button 
+            onClick={() => setActiveTab('points')}
+            className={`px-6 py-4 text-sm font-bold tracking-wide transition-colors relative whitespace-nowrap ${activeTab === 'points' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+          >
+            <span className="flex items-center gap-2">
+              <Coins className="w-4 h-4 text-cyan-400" />
+              <span>Points & Referrals</span>
+              <span className="text-[10px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.5 rounded-full font-bold">+50 PTS</span>
+            </span>
+            {activeTab === 'points' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-cyan-400 rounded-t-full" />}
           </button>
           <button 
             onClick={() => setActiveTab('settings')}
@@ -671,6 +685,17 @@ export const Profile: React.FC = () => {
                       </button>
                     </div>
                   </form>
+                </motion.div>
+              )}
+
+              {activeTab === 'points' && (
+                <motion.div
+                  key="points"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                >
+                  <ReferralHub isModal={false} />
                 </motion.div>
               )}
             </AnimatePresence>

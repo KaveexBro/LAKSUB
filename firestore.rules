@@ -49,6 +49,12 @@ service cloud.firestore {
              (!('watched' in data) || data.watched is list) &&
              (!('seriesWatchlist' in data) || data.seriesWatchlist is list) &&
              (!('points' in data) || (data.points is number && data.points >= 0)) &&
+             (!('lastDailyBonusDate' in data) || data.lastDailyBonusDate is string) &&
+             (!('dailyBonusStreak' in data) || (data.dailyBonusStreak is number && data.dailyBonusStreak >= 0)) &&
+             (!('referralCode' in data) || data.referralCode is string) &&
+             (!('referredBy' in data) || data.referredBy is string) &&
+             (!('referralCount' in data) || (data.referralCount is number && data.referralCount >= 0)) &&
+             (!('referralPointsEarned' in data) || (data.referralPointsEarned is number && data.referralPointsEarned >= 0)) &&
              (!('lastActiveAt' in data) || data.lastActiveAt is string);
     }
 
@@ -176,6 +182,17 @@ service cloud.firestore {
              (!('rootUserId' in data) || data.rootUserId is string);
     }
 
+    function isValidReferral(data) {
+      return data.referrerUid is string && data.referrerUid.size() > 0 &&
+             data.referredUid is string && data.referredUid.size() > 0 &&
+             data.referredUid == request.auth.uid &&
+             data.referrerUid != request.auth.uid &&
+             data.pointsAwarded == 50 &&
+             data.status in ['completed', 'pending'] &&
+             data.isRealReferral is bool &&
+             data.createdAt is string;
+    }
+
     // ===============================================================
     // Rules
     // ===============================================================
@@ -230,9 +247,19 @@ service cloud.firestore {
                         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastActiveAt']) &&
                         isValidUser(request.resource.data)) ||
                        // Allow users to update their own points
-                       (isOwner(userId) && 
-                        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['points']) &&
-                        isValidUser(request.resource.data));
+                        (isOwner(userId) && 
+                         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['points']) &&
+                         isValidUser(request.resource.data)) ||
+                        // Allow users to update their own daily login bonus & streak & referral fields
+                        (isOwner(userId) && 
+                         request.resource.data.diff(resource.data).affectedKeys().hasAny(['points', 'lastDailyBonusDate', 'dailyBonusStreak', 'referredBy']) &&
+                         isValidUser(request.resource.data)) ||
+                        // Allow crediting points to referrer upon verified referral
+                        (isAuthenticated() && request.auth.uid != userId &&
+                         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['points', 'referralCount', 'referralPointsEarned']) &&
+                         request.resource.data.points == resource.data.get('points', 0) + 50 &&
+                         request.resource.data.referralCount == resource.data.get('referralCount', 0) + 1 &&
+                         request.resource.data.referralPointsEarned == resource.data.get('referralPointsEarned', 0) + 50);
     }
 
     match /subtitles/{subtitleId} {
@@ -330,5 +357,18 @@ service cloud.firestore {
       allow update: if isOwner(resource.data.userId) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']) && request.resource.data.read == true;
       allow delete: if isOwner(resource.data.userId) || isAdmin();
     }
+    match /referrals/{referralId} {
+      allow read: if isAuthenticated() && (
+        resource.data.referrerUid == request.auth.uid || 
+        resource.data.referredUid == request.auth.uid || 
+        isAdmin()
+      );
+      allow create: if isAuthenticated() && 
+                    referralId == request.resource.data.referrerUid + '_' + request.auth.uid &&
+                    isValidReferral(request.resource.data);
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
   }
 }

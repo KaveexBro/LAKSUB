@@ -142,6 +142,22 @@
         "updatedAt": { "type": "string", "format": "date-time" }
       },
       "required": ["userId", "userName", "title", "type", "status", "createdAt"]
+    },
+    "Referral": {
+      "title": "Referral",
+      "description": "Record of a verified user referral for anti-fraud points distribution.",
+      "type": "object",
+      "properties": {
+        "referrerUid": { "type": "string" },
+        "referrerName": { "type": "string" },
+        "referredUid": { "type": "string" },
+        "referredName": { "type": "string" },
+        "status": { "type": "string", "enum": ["completed", "pending"] },
+        "pointsAwarded": { "type": "number" },
+        "isRealReferral": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["referrerUid", "referredUid", "status", "pointsAwarded", "isRealReferral", "createdAt"]
     }
   },
   "firestore": {
@@ -172,6 +188,10 @@
     "/requests/{requestId}": {
       "schema": { "$ref": "#/entities/SubtitleRequest" },
       "description": "Stores subtitle requests from Pro members."
+    },
+    "/referrals/{referralId}": {
+      "schema": { "$ref": "#/entities/Referral" },
+      "description": "Stores referral records with anti-fraud tracking."
     }
   }
 }

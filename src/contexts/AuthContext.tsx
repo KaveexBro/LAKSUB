@@ -3,6 +3,7 @@ import { User, onAuthStateChanged, signInWithPopup } from 'firebase/auth';
 import { doc, getDoc, setDoc, onSnapshot, updateDoc, collection, query, where, getDocs, writeBatch } from 'firebase/firestore';
 import { auth, db, googleProvider } from '../firebase';
 import { UserData } from '../types';
+import { checkAndAwardDailyVisitBonus, processReferral } from '../utils/pointsAndReferrals';
 
 interface AuthContextType {
   user: User | null;
@@ -23,6 +24,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Check and save referral query parameter on app visit
+    if (typeof window !== 'undefined') {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const refParam = urlParams.get('ref');
+        if (refParam) {
+          localStorage.setItem('laksub_referred_by_code', refParam.trim());
+        }
+      } catch (e) {
+        // Ignore URL parsing errors
+      }
+    }
+  }, []);
 
   useEffect(() => {
     let unsubscribeDoc: (() => void) | undefined;
@@ -61,11 +77,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               console.error("Error resetting daily downloads:", err);
             }
           }
+
+          // Check and award +10 Daily Visit points for Free members
+          const userIsPro = data.proExpiry ? new Date(data.proExpiry) > new Date() : false;
+          if (!userIsPro && data.lastDailyBonusDate !== today) {
+            checkAndAwardDailyVisitBonus(currentUser.uid, data, userIsPro);
+          }
           
           setUserData(data);
         } else {
           // Create new user document
           const today = new Date().toISOString().split('T')[0];
+          const myReferralCode = currentUser.uid.slice(0, 8).toUpperCase();
           const newUserData: UserData = {
             uid: currentUser.uid,
             email: currentUser.email || '',
@@ -81,10 +104,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             isEligibleForMonetization: false,
             monetizationStatus: 'locked',
             points: 100,
+            lastDailyBonusDate: today,
+            dailyBonusStreak: 1,
+            referralCode: myReferralCode,
+            referralCount: 0,
+            referralPointsEarned: 0,
           };
           try {
             await setDoc(userRef, newUserData);
             setUserData(newUserData);
+
+            // Process referral if user signed up via an invite link
+            const pendingReferralCode = localStorage.getItem('laksub_referred_by_code');
+            if (pendingReferralCode) {
+              processReferral(
+                currentUser.uid,
+                {
+                  displayName: newUserData.displayName,
+                  email: newUserData.email,
+                  photoURL: newUserData.photoURL,
+                },
+                pendingReferralCode
+              ).then(() => {
+                localStorage.removeItem('laksub_referred_by_code');
+              }).catch((e) => {
+                console.error("Error processing signup referral:", e);
+              });
+            }
           } catch (err) {
             console.error("Error creating user data:", err);
           }

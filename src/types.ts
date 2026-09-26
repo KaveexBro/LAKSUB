@@ -100,6 +100,38 @@ export interface UserData {
   watched?: string[];
   seriesWatchlist?: string[];
   points?: number;
+  lastDailyBonusDate?: string;
+  dailyBonusStreak?: number;
+  referralCode?: string;
+  referredBy?: string;
+  referralCount?: number;
+  referralPointsEarned?: number;
+}
+
+export interface ReferralRecord {
+  id: string; // `${referrerUid}_${referredUid}`
+  referrerUid: string;
+  referrerName: string;
+  referrerPhoto?: string;
+  referredUid: string;
+  referredName: string;
+  referredPhoto?: string;
+  status: 'completed' | 'pending';
+  pointsAwarded: number;
+  isRealReferral: boolean;
+  fraudReason?: string | null;
+  deviceHash?: string;
+  createdAt: string;
+}
+
+export interface PointTransaction {
+  id: string;
+  userId: string;
+  type: 'daily_visit' | 'subtitle_download' | 'subtitle_rating' | 'referral_bonus' | 'request_spent' | 'welcome_bonus';
+  points: number;
+  description: string;
+  referenceId?: string;
+  createdAt: string;
 }
 
 export interface DownloadRecord {
