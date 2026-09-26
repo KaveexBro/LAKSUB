@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect, Suspense, lazy } from 'react';
-import { Route, Switch, useLocation } from 'wouter';
+import { Route, Switch, useLocation, Redirect } from 'wouter';
 import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider } from './contexts/AuthContext';
 import { Navbar } from './components/Navbar';
@@ -14,7 +14,6 @@ import { AdBlockDetector } from './components/AdBlockDetector';
 import { GlobalAds } from './components/GlobalAds';
 import { AdZone } from './components/AdZone';
 import { Breadcrumbs } from './components/Breadcrumbs';
-import { PointsCelebrationToast } from './components/PointsCelebrationToast';
 import { db } from './firebase';
 import { doc, getDocFromServer } from 'firebase/firestore';
 
@@ -34,7 +33,6 @@ const Profile = lazy(() => import('./pages/Profile').then(m => ({ default: m.Pro
 const PublicProfile = lazy(() => import('./pages/PublicProfile').then(m => ({ default: m.PublicProfile })));
 const UpgradePro = lazy(() => import('./pages/UpgradePro').then(m => ({ default: m.UpgradePro })));
 const RequestSubtitle = lazy(() => import('./pages/RequestSubtitle').then(m => ({ default: m.RequestSubtitle })));
-const ReferralsPage = lazy(() => import('./pages/ReferralsPage').then(m => ({ default: m.ReferralsPage })));
 const Privacy = lazy(() => import('./pages/Privacy').then(m => ({ default: m.Privacy })));
 const Terms = lazy(() => import('./pages/Terms').then(m => ({ default: m.Terms })));
 const Contact = lazy(() => import('./pages/Contact').then(m => ({ default: m.Contact })));
@@ -81,7 +79,6 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-netflix-bg text-white font-sans selection:bg-netflix-red selection:text-white">
-      <PointsCelebrationToast />
       {!isStandalonePage && <Navbar />}
       {!isStandalonePage && <Breadcrumbs />}
       {!isStandalonePage && (
@@ -117,7 +114,9 @@ function AppContent() {
           <Route path="/upgrade" component={UpgradePro} />
           <Route path="/request" component={RequestSubtitle} />
           <Route path="/request-subtitle" component={RequestSubtitle} />
-          <Route path="/referrals" component={ReferralsPage} />
+          <Route path="/referrals">
+            <Redirect to="/profile?tab=points" />
+          </Route>
           <Route path="/privacy" component={Privacy} />
           <Route path="/terms" component={Terms} />
           <Route path="/dmca" component={DMCA} />

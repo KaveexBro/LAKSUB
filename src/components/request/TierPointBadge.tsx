@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { Crown, Coins, Sparkles, AlertCircle, ArrowUpRight, Users, Gift, Info, CheckCircle2 } from 'lucide-react';
+import { Crown, Coins, Sparkles, AlertCircle, ArrowUpRight, Info } from 'lucide-react';
 import { Link } from 'wouter';
 import { useAuth } from '../../contexts/AuthContext';
-import { ReferralHub } from '../ReferralHub';
 import { POINTS_CONFIG } from '../../utils/pointsAndReferrals';
 
 interface TierPointBadgeProps {
@@ -11,7 +10,6 @@ interface TierPointBadgeProps {
 
 export const TierPointBadge: React.FC<TierPointBadgeProps> = ({ requiredPoints = 50 }) => {
   const { user, userData, isPro, signIn } = useAuth();
-  const [isReferralModalOpen, setIsReferralModalOpen] = useState(false);
   const [showHowToEarn, setShowHowToEarn] = useState(false);
 
   if (!user) {
@@ -114,14 +112,12 @@ export const TierPointBadge: React.FC<TierPointBadgeProps> = ({ requiredPoints =
                   Ways to Earn
                 </button>
 
-                <button
-                  type="button"
-                  onClick={() => setIsReferralModalOpen(true)}
-                  className="text-xs font-bold text-cyan-400 hover:text-cyan-300 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 shadow"
-                >
-                  <Users className="w-4 h-4 text-cyan-400" />
-                  <span>Invite Friends (+50 PTS)</span>
-                </button>
+                <Link href="/profile?tab=points">
+                  <span className="text-xs font-bold text-cyan-400 hover:text-cyan-300 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 shadow cursor-pointer">
+                    <Coins className="w-4 h-4 text-cyan-400" />
+                    <span>Points Wallet</span>
+                  </span>
+                </Link>
 
                 <Link href="/upgrade">
                   <button
@@ -169,22 +165,14 @@ export const TierPointBadge: React.FC<TierPointBadgeProps> = ({ requiredPoints =
                 Insufficient points. You have <strong className="text-white">{currentPoints} PTS</strong>, but need at least <strong className="text-white">{requiredPoints} PTS</strong>.
               </span>
             </div>
-            <button
-              onClick={() => setIsReferralModalOpen(true)}
-              className="text-cyan-400 hover:underline font-bold text-xs flex items-center gap-1"
-            >
-              Earn points now <ArrowUpRight className="w-3.5 h-3.5" />
-            </button>
+            <Link href="/profile?tab=points">
+              <span className="text-cyan-400 hover:underline font-bold text-xs flex items-center gap-1 cursor-pointer">
+                Earn points now <ArrowUpRight className="w-3.5 h-3.5" />
+              </span>
+            </Link>
           </div>
         )}
       </div>
-
-      {/* Referral Center Modal */}
-      <ReferralHub
-        isModal={true}
-        isOpen={isReferralModalOpen}
-        onClose={() => setIsReferralModalOpen(false)}
-      />
     </>
   );
 };

@@ -28,7 +28,6 @@ import { Link } from 'wouter';
 import { Helmet } from 'react-helmet-async';
 import { AdZone } from '../components/AdZone';
 import { CreatorBadge } from '../components/CreatorBadge';
-import { ReferralHub } from '../components/ReferralHub';
 import { PointsWallet } from '../components/PointsWallet';
 
 export const Profile: React.FC = () => {
@@ -100,6 +99,22 @@ export const Profile: React.FC = () => {
       setBio(userData.bio || '');
     }
   }, [userData]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get('tab');
+      if (tabParam === 'points' || tabParam === 'wallet') {
+        setActiveTab('points');
+      } else if (tabParam === 'watchlist') {
+        setActiveTab('watchlist');
+      } else if (tabParam === 'history') {
+        setActiveTab('history');
+      } else if (tabParam === 'settings') {
+        setActiveTab('settings');
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (!user) return;

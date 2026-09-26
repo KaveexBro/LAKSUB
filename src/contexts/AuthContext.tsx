@@ -78,10 +78,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             }
           }
 
+          // Ensure referralCode exists for existing users
+          if (!data.referralCode) {
+            const myCode = currentUser.uid.slice(0, 8).toUpperCase();
+            data.referralCode = myCode;
+            updateDoc(userRef, { referralCode: myCode }).catch(err => console.error("Error setting referral code:", err));
+          }
+
           // Check and award +10 Daily Visit points for Free members via PointManager
           const userIsPro = data.proExpiry ? new Date(data.proExpiry) > new Date() : false;
           if (!userIsPro && data.lastDailyBonusDate !== today) {
             PointManager.handleDailyLogin(currentUser.uid, userIsPro, data);
+          }
+
+          // Claim pending referral if user logged in via invite link and hasn't claimed a referral yet
+          if (typeof window !== 'undefined') {
+            const pendingCode = localStorage.getItem('laksub_referred_by_code');
+            if (pendingCode && !data.referredBy) {
+              PointManager.handleReferral(
+                currentUser.uid,
+                pendingCode,
+                {
+                  displayName: data.displayName || currentUser.displayName || 'Member',
+                  email: data.email || currentUser.email || '',
+                  photoURL: data.photoURL || currentUser.photoURL || '',
+                }
+              ).then((res) => {
+                if (res.success) {
+                  localStorage.removeItem('laksub_referred_by_code');
+                }
+              }).catch(err => console.error("Error processing pending referral for user:", err));
+            }
           }
           
           setUserData(data);

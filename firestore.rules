@@ -260,7 +260,7 @@ service cloud.firestore {
                          isValidUser(request.resource.data)) ||
                         // Allow users to update their own daily login bonus & streak & referral fields
                         (isOwner(userId) && 
-                         request.resource.data.diff(resource.data).affectedKeys().hasAny(['points', 'lastDailyBonusDate', 'dailyBonusStreak', 'referredBy']) &&
+                         request.resource.data.diff(resource.data).affectedKeys().hasAny(['points', 'lastDailyBonusDate', 'dailyBonusStreak', 'referredBy', 'referralCode']) &&
                          isValidUser(request.resource.data)) ||
                         // Allow crediting points to referrer upon verified referral
                         (isAuthenticated() && request.auth.uid != userId &&

@@ -383,17 +383,37 @@ class PointManagerService {
     const deviceFingerprint = getDeviceId();
 
     try {
-      // Find referrer by referralCode or direct UID
+      // Find referrer by referralCode (upper or exact), direct UID, or UID prefix
       let referrerDocSnap: any = null;
-      const qByCode = query(collection(db, 'users'), where('referralCode', '==', cleanCode));
-      const snapByCode = await getDocs(qByCode);
 
-      if (!snapByCode.empty) {
-        referrerDocSnap = snapByCode.docs[0];
+      const qUpper = query(collection(db, 'users'), where('referralCode', '==', cleanCode.toUpperCase()));
+      const snapUpper = await getDocs(qUpper);
+
+      if (!snapUpper.empty) {
+        referrerDocSnap = snapUpper.docs[0];
       } else {
-        const directDoc = await getDoc(doc(db, 'users', cleanCode));
-        if (directDoc.exists()) {
-          referrerDocSnap = directDoc;
+        const qExact = query(collection(db, 'users'), where('referralCode', '==', cleanCode));
+        const snapExact = await getDocs(qExact);
+        if (!snapExact.empty) {
+          referrerDocSnap = snapExact.docs[0];
+        } else {
+          const directDoc = await getDoc(doc(db, 'users', cleanCode));
+          if (directDoc.exists()) {
+            referrerDocSnap = directDoc;
+          } else {
+            // Fallback: search users by UID prefix (e.g. 8-character UID prefix) or case-insensitive referralCode
+            const allUsersSnap = await getDocs(collection(db, 'users'));
+            const matchingDoc = allUsersSnap.docs.find((d) => {
+              const dData = d.data();
+              return (
+                d.id.toLowerCase().startsWith(cleanCode.toLowerCase()) ||
+                (dData.referralCode && dData.referralCode.toUpperCase() === cleanCode.toUpperCase())
+              );
+            });
+            if (matchingDoc) {
+              referrerDocSnap = matchingDoc;
+            }
+          }
         }
       }
 
