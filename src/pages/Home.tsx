@@ -42,6 +42,26 @@ export const Home: React.FC = () => {
   };
 
   useEffect(() => {
+    // Check if we have cached homepage content for instant render
+    try {
+      const cached = sessionStorage.getItem('laksub_home_cache');
+      if (cached) {
+        const data = JSON.parse(cached);
+        if (data.latestSubs && data.latestSubs.length > 0) {
+          const featuredIndex = Math.floor(Math.random() * Math.min(5, data.latestSubs.length));
+          setFeatured(data.latestSubs[featuredIndex]);
+          setLatestReleases(data.latestSubs.filter((_: any, i: number) => i !== featuredIndex));
+          setTop10(data.top10 || []);
+          setTrendingNow(data.trendingNow || []);
+          setActionMovies(data.actionMovies || []);
+          setTvSeries(data.tvSeries || []);
+          setLoading(false);
+        }
+      }
+    } catch (e) {
+      // Ignore cache parse errors
+    }
+
     const fetchContent = async () => {
       try {
         // Fetch latest
@@ -94,22 +114,40 @@ export const Home: React.FC = () => {
         ]);
 
         const latestSubs = latestSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Subtitle));
+        const top10Subs = top10Snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Subtitle));
+        const trendingSubs = trendingSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Subtitle));
+        const actionSubs = actionSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Subtitle));
+        const tvSeriesData = seriesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Subtitle));
         
         if (latestSubs.length > 0) {
-          // Pick a random one from the latest 5 for featured to keep it fresh
           const featuredIndex = Math.floor(Math.random() * Math.min(5, latestSubs.length));
           setFeatured(latestSubs[featuredIndex]);
           setLatestReleases(latestSubs.filter((_, i) => i !== featuredIndex));
         }
 
-        setTop10(top10Snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Subtitle)));
-        setTrendingNow(trendingSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Subtitle)));
-        setActionMovies(actionSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Subtitle)));
-        const tvSeriesData = seriesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Subtitle));
+        setTop10(top10Subs);
+        setTrendingNow(trendingSubs);
+        setActionMovies(actionSubs);
         setTvSeries(tvSeriesData);
 
-        // Fetch badges for unique series
-        const allSeries = [...latestSubs, ...top10Snap.docs.map(doc => doc.data() as Subtitle), ...trendingSnap.docs.map(doc => doc.data() as Subtitle), ...tvSeriesData].filter(s => s.type === 'series');
+        // UNBLOCK: Show the page immediately to user!
+        setLoading(false);
+
+        // Save to cache for instant subsequent loads
+        try {
+          sessionStorage.setItem('laksub_home_cache', JSON.stringify({
+            latestSubs,
+            top10: top10Subs,
+            trendingNow: trendingSubs,
+            actionMovies: actionSubs,
+            tvSeries: tvSeriesData,
+          }));
+        } catch (e) {
+          // Ignore cache quota errors
+        }
+
+        // Fetch badges in the background using cached in-memory series documents
+        const allSeries = [...latestSubs, ...top10Subs, ...trendingSubs, ...tvSeriesData].filter(s => s.type === 'series');
         const uniqueSeries = new Map<string, number | undefined>();
         allSeries.forEach(s => {
           if (!uniqueSeries.has(s.movieTitle)) {
@@ -120,7 +158,7 @@ export const Home: React.FC = () => {
         const newBadges: Record<string, SeriesBadgeInfo> = {};
         await Promise.all(
           Array.from(uniqueSeries.entries()).map(async ([title, tmdbId]) => {
-            const badge = await getSeriesBadge(title, tmdbId);
+            const badge = await getSeriesBadge(title, tmdbId, allSeries);
             if (badge) {
               newBadges[title] = badge;
             }
@@ -140,15 +178,28 @@ export const Home: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-netflix-bg flex items-center justify-center">
-        <motion.div 
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          className="flex flex-col items-center gap-4"
-        >
-          <div className="w-16 h-16 border-4 border-netflix-red border-t-transparent rounded-full animate-spin shadow-[0_0_20px_rgba(229,9,20,0.4)]"></div>
-          <SiteLogo className="h-12 w-auto object-contain" />
-        </motion.div>
+      <div className="min-h-screen bg-netflix-bg">
+        {/* Hero Banner Skeleton */}
+        <div className="relative h-[80vh] w-full bg-[#111] overflow-hidden flex items-end p-6 md:p-16">
+          <div className="max-w-2xl w-full space-y-4">
+            <div className="h-8 md:h-12 bg-white/10 rounded-lg w-3/4 animate-pulse" />
+            <div className="h-4 bg-white/5 rounded w-1/2 animate-pulse" />
+            <div className="h-16 bg-white/5 rounded-lg w-full animate-pulse" />
+            <div className="flex gap-4 pt-4">
+              <div className="h-11 w-32 bg-netflix-red/30 rounded-full animate-pulse" />
+              <div className="h-11 w-32 bg-white/10 rounded-full animate-pulse" />
+            </div>
+          </div>
+        </div>
+        {/* Cards Row Skeleton */}
+        <div className="px-4 md:px-12 py-8 space-y-4">
+          <div className="h-6 w-48 bg-white/10 rounded animate-pulse" />
+          <div className="flex gap-4 overflow-hidden">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="flex-none w-36 md:w-52 aspect-[2/3] bg-[#181818] rounded-2xl animate-pulse" />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }

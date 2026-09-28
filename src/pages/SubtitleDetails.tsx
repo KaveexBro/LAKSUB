@@ -226,63 +226,65 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
           setSubtitle(subData);
           setAuthorPhoto(subData.authorPhoto || '');
           setAuthorName(subData.authorName || '');
-
-          // Fetch Author's Upload Count and dynamic profile info
-          if (subData.authorUid) {
-            try {
-              const authorDoc = await getDoc(doc(db, 'users', subData.authorUid));
-              if (authorDoc.exists()) {
-                const authorData = authorDoc.data();
-                setAuthorUploadCount(authorData.totalUploads || 0);
-                if (authorData.photoURL) {
-                  setAuthorPhoto(authorData.photoURL);
-                }
-                if (authorData.displayName) {
-                  setAuthorName(authorData.displayName);
-                }
-              }
-            } catch (err) {
-              console.error("Error fetching author data:", err);
-            }
-          }
+          
+          // UNBLOCK: Render subtitle details page immediately!
+          setLoading(false);
 
           // If adult content and user not verified, show age modal
           if (subData.isAdult && !userData?.isAdultVerified && localStorage.getItem('laksub_adult_verified') !== 'true') {
             setIsAgeModalOpen(true);
           }
 
-          // Fetch TMDB data if available
-          if (subData.tmdbId) {
-            try {
-              const tmdb = await getTMDBDetails(subData.tmdbId, subData.type === 'series' ? 'tv' : 'movie');
-              setTmdbData(tmdb);
-
-              // If it's an episode, fetch episode specific details
-              if (subData.type === 'series' && subData.season && subData.episode) {
-                const epData = await getTMDBEpisodeDetails(subData.tmdbId, subData.season, subData.episode);
-                setEpisodeData(epData);
+          // Fetch monetization setting, author info, TMDB, and ratings concurrently in the background
+          const currentSub = subData;
+          Promise.allSettled([
+            // 1. Monetization setting
+            getDoc(doc(db, 'settings', 'monetization')).then(monetizationDoc => {
+              const isMonetizationEnabled = monetizationDoc.exists() ? monetizationDoc.data().enabled : false;
+              setMonetizationEnabled(isMonetizationEnabled);
+              if (!isMonetizationEnabled) {
+                setCanDownload(true);
+                setCountdown(0);
               }
-            } catch (tmdbErr) {
-              console.error("Error fetching TMDB details:", tmdbErr);
-              // Don't fail the whole page if TMDB fails
-            }
-          }
-          
-          if (user) {
-            const q = query(collection(db, 'ratings'), where('userId', '==', user.uid), where('subtitleId', '==', subData.id));
-            const ratingSnap = await getDocs(q);
-            if (!ratingSnap.empty) {
-              const existingRating = ratingSnap.docs[0].data() as Rating;
-              setUserRating(existingRating.rating);
-              setCommentInput(existingRating.comment || '');
-            }
-          }
+            }),
 
-          // Fetch all ratings for this subtitle
-          const ratingsQuery = query(collection(db, 'ratings'), where('subtitleId', '==', subData.id));
-          const ratingsSnap = await getDocs(ratingsQuery);
-          const ratingsList = ratingsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Rating));
-          setRatings(ratingsList.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+            // 2. Author info
+            currentSub.authorUid ? getDoc(doc(db, 'users', currentSub.authorUid)).then(authorDoc => {
+              if (authorDoc.exists()) {
+                const authorData = authorDoc.data();
+                setAuthorUploadCount(authorData.totalUploads || 0);
+                if (authorData.photoURL) setAuthorPhoto(authorData.photoURL);
+                if (authorData.displayName) setAuthorName(authorData.displayName);
+              }
+            }) : Promise.resolve(),
+
+            // 3. TMDB Details
+            currentSub.tmdbId ? getTMDBDetails(currentSub.tmdbId, currentSub.type === 'series' ? 'tv' : 'movie').then(tmdb => {
+              setTmdbData(tmdb);
+              if (currentSub.type === 'series' && currentSub.season && currentSub.episode) {
+                getTMDBEpisodeDetails(currentSub.tmdbId!, currentSub.season, currentSub.episode).then(epData => {
+                  setEpisodeData(epData);
+                }).catch(() => {});
+              }
+            }) : Promise.resolve(),
+
+            // 4. User Rating
+            user ? getDocs(query(collection(db, 'ratings'), where('userId', '==', user.uid), where('subtitleId', '==', currentSub.id))).then(ratingSnap => {
+              if (!ratingSnap.empty) {
+                const existingRating = ratingSnap.docs[0].data() as Rating;
+                setUserRating(existingRating.rating);
+                setCommentInput(existingRating.comment || '');
+              }
+            }) : Promise.resolve(),
+
+            // 5. Ratings List
+            getDocs(query(collection(db, 'ratings'), where('subtitleId', '==', currentSub.id))).then(ratingsSnap => {
+              const ratingsList = ratingsSnap.docs.map(d => ({ id: d.id, ...d.data() } as Rating));
+              setRatings(ratingsList.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+            })
+          ]).catch(err => {
+            console.error("Error in background details loading:", err);
+          });
         } else {
           setError("Subtitle not found.");
         }

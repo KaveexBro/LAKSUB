@@ -26,6 +26,10 @@ export const TopSubtitlers: React.FC = () => {
         
         const snapshot = await getDocs(creatorsQuery);
         let creators = snapshot.docs.map(doc => doc.data() as (UserData & { avgRating?: number }));
+        
+        // UNBLOCK: Immediately show creators leaderboard
+        setTopCreators(creators);
+        setLoading(false);
 
         // Find tied groups
         const uploadCounts = creators.map(c => c.totalUploads || 0);

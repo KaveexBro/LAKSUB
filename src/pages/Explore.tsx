@@ -48,6 +48,21 @@ export const Explore: React.FC<{ initialType?: 'movie' | 'series' | 'all', initi
   }, [searchString, initialType, initialGenre]);
 
   useEffect(() => {
+    // SWR instant render from cache if available
+    try {
+      const cached = sessionStorage.getItem('laksub_explore_cache');
+      if (cached) {
+        const subs = JSON.parse(cached) as Subtitle[];
+        if (subs && subs.length > 0) {
+          setSubtitles(subs);
+          setFilteredSubtitles(subs);
+          setLoading(false);
+        }
+      }
+    } catch (e) {
+      // Ignore cache errors
+    }
+
     const fetchExploreData = async () => {
       try {
         const q = query(
@@ -60,7 +75,36 @@ export const Explore: React.FC<{ initialType?: 'movie' | 'series' | 'all', initi
         setSubtitles(subs);
         setFilteredSubtitles(subs);
 
-        // Fetch TMDB languages for filtering in chunks to avoid freezing the browser
+        // UNBLOCK: Immediately show content to the user!
+        setLoading(false);
+
+        try {
+          sessionStorage.setItem('laksub_explore_cache', JSON.stringify(subs));
+        } catch (e) {
+          // Ignore cache quota
+        }
+
+        // Fetch badges for unique series in the background using already fetched subs
+        const allSeries = subs.filter(s => s.type === 'series');
+        const uniqueSeries = new Map<string, number | undefined>();
+        allSeries.forEach(s => {
+          if (!uniqueSeries.has(s.movieTitle)) {
+            uniqueSeries.set(s.movieTitle, s.tmdbId);
+          }
+        });
+
+        const newBadges: Record<string, SeriesBadgeInfo> = {};
+        await Promise.all(
+          Array.from(uniqueSeries.entries()).map(async ([title, tmdbId]) => {
+            const badge = await getSeriesBadge(title, tmdbId, allSeries);
+            if (badge) {
+              newBadges[title] = badge;
+            }
+          })
+        );
+        setSeriesBadges(newBadges);
+
+        // Fetch TMDB languages in the background for filtering
         const uniqueTmdbIds = Array.from(new Set(subs.map(s => `${s.type}-${s.tmdbId}`)));
         const langMap: Record<string, string> = {};
         
@@ -76,33 +120,12 @@ export const Explore: React.FC<{ initialType?: 'movie' | 'series' | 'all', initi
                   langMap[key] = lang;
                 }
               } catch (e) {
-                console.error(e);
+                // Ignore single TMDB language failure
               }
             }
           }));
         }
-        
         setTmdbLanguages(langMap);
-
-        // Fetch badges for unique series
-        const allSeries = subs.filter(s => s.type === 'series');
-        const uniqueSeries = new Map<string, number | undefined>();
-        allSeries.forEach(s => {
-          if (!uniqueSeries.has(s.movieTitle)) {
-            uniqueSeries.set(s.movieTitle, s.tmdbId);
-          }
-        });
-
-        const newBadges: Record<string, SeriesBadgeInfo> = {};
-        await Promise.all(
-          Array.from(uniqueSeries.entries()).map(async ([title, tmdbId]) => {
-            const badge = await getSeriesBadge(title, tmdbId);
-            if (badge) {
-              newBadges[title] = badge;
-            }
-          })
-        );
-        setSeriesBadges(newBadges);
 
       } catch (err) {
         console.error("Error fetching explore data:", err);

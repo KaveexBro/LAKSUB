@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
+import compression from 'compression';
 import path from 'path';
 import fs from 'fs';
 import { createServer as createViteServer } from 'vite';
@@ -15,6 +16,7 @@ const imagekit = new ImageKit({
 async function startServer() {
   const app = express();
   
+  app.use(compression());
   app.set('trust proxy', true);
 
   app.get('/api/imagekit/auth', (req, res) => {
@@ -456,9 +458,19 @@ Sitemap: https://www.laksub.com/sitemap.xml
   } else {
     // Serve static files from 'dist'
     const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath)); // Removed index: false so prerendered folders are served properly
+    // Hashed assets can be safely cached for 1 year immutable
+    app.use('/assets', express.static(path.join(distPath, 'assets'), {
+      maxAge: '1y',
+      immutable: true,
+    }));
+    app.use(express.static(distPath, {
+      maxAge: '1h',
+      etag: true,
+    })); // Removed index: false so prerendered folders are served properly
     
     app.get('*', (req, res) => {
+      // Prevent stale index.html caching so new deployments are seen instantly
+      res.setHeader('Cache-Control', 'no-cache, must-revalidate');
       res.sendFile(path.join(distPath, 'index.html'));
     });
   }

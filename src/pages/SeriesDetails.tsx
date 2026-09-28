@@ -81,6 +81,7 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
         });
         
         setSubtitles(subs);
+        setLoading(false);
 
         // Set initial selected season
         const seasons = Array.from(new Set(subs.map(s => s.season).filter(s => s !== undefined))) as number[];
@@ -90,14 +91,13 @@ export const SeriesDetails: React.FC<{ params?: { slug?: string } }> = ({ params
           setSelectedSeason(0); // For specials/unassigned
         }
 
-        // Fetch TMDB data for the series
+        // Fetch TMDB data for the series in the background
         if (subs.length > 0 && subs[0].tmdbId) {
-          try {
-            const tmdb = await getTMDBDetails(subs[0].tmdbId, 'tv');
-            setTmdbData(tmdb);
-          } catch (err) {
+          getTMDBDetails(subs[0].tmdbId, 'tv').then(tmdb => {
+            if (tmdb) setTmdbData(tmdb);
+          }).catch(err => {
             console.error("Error fetching TMDB series details:", err);
-          }
+          });
         }
       } catch (err) {
         console.error("Error fetching series:", err);

@@ -14,8 +14,6 @@ import { AdBlockDetector } from './components/AdBlockDetector';
 import { GlobalAds } from './components/GlobalAds';
 import { AdZone } from './components/AdZone';
 import { Breadcrumbs } from './components/Breadcrumbs';
-import { db } from './firebase';
-import { doc, getDocFromServer } from 'firebase/firestore';
 
 const Footer = lazy(() => import('./components/Footer').then(module => ({ default: module.Footer })));
 
@@ -59,23 +57,6 @@ function ScrollToTop() {
 function AppContent() {
   const [location] = useLocation();
   const isStandalonePage = ['/privacy', '/terms', '/dmca', '/contact', '/about', '/faq'].includes(location);
-
-  useEffect(() => {
-    async function testConnection() {
-      try {
-        await getDocFromServer(doc(db, 'test', 'connection'));
-      } catch (error) {
-        if (error instanceof Error) {
-          if (error.message.includes('the client is offline')) {
-            console.warn("Please check your Firebase configuration. The client is offline.");
-          } else if (error.message.includes('unavailable')) {
-            console.warn("Firebase is currently unavailable. This is normal immediately after provisioning a new database. It should resolve itself within a few minutes. Please refresh the page.");
-          }
-        }
-      }
-    }
-    testConnection();
-  }, []);
 
   return (
     <div className="min-h-screen bg-netflix-bg text-white font-sans selection:bg-netflix-red selection:text-white">
