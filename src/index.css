@@ -8,8 +8,8 @@
   --color-netflix-surface: #121212;
   --color-netflix-surface-hover: #1e1e1e;
   
-  --font-sans: "Inter", "Abhaya Libre", ui-sans-serif, system-ui, sans-serif;
-  --font-sinhala: "Abhaya Libre", serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Sinhala", Helvetica, Arial, sans-serif;
+  --font-sinhala: "Noto Sans Sinhala", "Abhaya Libre", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   /* Consistent Spacing Scale */
   --spacing-component-xs: 0.25rem;

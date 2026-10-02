@@ -217,7 +217,7 @@ export const Navbar: React.FC = () => {
                   </span>
                 </div>
               </div>
-              <div className="flex flex-col gap-6 text-lg font-bold tracking-[0.2em]">
+              <div className="flex flex-col gap-6 text-lg font-bold tracking-wide">
                 <Link href="/"><span onClick={() => setIsMobileMenuOpen(false)} className="hover:text-netflix-red transition-colors">Home</span></Link>
                 <Link href="/series"><span onClick={() => setIsMobileMenuOpen(false)} className="hover:text-netflix-red transition-colors">TV Shows</span></Link>
                 <Link href="/movies"><span onClick={() => setIsMobileMenuOpen(false)} className="hover:text-netflix-red transition-colors">Movies</span></Link>
