@@ -1442,10 +1442,17 @@ export const AdminDashboard: React.FC = () => {
                                 </button>
                               </td>
                               <td className="p-4 font-medium">
-                                {group.item.movieTitle}
-                                {group.item.isAdult && (
-                                  <span className="ml-2 bg-red-600 text-white text-[8px] px-1 rounded font-bold">18+</span>
-                                )}
+                                <div className="flex items-center flex-wrap gap-1.5">
+                                  <span>{group.item.movieTitle}</span>
+                                  {group.item.fileFormat && (
+                                    <span className="bg-white/5 border border-white/10 text-gray-300 text-[10px] px-1.5 py-0.5 rounded font-mono">
+                                      {group.item.fileFormat} {group.item.version || ''}
+                                    </span>
+                                  )}
+                                  {group.item.isAdult && (
+                                    <span className="bg-red-600 text-white text-[8px] px-1 rounded font-bold">18+</span>
+                                  )}
+                                </div>
                               </td>
                               <td className="p-4">
                                 <span className="px-2 py-0.5 bg-gray-800 text-gray-400 text-[10px] uppercase font-bold rounded">

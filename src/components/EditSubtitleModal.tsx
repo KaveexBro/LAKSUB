@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Subtitle, VideoDownloadOption } from '../types';
 import { db } from '../firebase';
 import { doc, updateDoc, deleteField } from 'firebase/firestore';
-import { X, Save, Search, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { X, Save, Search, CheckCircle2, ShieldCheck, FileCode } from 'lucide-react';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import { searchTMDB, getTMDBImageUrl, TMDBMovie } from '../services/tmdbService';
@@ -67,6 +67,22 @@ export const EditSubtitleModal: React.FC<EditSubtitleModalProps> = ({ subtitle, 
   const [isAdult, setIsAdult] = useState(subtitle.isAdult || false);
   const [parentalRating, setParentalRating] = useState(subtitle.parentalRating || 'G');
   const [parentalDescription, setParentalDescription] = useState(subtitle.parentalDescription || '');
+
+  // Subtitle File Metadata State
+  const [fileFormat, setFileFormat] = useState(subtitle.fileFormat || '.srt');
+  const [encoding, setEncoding] = useState(subtitle.encoding || 'UTF-8');
+  const [version, setVersion] = useState(subtitle.version || 'v1.0');
+  const [fileSize, setFileSize] = useState(subtitle.fileSize || '~45 KB');
+  const [compatibleRips, setCompatibleRips] = useState<string[]>(() => {
+    if (Array.isArray(subtitle.compatibleRips) && subtitle.compatibleRips.length > 0) {
+      return subtitle.compatibleRips;
+    }
+    if (typeof subtitle.compatibleRips === 'string' && (subtitle.compatibleRips as string).trim()) {
+      return (subtitle.compatibleRips as string).split(',').map((s: string) => s.trim()).filter(Boolean);
+    }
+    return ['WEB-DL', 'Blu-Ray', '1080p', '720p', 'HDTV'];
+  });
+  const [customRipInput, setCustomRipInput] = useState('');
 
   // Parents Guide State
   const [pgSexSeverity, setPgSexSeverity] = useState<'None' | 'Mild' | 'Moderate' | 'Severe'>(subtitle.parentsGuide?.sex?.severity || 'None');
@@ -149,6 +165,11 @@ export const EditSubtitleModal: React.FC<EditSubtitleModalProps> = ({ subtitle, 
         genres,
         description,
         downloadLink,
+        fileFormat: fileFormat.trim() || '.srt',
+        encoding: encoding.trim() || 'UTF-8',
+        version: version.trim() || 'v1.0',
+        fileSize: fileSize.trim() || '~45 KB',
+        compatibleRips: compatibleRips.length > 0 ? compatibleRips : ['WEB-DL', 'Blu-Ray', 'HDTV'],
         telegramLink: telegramLink === '' ? deleteField() : telegramLink,
         watchOnlineLink: watchOnlineLink === '' ? deleteField() : watchOnlineLink,
         videoOptions: videoOptions.filter(o => o.url.trim() !== '' && o.sourceName.trim() !== '').length > 0 ? videoOptions.filter(o => o.url.trim() !== '' && o.sourceName.trim() !== '') : deleteField(),
@@ -395,6 +416,161 @@ export const EditSubtitleModal: React.FC<EditSubtitleModalProps> = ({ subtitle, 
                   <CheckCircle2 className="w-3 h-3" /> Google Drive link detected. It will be automatically converted to a direct download link for users.
                 </p>
               )}
+            </div>
+
+            {/* Subtitle File & Release Metadata Panel */}
+            <div className="bg-[#181818] p-5 rounded-xl border border-white/10 space-y-4">
+              <div className="flex items-center justify-between border-b border-white/5 pb-2.5">
+                <div className="flex items-center gap-2">
+                  <FileCode className="w-4 h-4 text-netflix-red" />
+                  <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+                    Subtitle File & Release Metadata
+                  </h3>
+                </div>
+                <span className="text-[11px] text-gray-400">Controls specs shown on download page</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">
+                    Format / Extension
+                  </label>
+                  <select
+                    value={fileFormat}
+                    onChange={e => setFileFormat(e.target.value)}
+                    className="w-full bg-black border border-gray-700 rounded-md px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
+                  >
+                    <option value=".srt">.SRT (SubRip)</option>
+                    <option value=".ass">.ASS (Advanced SubStation)</option>
+                    <option value=".vtt">.VTT (WebVTT)</option>
+                    <option value=".zip">.ZIP (Archive)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">
+                    Encoding
+                  </label>
+                  <select
+                    value={encoding}
+                    onChange={e => setEncoding(e.target.value)}
+                    className="w-full bg-black border border-gray-700 rounded-md px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
+                  >
+                    <option value="UTF-8">UTF-8 Unicode</option>
+                    <option value="UTF-8 with BOM">UTF-8 with BOM</option>
+                    <option value="UTF-16">UTF-16</option>
+                    <option value="ANSI">ANSI / Windows</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">
+                    Subtitle Version
+                  </label>
+                  <input
+                    type="text"
+                    value={version}
+                    onChange={e => setVersion(e.target.value)}
+                    placeholder="e.g. v1.0, v1.2 Final"
+                    className="w-full bg-black border border-gray-700 rounded-md px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">
+                    File Size (Approx)
+                  </label>
+                  <input
+                    type="text"
+                    value={fileSize}
+                    onChange={e => setFileSize(e.target.value)}
+                    placeholder="e.g. ~45 KB"
+                    className="w-full bg-black border border-gray-700 rounded-md px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Compatible Releases */}
+              <div className="space-y-2 pt-1 border-t border-white/5">
+                <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider">
+                  Compatible Releases / Rips
+                </label>
+                <p className="text-[11px] text-gray-400">Click common tags to toggle or add custom release tags:</p>
+                
+                <div className="flex flex-wrap gap-1.5">
+                  {['WEB-DL', 'Blu-Ray', '1080p', '720p', 'HDTV', 'HDRip', 'WEBRip', 'AMZN', 'NF Rip'].map(tag => {
+                    const isSelected = compatibleRips.includes(tag);
+                    return (
+                      <button
+                        key={tag}
+                        type="button"
+                        onClick={() => {
+                          if (isSelected) {
+                            setCompatibleRips(compatibleRips.filter(t => t !== tag));
+                          } else {
+                            setCompatibleRips([...compatibleRips, tag]);
+                          }
+                        }}
+                        className={`text-xs px-2.5 py-1 rounded-md font-bold transition-all border ${
+                          isSelected 
+                            ? 'bg-netflix-red text-white border-netflix-red' 
+                            : 'bg-black/50 text-gray-400 border-gray-800 hover:border-gray-600'
+                        }`}
+                      >
+                        {isSelected ? `✓ ${tag}` : `+ ${tag}`}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="flex gap-2 pt-1">
+                  <input
+                    type="text"
+                    value={customRipInput}
+                    onChange={e => setCustomRipInput(e.target.value)}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' && customRipInput.trim()) {
+                        e.preventDefault();
+                        if (!compatibleRips.includes(customRipInput.trim())) {
+                          setCompatibleRips([...compatibleRips, customRipInput.trim()]);
+                        }
+                        setCustomRipInput('');
+                      }
+                    }}
+                    placeholder="Add custom release tag (e.g. YIFY, PaHe) and press Enter"
+                    className="flex-1 bg-black border border-gray-700 rounded-md px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (customRipInput.trim() && !compatibleRips.includes(customRipInput.trim())) {
+                        setCompatibleRips([...compatibleRips, customRipInput.trim()]);
+                        setCustomRipInput('');
+                      }
+                    }}
+                    className="bg-gray-800 hover:bg-gray-700 text-white text-xs px-3 py-2 rounded-md font-semibold"
+                  >
+                    Add Tag
+                  </button>
+                </div>
+
+                {compatibleRips.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {compatibleRips.map(tag => (
+                      <span key={tag} className="text-xs bg-white/10 text-gray-200 px-2 py-0.5 rounded flex items-center gap-1 border border-white/10">
+                        {tag}
+                        <button
+                          type="button"
+                          onClick={() => setCompatibleRips(compatibleRips.filter(t => t !== tag))}
+                          className="text-gray-400 hover:text-red-400 text-sm font-bold ml-0.5"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             <div>

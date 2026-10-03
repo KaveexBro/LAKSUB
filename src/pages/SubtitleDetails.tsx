@@ -5,7 +5,7 @@ import { db } from '../firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { Subtitle, Rating } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
-import { Download, Star, Clock, AlertCircle, Crown, Users, Calendar, Film, Play, Info, ThumbsUp, MessageSquare, Share2, Flag, CheckCircle2, ArrowRight, ChevronRight, ChevronDown, ChevronUp, Heart, Award, ShieldCheck, Zap, X, ArrowLeft, Copy, Send, Bookmark, CheckCircle, Video, FileText, Eye, Coins, FileCode, Check } from 'lucide-react';
+import { Download, Star, Clock, AlertCircle, Crown, Users, Calendar, Film, Play, Info, ThumbsUp, MessageSquare, Share2, Flag, CheckCircle2, ArrowRight, ChevronRight, ChevronDown, ChevronUp, Heart, Award, ShieldCheck, Zap, X, ArrowLeft, Copy, Send, Bookmark, CheckCircle, Video, FileText, Coins, FileCode, Check } from 'lucide-react';
 import DOMPurify from 'dompurify';
 import { Helmet } from 'react-helmet-async';
 import { getTMDBDetails, getTMDBImageUrl, getTMDBEpisodeDetails } from '../services/tmdbService';
@@ -49,7 +49,6 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
   const [reportMessage, setReportMessage] = useState('');
   const [reporting, setReporting] = useState(false);
   const [reportSuccess, setReportSuccess] = useState(false);
-  const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [isAgeModalOpen, setIsAgeModalOpen] = useState(false);
   const [verifyingAge, setVerifyingAge] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -845,12 +844,12 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
 
       <div className="w-full mx-auto mb-6"><AdZone zoneName="subtitle-details" /></div>
 
-      {/* Prominent Subtitle File Metadata & Specifications Panel */}
-      <div className="bg-[#121212] border border-white/10 rounded-2xl p-5 mb-6 shadow-xl space-y-4 text-left">
-        <div className="flex items-center justify-between border-b border-white/5 pb-3">
+      {/* Subtitle File Specifications Panel */}
+      <div className="bg-[#121212] border border-white/10 rounded-2xl p-4 md:p-5 mb-6 shadow-xl space-y-3.5 text-left">
+        <div className="flex items-center justify-between border-b border-white/5 pb-2.5">
           <div className="flex items-center gap-2">
-            <FileCode className="w-5 h-5 text-netflix-red" />
-            <h3 className="text-xs font-black uppercase tracking-wider text-white">Subtitle File Specifications</h3>
+            <FileCode className="w-4 h-4 text-netflix-red" />
+            <h3 className="text-xs font-bold uppercase tracking-wider text-white">Subtitle Specifications</h3>
           </div>
           <span className="text-[10px] font-bold bg-netflix-red/10 text-netflix-red border border-netflix-red/20 px-2 py-0.5 rounded-full uppercase">
             Sinhala (si-LK)
@@ -858,38 +857,47 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
         </div>
 
         {/* Specs Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           <div className="bg-black/40 p-2.5 rounded-xl border border-white/5">
-            <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">Format</span>
-            <span className="text-xs md:text-sm font-black text-white flex items-center gap-1 mt-0.5">
-              <FileText className="w-3.5 h-3.5 text-netflix-red" /> .SRT (SubRip)
+            <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider block">Format</span>
+            <span className="text-xs md:text-sm font-bold text-white flex items-center gap-1 mt-0.5 font-mono">
+              <FileText className="w-3.5 h-3.5 text-netflix-red" />
+              {subtitle.fileFormat ? subtitle.fileFormat.toUpperCase() : '.SRT'}
             </span>
           </div>
 
           <div className="bg-black/40 p-2.5 rounded-xl border border-white/5">
-            <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">Encoding</span>
-            <span className="text-xs md:text-sm font-black text-white mt-0.5 block">UTF-8 Unicode</span>
+            <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider block">Encoding</span>
+            <span className="text-xs md:text-sm font-bold text-white mt-0.5 block font-mono">
+              {subtitle.encoding || 'UTF-8'}
+            </span>
           </div>
 
           <div className="bg-black/40 p-2.5 rounded-xl border border-white/5">
-            <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">Version</span>
-            <span className="text-xs md:text-sm font-black text-emerald-400 mt-0.5 block">v1.0 (Final Sync)</span>
+            <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider block">Version</span>
+            <span className="text-xs md:text-sm font-bold text-emerald-400 mt-0.5 block font-mono">
+              {subtitle.version || 'v1.0'}
+            </span>
           </div>
 
           <div className="bg-black/40 p-2.5 rounded-xl border border-white/5">
-            <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">File Size</span>
-            <span className="text-xs md:text-sm font-black text-white mt-0.5 block">~52 KB</span>
+            <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider block">File Size</span>
+            <span className="text-xs md:text-sm font-bold text-white mt-0.5 block font-mono">
+              {subtitle.fileSize || '~45 KB'}
+            </span>
           </div>
         </div>
 
         {/* Compatible Releases */}
         <div className="space-y-1.5 pt-1">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Compatible Releases:</span>
-            <span className="text-[10px] text-gray-500 font-medium">23.976 / 24.0 fps</span>
-          </div>
+          <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block">Compatible Releases</span>
           <div className="flex flex-wrap gap-1.5">
-            {['WEB-DL', 'Blu-Ray', '1080p', '720p', 'HDTV', 'HDRip', 'NF Rip', 'AMZN'].map((tag) => (
+            {((Array.isArray(subtitle.compatibleRips) && subtitle.compatibleRips.length > 0)
+              ? subtitle.compatibleRips
+              : (typeof subtitle.compatibleRips === 'string' && (subtitle.compatibleRips as string).trim())
+                ? (subtitle.compatibleRips as string).split(',').map((s: string) => s.trim()).filter(Boolean)
+                : ['WEB-DL', 'Blu-Ray', '1080p', '720p', 'HDTV']
+            ).map((tag: string) => (
               <span key={tag} className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white/5 text-gray-300 border border-white/5">
                 {tag}
               </span>
@@ -899,12 +907,12 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
 
         {/* Clear Access Rules & Points Status */}
         <div className="pt-2 border-t border-white/5">
-          <div className="bg-white/[0.02] border border-white/5 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+          <div className="bg-white/[0.02] border border-white/5 rounded-xl p-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
             <div className="flex items-center gap-2">
               <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-black border border-emerald-500/20 text-[10px] uppercase">
                 Free Download
               </span>
-              <span className="text-gray-300 font-medium">0 Points Deducted</span>
+              <span className="text-gray-300 font-medium">0 Points Required</span>
             </div>
             {user ? (
               <div className="flex items-center gap-1.5 text-amber-400 font-bold text-xs">
@@ -973,25 +981,6 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
             )}
           </div>
         )}
-
-        {/* Secondary Action Row: Preview Subtitle & Report Sync */}
-        <div className="grid grid-cols-2 gap-2.5 w-full">
-          <button 
-            onClick={() => setShowPreviewModal(true)}
-            className="btn-secondary w-full py-2.5 px-3 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer bg-white/5 hover:bg-white/10 text-white rounded-xl border border-white/10 transition-colors"
-          >
-            <Eye className="w-3.5 h-3.5 text-cyan-400" /> Preview Subtitle
-          </button>
-          <button 
-            onClick={() => {
-              setReportReason('sync_issue');
-              setIsReportModalOpen(true);
-            }}
-            className="btn-secondary w-full py-2.5 px-3 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white rounded-xl border border-white/10 transition-colors"
-          >
-            <Clock className="w-3.5 h-3.5 text-amber-400" /> Report Sync Issue
-          </button>
-        </div>
 
         <button 
           onClick={handleShare}
@@ -1859,107 +1848,6 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
         )}
       </AnimatePresence>
 
-      {/* Subtitle Text Preview Modal */}
-      <AnimatePresence>
-        {showPreviewModal && subtitle && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/80 backdrop-blur-md"
-              onClick={() => setShowPreviewModal(false)}
-            />
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-2xl bg-[#161616] border border-white/10 rounded-3xl p-6 md:p-8 shadow-2xl overflow-hidden max-h-[85vh] flex flex-col"
-            >
-              <div className="flex items-center justify-between pb-4 border-b border-white/10">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-cyan-500/10 border border-cyan-500/20 rounded-xl flex items-center justify-center text-cyan-400">
-                    <FileText className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg md:text-xl font-bold tracking-tight text-white line-clamp-1">
-                      {subtitle.movieTitle}
-                    </h3>
-                    <p className="text-xs text-gray-400">Sinhala Subtitle Text Sample (.SRT Preview)</p>
-                  </div>
-                </div>
-                <button 
-                  onClick={() => setShowPreviewModal(false)} 
-                  className="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-white/5 transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              {/* Badges / Specs banner */}
-              <div className="flex flex-wrap gap-2 my-4 text-[10px] font-bold">
-                <span className="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-gray-300">Format: SubRip (.SRT)</span>
-                <span className="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-gray-300">Encoding: UTF-8</span>
-                <span className="px-2.5 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">Synchronized: 23.976 / 24 fps</span>
-              </div>
-
-              {/* Sample Subtitle Dialogues */}
-              <div className="flex-1 overflow-y-auto bg-black/60 rounded-2xl p-4 md:p-5 border border-white/5 font-mono text-xs md:text-sm text-gray-300 space-y-4">
-                <div className="space-y-1">
-                  <span className="text-gray-500 font-bold">1</span>
-                  <div className="text-amber-400/90 text-xs">00:01:14,200 --&gt; 00:01:18,500</div>
-                  <div className="text-white font-sinhala font-medium text-base">[LAKSUB.COM නිල උපසිරැසි නිකුතුව]</div>
-                </div>
-
-                <div className="space-y-1 pt-2 border-t border-white/5">
-                  <span className="text-gray-500 font-bold">2</span>
-                  <div className="text-amber-400/90 text-xs">00:01:19,100 --&gt; 00:01:23,400</div>
-                  <div className="text-white font-sinhala font-medium text-base">පරිවර්තනය: {subtitle.authorName || 'LAKSUB ප්‍රජා පරිවර්තක'}</div>
-                </div>
-
-                <div className="space-y-1 pt-2 border-t border-white/5">
-                  <span className="text-gray-500 font-bold">3</span>
-                  <div className="text-amber-400/90 text-xs">00:01:24,000 --&gt; 00:01:28,800</div>
-                  <div className="text-white font-sinhala font-medium text-base">{subtitle.movieTitle} ({subtitle.releaseYear})</div>
-                  <div className="text-gray-400 text-xs italic">Sinhala subtitles synchronized for WEB-DL / Blu-Ray</div>
-                </div>
-
-                <div className="space-y-1 pt-2 border-t border-white/5">
-                  <span className="text-gray-500 font-bold">4</span>
-                  <div className="text-amber-400/90 text-xs">00:01:31,050 --&gt; 00:01:35,900</div>
-                  <div className="text-white font-sinhala font-medium text-base">සියලුම VLC, KMPlayer, සහ Smart TV ධාවක සඳහා ගැළපේ.</div>
-                </div>
-              </div>
-
-              {/* Footer */}
-              <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-white/10 mt-4">
-                <span className="text-xs text-gray-400">Total lines: ~1,240 dialogue cues</span>
-                <div className="flex gap-2 w-full sm:w-auto">
-                  <button 
-                    onClick={() => setShowPreviewModal(false)}
-                    className="btn-secondary flex-1 sm:flex-none text-xs"
-                  >
-                    Close Preview
-                  </button>
-                  <button 
-                    onClick={() => {
-                      setShowPreviewModal(false);
-                      if (!user) {
-                        signIn();
-                      } else {
-                        handleDownload();
-                      }
-                    }}
-                    className="btn-primary flex-1 sm:flex-none text-xs flex items-center justify-center gap-1.5"
-                  >
-                    <Download className="w-4 h-4" /> Download Subtitle
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 pb-10">
         <AdZone zoneName="subtitle-details-bottom" />
       </div>

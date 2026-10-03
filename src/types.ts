@@ -38,6 +38,11 @@ export interface Subtitle {
   isAdult?: boolean;
   parentalRating?: string;
   parentalDescription?: string;
+  fileFormat?: string;
+  encoding?: string;
+  version?: string;
+  compatibleRips?: string[];
+  fileSize?: string;
   parentsGuide?: {
     sex: { severity: 'None' | 'Mild' | 'Moderate' | 'Severe'; description: string };
     violence: { severity: 'None' | 'Mild' | 'Moderate' | 'Severe'; description: string };
