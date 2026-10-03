@@ -85,6 +85,11 @@ service cloud.firestore {
              (!('parentalRating' in data) || (data.parentalRating is string)) &&
              (!('parentalDescription' in data) || (data.parentalDescription is string)) &&
              (!('parentsGuide' in data) || (data.parentsGuide is map)) &&
+             (!('fileFormat' in data) || (data.fileFormat is string)) &&
+             (!('encoding' in data) || (data.encoding is string)) &&
+             (!('version' in data) || (data.version is string)) &&
+             (!('fileSize' in data) || (data.fileSize is string)) &&
+             (!('compatibleRips' in data) || (data.compatibleRips is list)) &&
              data.status in ['pending', 'approved'] &&
              data.createdAt is string;
     }

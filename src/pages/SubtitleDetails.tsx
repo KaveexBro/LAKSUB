@@ -844,90 +844,122 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
 
       <div className="w-full mx-auto mb-6"><AdZone zoneName="subtitle-details" /></div>
 
-      {/* Subtitle File Specifications Panel */}
-      <div className="bg-[#121212] border border-white/10 rounded-2xl p-4 md:p-5 mb-6 shadow-xl space-y-3.5 text-left">
-        <div className="flex items-center justify-between border-b border-white/5 pb-2.5">
-          <div className="flex items-center gap-2">
-            <FileCode className="w-4 h-4 text-netflix-red" />
-            <h3 className="text-xs font-bold uppercase tracking-wider text-white">Subtitle Specifications</h3>
-          </div>
-          <span className="text-[10px] font-bold bg-netflix-red/10 text-netflix-red border border-netflix-red/20 px-2 py-0.5 rounded-full uppercase">
-            Sinhala (si-LK)
-          </span>
-        </div>
+      {/* Subtitle File Specifications Panel - Only shown if metadata was genuinely configured */}
+      {(() => {
+        const rawCompatibleRips = Array.isArray(subtitle.compatibleRips) 
+          ? subtitle.compatibleRips 
+          : (typeof subtitle.compatibleRips === 'string' && (subtitle.compatibleRips as string).trim())
+            ? (subtitle.compatibleRips as string).split(',').map((s: string) => s.trim()).filter(Boolean)
+            : [];
 
-        {/* Specs Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          <div className="bg-black/40 p-2.5 rounded-xl border border-white/5">
-            <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider block">Format</span>
-            <span className="text-xs md:text-sm font-bold text-white flex items-center gap-1 mt-0.5 font-mono">
-              <FileText className="w-3.5 h-3.5 text-netflix-red" />
-              {subtitle.fileFormat ? subtitle.fileFormat.toUpperCase() : '.SRT'}
-            </span>
-          </div>
+        // Guard against legacy subtitles created prior to this feature that had auto-filled defaults saved
+        const isLegacyAutoFilled = 
+          new Date(subtitle.createdAt) < new Date('2026-10-01T00:00:00Z') &&
+          subtitle.fileSize === '~45 KB' &&
+          subtitle.version === 'v1.0' &&
+          subtitle.encoding === 'UTF-8';
 
-          <div className="bg-black/40 p-2.5 rounded-xl border border-white/5">
-            <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider block">Encoding</span>
-            <span className="text-xs md:text-sm font-bold text-white mt-0.5 block font-mono">
-              {subtitle.encoding || 'UTF-8'}
-            </span>
-          </div>
+        const hasMetadata = !isLegacyAutoFilled && Boolean(
+          (subtitle.fileFormat && subtitle.fileFormat.trim()) ||
+          (subtitle.encoding && subtitle.encoding.trim()) ||
+          (subtitle.version && subtitle.version.trim()) ||
+          (subtitle.fileSize && subtitle.fileSize.trim()) ||
+          rawCompatibleRips.length > 0
+        );
 
-          <div className="bg-black/40 p-2.5 rounded-xl border border-white/5">
-            <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider block">Version</span>
-            <span className="text-xs md:text-sm font-bold text-emerald-400 mt-0.5 block font-mono">
-              {subtitle.version || 'v1.0'}
-            </span>
-          </div>
+        if (!hasMetadata) return null;
 
-          <div className="bg-black/40 p-2.5 rounded-xl border border-white/5">
-            <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider block">File Size</span>
-            <span className="text-xs md:text-sm font-bold text-white mt-0.5 block font-mono">
-              {subtitle.fileSize || '~45 KB'}
-            </span>
-          </div>
-        </div>
-
-        {/* Compatible Releases */}
-        <div className="space-y-1.5 pt-1">
-          <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block">Compatible Releases</span>
-          <div className="flex flex-wrap gap-1.5">
-            {((Array.isArray(subtitle.compatibleRips) && subtitle.compatibleRips.length > 0)
-              ? subtitle.compatibleRips
-              : (typeof subtitle.compatibleRips === 'string' && (subtitle.compatibleRips as string).trim())
-                ? (subtitle.compatibleRips as string).split(',').map((s: string) => s.trim()).filter(Boolean)
-                : ['WEB-DL', 'Blu-Ray', '1080p', '720p', 'HDTV']
-            ).map((tag: string) => (
-              <span key={tag} className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white/5 text-gray-300 border border-white/5">
-                {tag}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Clear Access Rules & Points Status */}
-        <div className="pt-2 border-t border-white/5">
-          <div className="bg-white/[0.02] border border-white/5 rounded-xl p-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-            <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-black border border-emerald-500/20 text-[10px] uppercase">
-                Free Download
-              </span>
-              <span className="text-gray-300 font-medium">0 Points Required</span>
-            </div>
-            {user ? (
-              <div className="flex items-center gap-1.5 text-amber-400 font-bold text-xs">
-                <Coins className="w-3.5 h-3.5" />
-                <span>Your Balance: {userData?.points ?? 0} Points</span>
+        return (
+          <div className="bg-[#121212] border border-white/10 rounded-2xl p-4 md:p-5 mb-6 shadow-xl space-y-3.5 text-left">
+            <div className="flex items-center justify-between border-b border-white/5 pb-2.5">
+              <div className="flex items-center gap-2">
+                <FileCode className="w-4 h-4 text-netflix-red" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-white">Subtitle Specifications</h3>
               </div>
-            ) : (
-              <span className="text-gray-400 text-[11px]">Free for all registered accounts</span>
+              <span className="text-[10px] font-bold bg-netflix-red/10 text-netflix-red border border-netflix-red/20 px-2 py-0.5 rounded-full uppercase">
+                Sinhala (si-LK)
+              </span>
+            </div>
+
+            {/* Specs Grid - Only render attributes that are actually defined */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {subtitle.fileFormat && (
+                <div className="bg-black/40 p-2.5 rounded-xl border border-white/5">
+                  <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider block">Format</span>
+                  <span className="text-xs md:text-sm font-bold text-white flex items-center gap-1 mt-0.5 font-mono">
+                    <FileText className="w-3.5 h-3.5 text-netflix-red" />
+                    {subtitle.fileFormat.toUpperCase()}
+                  </span>
+                </div>
+              )}
+
+              {subtitle.encoding && (
+                <div className="bg-black/40 p-2.5 rounded-xl border border-white/5">
+                  <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider block">Encoding</span>
+                  <span className="text-xs md:text-sm font-bold text-white mt-0.5 block font-mono">
+                    {subtitle.encoding}
+                  </span>
+                </div>
+              )}
+
+              {subtitle.version && (
+                <div className="bg-black/40 p-2.5 rounded-xl border border-white/5">
+                  <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider block">Version</span>
+                  <span className="text-xs md:text-sm font-bold text-emerald-400 mt-0.5 block font-mono">
+                    {subtitle.version}
+                  </span>
+                </div>
+              )}
+
+              {subtitle.fileSize && (
+                <div className="bg-black/40 p-2.5 rounded-xl border border-white/5">
+                  <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider block">File Size</span>
+                  <span className="text-xs md:text-sm font-bold text-white mt-0.5 block font-mono">
+                    {subtitle.fileSize}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Compatible Releases - Only render if actually specified */}
+            {rawCompatibleRips.length > 0 && (
+              <div className="space-y-1.5 pt-1">
+                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block">Compatible Releases</span>
+                <div className="flex flex-wrap gap-1.5">
+                  {rawCompatibleRips.map((tag: string) => (
+                    <span key={tag} className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white/5 text-gray-300 border border-white/5">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
             )}
           </div>
-          
-          <div className="mt-2 text-[11px] text-gray-500 flex flex-wrap items-center justify-between gap-1 px-1">
-            <span>Free Tier: 15s wait • 10 downloads/day</span>
-            <Link href="/upgrade" className="text-netflix-red hover:underline font-semibold">Pro: Instant 0s • Unlimited</Link>
+        );
+      })()}
+
+      {/* Clear Access Rules & Points Status */}
+      <div className="bg-[#121212] border border-white/10 rounded-2xl p-3.5 mb-6 text-left space-y-2">
+        <div className="bg-white/[0.02] border border-white/5 rounded-xl p-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+          <div className="flex items-center gap-2">
+            <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-black border border-emerald-500/20 text-[10px] uppercase">
+              Free Download
+            </span>
+            <span className="text-gray-300 font-medium">0 Points Required</span>
           </div>
+          {user ? (
+            <div className="flex items-center gap-1.5 text-amber-400 font-bold text-xs">
+              <Coins className="w-3.5 h-3.5" />
+              <span>Your Balance: {userData?.points ?? 0} Points</span>
+            </div>
+          ) : (
+            <span className="text-gray-400 text-[11px]">Free for all registered accounts</span>
+          )}
+        </div>
+        
+        <div className="text-[11px] text-gray-500 flex flex-wrap items-center justify-between gap-1 px-1">
+          <span>Free Tier: 15s wait • 10 downloads/day</span>
+          <Link href="/upgrade" className="text-netflix-red hover:underline font-semibold">Pro: Instant 0s • Unlimited</Link>
         </div>
       </div>
 

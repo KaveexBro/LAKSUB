@@ -76,12 +76,12 @@ export const CreatorDashboard: React.FC = () => {
   const [parentalRating, setParentalRating] = useState('G');
   const [parentalDescription, setParentalDescription] = useState('');
 
-  // Subtitle File Metadata State
-  const [fileFormat, setFileFormat] = useState('.srt');
-  const [encoding, setEncoding] = useState('UTF-8');
-  const [version, setVersion] = useState('v1.0');
-  const [fileSize, setFileSize] = useState('~45 KB');
-  const [compatibleRips, setCompatibleRips] = useState<string[]>(['WEB-DL', 'Blu-Ray', '1080p', '720p', 'HDTV']);
+  // Subtitle File Metadata State (Optional)
+  const [fileFormat, setFileFormat] = useState('');
+  const [encoding, setEncoding] = useState('');
+  const [version, setVersion] = useState('');
+  const [fileSize, setFileSize] = useState('');
+  const [compatibleRips, setCompatibleRips] = useState<string[]>([]);
   const [customRipInput, setCustomRipInput] = useState('');
 
   // Parents Guide State
@@ -203,11 +203,6 @@ export const CreatorDashboard: React.FC = () => {
         genres,
         description,
         downloadLink,
-        fileFormat: fileFormat.trim() || '.srt',
-        encoding: encoding.trim() || 'UTF-8',
-        version: version.trim() || 'v1.0',
-        fileSize: fileSize.trim() || '~45 KB',
-        compatibleRips: compatibleRips.length > 0 ? compatibleRips : ['WEB-DL', 'Blu-Ray', 'HDTV'],
         authorUid: user.uid,
         authorName: userData.displayName || 'Anonymous',
         averageRating: 0,
@@ -248,6 +243,12 @@ export const CreatorDashboard: React.FC = () => {
       if (proOnlyUntilVal) {
         newSub.proOnlyUntil = proOnlyUntilVal;
       }
+
+      if (fileFormat.trim()) newSub.fileFormat = fileFormat.trim();
+      if (encoding.trim()) newSub.encoding = encoding.trim();
+      if (version.trim()) newSub.version = version.trim();
+      if (fileSize.trim()) newSub.fileSize = fileSize.trim();
+      if (compatibleRips.length > 0) newSub.compatibleRips = compatibleRips;
 
       let docRef;
       try {
@@ -298,11 +299,11 @@ export const CreatorDashboard: React.FC = () => {
       setPosterPath('');
       setBackdropPath('');
       setVideoOptions([]);
-      setFileFormat('.srt');
-      setEncoding('UTF-8');
-      setVersion('v1.0');
-      setFileSize('~45 KB');
-      setCompatibleRips(['WEB-DL', 'Blu-Ray', '1080p', '720p', 'HDTV']);
+      setFileFormat('');
+      setEncoding('');
+      setVersion('');
+      setFileSize('');
+      setCompatibleRips([]);
       setCustomRipInput('');
     } catch (err: any) {
       console.error("Upload error:", err);
@@ -648,6 +649,7 @@ export const CreatorDashboard: React.FC = () => {
                       onChange={e => setFileFormat(e.target.value)}
                       className="w-full bg-black border border-gray-700 rounded-md px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
                     >
+                      <option value="">Select format (optional)</option>
                       <option value=".srt">.SRT (SubRip)</option>
                       <option value=".ass">.ASS (Advanced SubStation)</option>
                       <option value=".vtt">.VTT (WebVTT)</option>
@@ -664,6 +666,7 @@ export const CreatorDashboard: React.FC = () => {
                       onChange={e => setEncoding(e.target.value)}
                       className="w-full bg-black border border-gray-700 rounded-md px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
                     >
+                      <option value="">Select encoding (optional)</option>
                       <option value="UTF-8">UTF-8 Unicode</option>
                       <option value="UTF-8 with BOM">UTF-8 with BOM</option>
                       <option value="UTF-16">UTF-16</option>

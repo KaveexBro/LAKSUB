@@ -69,10 +69,10 @@ export const EditSubtitleModal: React.FC<EditSubtitleModalProps> = ({ subtitle, 
   const [parentalDescription, setParentalDescription] = useState(subtitle.parentalDescription || '');
 
   // Subtitle File Metadata State
-  const [fileFormat, setFileFormat] = useState(subtitle.fileFormat || '.srt');
-  const [encoding, setEncoding] = useState(subtitle.encoding || 'UTF-8');
-  const [version, setVersion] = useState(subtitle.version || 'v1.0');
-  const [fileSize, setFileSize] = useState(subtitle.fileSize || '~45 KB');
+  const [fileFormat, setFileFormat] = useState(subtitle.fileFormat || '');
+  const [encoding, setEncoding] = useState(subtitle.encoding || '');
+  const [version, setVersion] = useState(subtitle.version || '');
+  const [fileSize, setFileSize] = useState(subtitle.fileSize || '');
   const [compatibleRips, setCompatibleRips] = useState<string[]>(() => {
     if (Array.isArray(subtitle.compatibleRips) && subtitle.compatibleRips.length > 0) {
       return subtitle.compatibleRips;
@@ -80,7 +80,7 @@ export const EditSubtitleModal: React.FC<EditSubtitleModalProps> = ({ subtitle, 
     if (typeof subtitle.compatibleRips === 'string' && (subtitle.compatibleRips as string).trim()) {
       return (subtitle.compatibleRips as string).split(',').map((s: string) => s.trim()).filter(Boolean);
     }
-    return ['WEB-DL', 'Blu-Ray', '1080p', '720p', 'HDTV'];
+    return [];
   });
   const [customRipInput, setCustomRipInput] = useState('');
 
@@ -165,11 +165,11 @@ export const EditSubtitleModal: React.FC<EditSubtitleModalProps> = ({ subtitle, 
         genres,
         description,
         downloadLink,
-        fileFormat: fileFormat.trim() || '.srt',
-        encoding: encoding.trim() || 'UTF-8',
-        version: version.trim() || 'v1.0',
-        fileSize: fileSize.trim() || '~45 KB',
-        compatibleRips: compatibleRips.length > 0 ? compatibleRips : ['WEB-DL', 'Blu-Ray', 'HDTV'],
+        fileFormat: fileFormat.trim() ? fileFormat.trim() : deleteField(),
+        encoding: encoding.trim() ? encoding.trim() : deleteField(),
+        version: version.trim() ? version.trim() : deleteField(),
+        fileSize: fileSize.trim() ? fileSize.trim() : deleteField(),
+        compatibleRips: compatibleRips.length > 0 ? compatibleRips : deleteField(),
         telegramLink: telegramLink === '' ? deleteField() : telegramLink,
         watchOnlineLink: watchOnlineLink === '' ? deleteField() : watchOnlineLink,
         videoOptions: videoOptions.filter(o => o.url.trim() !== '' && o.sourceName.trim() !== '').length > 0 ? videoOptions.filter(o => o.url.trim() !== '' && o.sourceName.trim() !== '') : deleteField(),
@@ -209,6 +209,12 @@ export const EditSubtitleModal: React.FC<EditSubtitleModalProps> = ({ subtitle, 
       if (tmdbId === '') delete updatedSubtitle.tmdbId;
       if (posterPath === '') delete updatedSubtitle.posterPath;
       if (backdropPath === '') delete updatedSubtitle.backdropPath;
+
+      if (!fileFormat.trim()) delete updatedSubtitle.fileFormat;
+      if (!encoding.trim()) delete updatedSubtitle.encoding;
+      if (!version.trim()) delete updatedSubtitle.version;
+      if (!fileSize.trim()) delete updatedSubtitle.fileSize;
+      if (compatibleRips.length === 0) delete updatedSubtitle.compatibleRips;
 
       if (type !== 'series') {
         delete updatedSubtitle.season;
@@ -440,6 +446,7 @@ export const EditSubtitleModal: React.FC<EditSubtitleModalProps> = ({ subtitle, 
                     onChange={e => setFileFormat(e.target.value)}
                     className="w-full bg-black border border-gray-700 rounded-md px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
                   >
+                    <option value="">Not Specified (None)</option>
                     <option value=".srt">.SRT (SubRip)</option>
                     <option value=".ass">.ASS (Advanced SubStation)</option>
                     <option value=".vtt">.VTT (WebVTT)</option>
@@ -456,6 +463,7 @@ export const EditSubtitleModal: React.FC<EditSubtitleModalProps> = ({ subtitle, 
                     onChange={e => setEncoding(e.target.value)}
                     className="w-full bg-black border border-gray-700 rounded-md px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
                   >
+                    <option value="">Not Specified (None)</option>
                     <option value="UTF-8">UTF-8 Unicode</option>
                     <option value="UTF-8 with BOM">UTF-8 with BOM</option>
                     <option value="UTF-16">UTF-16</option>
