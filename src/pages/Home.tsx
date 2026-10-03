@@ -4,7 +4,7 @@ import { useSiteSettings } from "../contexts/SiteSettingsContext";
 import { db } from '../firebase';
 import { Link } from 'wouter';
 import { SiteLogo } from '../components/SiteLogo';
-import { Play, Info, Volume2, X, MessageCircle } from 'lucide-react';
+import { Play, Info, Volume2, X, MessageCircle, AlertTriangle, RotateCcw, Compass, Film } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Subtitle } from '../types';
 import { getTMDBImageUrl } from '../services/tmdbService';
@@ -23,6 +23,8 @@ export const Home: React.FC = () => {
   const [tvSeries, setTvSeries] = useState<Subtitle[]>([]);
   const [seriesBadges, setSeriesBadges] = useState<Record<string, SeriesBadgeInfo>>({});
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
   const [isMuted, setIsMuted] = useState(true);
   const [showWaBanner, setShowWaBanner] = useState(false);
 
@@ -42,12 +44,16 @@ export const Home: React.FC = () => {
   };
 
   useEffect(() => {
+    let isCancelled = false;
+    let hasLoadedData = false;
+
     // Check if we have cached homepage content for instant render
     try {
       const cached = sessionStorage.getItem('laksub_home_cache');
       if (cached) {
         const data = JSON.parse(cached);
         if (data.latestSubs && data.latestSubs.length > 0) {
+          hasLoadedData = true;
           const featuredIndex = Math.floor(Math.random() * Math.min(5, data.latestSubs.length));
           setFeatured(data.latestSubs[featuredIndex]);
           setLatestReleases(data.latestSubs.filter((_: any, i: number) => i !== featuredIndex));
@@ -56,14 +62,29 @@ export const Home: React.FC = () => {
           setActionMovies(data.actionMovies || []);
           setTvSeries(data.tvSeries || []);
           setLoading(false);
+          setError(null);
         }
       }
     } catch (e) {
       // Ignore cache parse errors
     }
 
+    // 10-second timeout fallback mechanism
+    const timeoutTimer = setTimeout(() => {
+      if (!isCancelled && !hasLoadedData) {
+        // If data hasn't loaded in 10s, inspect cache or fail gracefully with recovery action
+        const cachedFallback = sessionStorage.getItem('laksub_home_cache');
+        if (!cachedFallback) {
+          setError('Connection timed out while loading the homepage. Please verify your connection or try again.');
+          setLoading(false);
+        }
+      }
+    }, 10000);
+
     const fetchContent = async () => {
       try {
+        setError(null);
+
         // Fetch latest
         const latestQuery = query(
           collection(db, 'subtitles'), 
@@ -113,12 +134,16 @@ export const Home: React.FC = () => {
           getDocs(seriesQuery)
         ]);
 
+        if (isCancelled) return;
+
         const latestSubs = latestSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Subtitle));
         const top10Subs = top10Snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Subtitle));
         const trendingSubs = trendingSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Subtitle));
         const actionSubs = actionSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Subtitle));
         const tvSeriesData = seriesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Subtitle));
         
+        hasLoadedData = true;
+
         if (latestSubs.length > 0) {
           const featuredIndex = Math.floor(Math.random() * Math.min(5, latestSubs.length));
           setFeatured(latestSubs[featuredIndex]);
@@ -132,6 +157,7 @@ export const Home: React.FC = () => {
 
         // UNBLOCK: Show the page immediately to user!
         setLoading(false);
+        setError(null);
 
         // Save to cache for instant subsequent loads
         try {
@@ -164,40 +190,151 @@ export const Home: React.FC = () => {
             }
           })
         );
-        setSeriesBadges(newBadges);
+        if (!isCancelled) {
+          setSeriesBadges(newBadges);
+        }
 
-      } catch (error) {
-        console.error("Error fetching content:", error);
+      } catch (err: any) {
+        console.error("Error fetching content:", err);
+        if (!isCancelled && !hasLoadedData) {
+          setError(err?.message || "Failed to load latest subtitles. Please check your network connection.");
+        }
       } finally {
-        setLoading(false);
+        clearTimeout(timeoutTimer);
+        if (!isCancelled) {
+          setLoading(false);
+        }
       }
     };
 
     fetchContent();
-  }, []);
 
+    return () => {
+      isCancelled = true;
+      clearTimeout(timeoutTimer);
+    };
+  }, [retryCount]);
+
+  // SKELETON LOADER (Layout-matching UI skeleton)
   if (loading) {
     return (
-      <div className="min-h-screen bg-netflix-bg">
+      <div className="min-h-screen bg-netflix-bg overflow-x-hidden">
         {/* Hero Banner Skeleton */}
-        <div className="relative h-[80vh] w-full bg-[#111] overflow-hidden flex items-end p-6 md:p-16">
+        <div className="relative h-[75vh] md:h-[85vh] w-full bg-gradient-to-t from-netflix-bg via-[#111] to-[#181818] overflow-hidden flex items-end p-6 md:p-16">
           <div className="max-w-2xl w-full space-y-4">
-            <div className="h-8 md:h-12 bg-white/10 rounded-lg w-3/4 animate-pulse" />
-            <div className="h-4 bg-white/5 rounded w-1/2 animate-pulse" />
-            <div className="h-16 bg-white/5 rounded-lg w-full animate-pulse" />
+            <div className="flex items-center gap-2">
+              <div className="h-6 w-20 bg-netflix-red/30 rounded-full animate-pulse" />
+              <div className="h-6 w-28 bg-white/10 rounded-full animate-pulse" />
+            </div>
+            <div className="h-10 md:h-16 bg-white/10 rounded-xl w-4/5 animate-pulse" />
+            <div className="h-4 bg-white/5 rounded-md w-3/5 animate-pulse" />
+            <div className="space-y-2 pt-2">
+              <div className="h-4 bg-white/5 rounded w-full animate-pulse" />
+              <div className="h-4 bg-white/5 rounded w-4/5 animate-pulse" />
+            </div>
             <div className="flex gap-4 pt-4">
-              <div className="h-11 w-32 bg-netflix-red/30 rounded-full animate-pulse" />
-              <div className="h-11 w-32 bg-white/10 rounded-full animate-pulse" />
+              <div className="h-12 w-36 bg-netflix-red/40 rounded-full animate-pulse" />
+              <div className="h-12 w-36 bg-white/10 rounded-full animate-pulse" />
             </div>
           </div>
         </div>
-        {/* Cards Row Skeleton */}
+
+        {/* Top 10 Row Skeleton */}
         <div className="px-4 md:px-12 py-8 space-y-4">
-          <div className="h-6 w-48 bg-white/10 rounded animate-pulse" />
+          <div className="h-7 w-64 bg-white/10 rounded-lg animate-pulse" />
+          <div className="flex gap-4 overflow-hidden">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="flex-none w-64 md:w-80 h-40 md:h-48 bg-[#181818] rounded-2xl animate-pulse border border-white/5" />
+            ))}
+          </div>
+        </div>
+
+        {/* Latest Releases Row Skeleton */}
+        <div className="px-4 md:px-12 py-4 space-y-4">
+          <div className="h-7 w-52 bg-white/10 rounded-lg animate-pulse" />
           <div className="flex gap-4 overflow-hidden">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="flex-none w-36 md:w-52 aspect-[2/3] bg-[#181818] rounded-2xl animate-pulse" />
+              <div key={i} className="flex-none w-36 md:w-52 aspect-[2/3] bg-[#181818] rounded-2xl animate-pulse border border-white/5" />
             ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ERROR STATE with recovery actions
+  if (error && !featured && latestReleases.length === 0) {
+    return (
+      <div className="min-h-screen bg-netflix-bg text-white flex items-center justify-center px-4 py-20">
+        <div className="max-w-md w-full bg-netflix-surface border border-white/10 rounded-3xl p-8 text-center shadow-2xl space-y-6">
+          <div className="w-16 h-16 bg-red-500/10 border border-red-500/20 rounded-2xl mx-auto flex items-center justify-center text-red-500">
+            <AlertTriangle className="w-8 h-8" />
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-black text-white tracking-tight">Unable to Load Homepage</h2>
+            <p className="text-sm text-gray-400 mt-2 leading-relaxed">
+              {error}
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-3 pt-2">
+            <button
+              onClick={() => {
+                setLoading(true);
+                setError(null);
+                setRetryCount(c => c + 1);
+              }}
+              className="btn-primary w-full py-3 flex items-center justify-center gap-2 cursor-pointer shadow-lg"
+            >
+              <RotateCcw className="w-4 h-4" /> Try Again
+            </button>
+
+            <Link href="/explore" className="w-full">
+              <button className="btn-secondary w-full py-3 flex items-center justify-center gap-2 cursor-pointer">
+                <Compass className="w-4 h-4" /> Browse Subtitles Catalog
+              </button>
+            </Link>
+
+            <Link href="/series" className="w-full">
+              <button className="text-xs text-gray-400 hover:text-white transition-colors py-2">
+                Go to TV Series
+              </button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // EMPTY STATE (Data completed but no subtitles present)
+  if (!featured && latestReleases.length === 0 && top10.length === 0) {
+    return (
+      <div className="min-h-screen bg-netflix-bg text-white flex items-center justify-center px-4 py-20">
+        <div className="max-w-md w-full bg-netflix-surface border border-white/10 rounded-3xl p-8 text-center shadow-2xl space-y-6">
+          <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-2xl mx-auto flex items-center justify-center text-gray-400">
+            <Film className="w-8 h-8" />
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-black text-white tracking-tight">No Subtitles Found</h2>
+            <p className="text-sm text-gray-400 mt-2 leading-relaxed">
+              We couldn&apos;t find any subtitles in the database right now. You can be the first to request one!
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-3 pt-2">
+            <Link href="/request" className="w-full">
+              <button className="btn-primary w-full py-3 flex items-center justify-center gap-2 cursor-pointer">
+                Request a Subtitle
+              </button>
+            </Link>
+
+            <Link href="/explore" className="w-full">
+              <button className="btn-secondary w-full py-3 flex items-center justify-center gap-2 cursor-pointer">
+                <Compass className="w-4 h-4" /> Browse Catalog
+              </button>
+            </Link>
           </div>
         </div>
       </div>

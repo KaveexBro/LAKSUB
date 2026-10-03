@@ -3,7 +3,7 @@ import { collection, query, getDocs, orderBy, where, limit } from 'firebase/fire
 import { db } from '../firebase';
 import { Link } from 'wouter';
 import { UserData } from '../types';
-import { Trophy, Star, Medal, Info, X, CheckCircle2, TrendingUp, Award, Wallet } from 'lucide-react';
+import { Trophy, Star, Medal, Info, X, CheckCircle2, TrendingUp, Award, Wallet, AlertTriangle, RotateCcw, Compass, Users } from 'lucide-react';
 import { CreatorBadge } from '../components/CreatorBadge';
 import { Helmet } from 'react-helmet-async';
 import { AdZone } from '../components/AdZone';
@@ -12,11 +12,27 @@ import { motion, AnimatePresence } from 'motion/react';
 export const TopSubtitlers: React.FC = () => {
   const [topCreators, setTopCreators] = useState<(UserData & { avgRating?: number })[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
   const [showInfoModal, setShowInfoModal] = useState(false);
 
   useEffect(() => {
+    let isCancelled = false;
+    let hasLoaded = false;
+
+    // 10-second timeout mechanism
+    const timeoutTimer = setTimeout(() => {
+      if (!isCancelled && !hasLoaded) {
+        setError("Connection timed out while loading the subtitler leaderboard. Please check your connection and try again.");
+        setLoading(false);
+      }
+    }, 10000);
+
     const fetchTopCreators = async () => {
       try {
+        setError(null);
+        setLoading(true);
+
         const creatorsQuery = query(
           collection(db, 'users'),
           where('totalUploads', '>', 0),
@@ -25,11 +41,15 @@ export const TopSubtitlers: React.FC = () => {
         );
         
         const snapshot = await getDocs(creatorsQuery);
+        if (isCancelled) return;
+
         let creators = snapshot.docs.map(doc => doc.data() as (UserData & { avgRating?: number }));
         
+        hasLoaded = true;
         // UNBLOCK: Immediately show creators leaderboard
         setTopCreators(creators);
         setLoading(false);
+        setError(null);
 
         // Find tied groups
         const uploadCounts = creators.map(c => c.totalUploads || 0);
@@ -61,6 +81,8 @@ export const TopSubtitlers: React.FC = () => {
             avgRatings[user.uid] = count > 0 ? totalRating / count : 0;
           }));
 
+          if (isCancelled) return;
+
           // Attach avgRating to creators for display
           creators = creators.map(c => ({
             ...c,
@@ -85,22 +107,166 @@ export const TopSubtitlers: React.FC = () => {
           });
         }
 
-        setTopCreators(creators);
-      } catch (err) {
+        if (!isCancelled) {
+          setTopCreators(creators);
+        }
+      } catch (err: any) {
         console.error("Error fetching top creators:", err);
+        if (!isCancelled && !hasLoaded) {
+          setError(err?.message || "Failed to load subtitlers leaderboard. Please try again.");
+        }
       } finally {
-        setLoading(false);
+        clearTimeout(timeoutTimer);
+        if (!isCancelled) {
+          setLoading(false);
+        }
       }
     };
 
     fetchTopCreators();
-  }, []);
 
+    return () => {
+      isCancelled = true;
+      clearTimeout(timeoutTimer);
+    };
+  }, [retryCount]);
+
+  // SKELETON LOADER (Layout-matching Leaderboard Skeleton)
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
-      </div>
+      <main className="min-h-screen bg-[#0a0a0a] text-white pb-16 font-sans selection:bg-white/20">
+        <section className="pt-28 pb-16 px-4 md:px-12 max-w-5xl mx-auto space-y-12">
+          {/* Header Skeleton */}
+          <div className="flex flex-col items-center text-center space-y-4">
+            <div className="h-12 w-64 md:w-80 bg-white/10 rounded-2xl animate-pulse" />
+            <div className="h-5 w-72 md:w-96 bg-white/5 rounded-lg animate-pulse" />
+            <div className="h-10 w-56 bg-white/5 rounded-full animate-pulse mt-2" />
+          </div>
+
+          {/* Podium Skeleton (Top 3 Creators) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end pt-8">
+            {/* Rank 2 (Silver) */}
+            <div className="h-72 bg-[#141414] border border-white/5 rounded-3xl p-6 flex flex-col items-center justify-center space-y-4 animate-pulse order-2 md:order-1">
+              <div className="w-20 h-20 rounded-full bg-white/10" />
+              <div className="h-5 w-32 bg-white/10 rounded" />
+              <div className="h-4 w-20 bg-white/5 rounded" />
+              <div className="h-8 w-24 bg-white/10 rounded-full" />
+            </div>
+
+            {/* Rank 1 (Gold - Elevated) */}
+            <div className="h-84 bg-[#141414] border border-[#FFD700]/20 rounded-3xl p-6 flex flex-col items-center justify-center space-y-4 animate-pulse order-1 md:order-2 shadow-[0_0_40px_rgba(255,215,0,0.08)]">
+              <div className="w-24 h-24 rounded-full bg-yellow-500/20" />
+              <div className="h-6 w-36 bg-yellow-500/30 rounded" />
+              <div className="h-4 w-24 bg-white/10 rounded" />
+              <div className="h-9 w-28 bg-yellow-500/20 rounded-full" />
+            </div>
+
+            {/* Rank 3 (Bronze) */}
+            <div className="h-68 bg-[#141414] border border-white/5 rounded-3xl p-6 flex flex-col items-center justify-center space-y-4 animate-pulse order-3">
+              <div className="w-18 h-18 rounded-full bg-white/10" />
+              <div className="h-5 w-28 bg-white/10 rounded" />
+              <div className="h-4 w-20 bg-white/5 rounded" />
+              <div className="h-8 w-24 bg-white/10 rounded-full" />
+            </div>
+          </div>
+
+          {/* List Rows Skeleton */}
+          <div className="space-y-3 pt-6">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="h-20 bg-[#141414] border border-white/5 rounded-2xl p-4 flex items-center justify-between animate-pulse">
+                <div className="flex items-center gap-4">
+                  <div className="w-8 h-8 rounded-full bg-white/10" />
+                  <div className="w-12 h-12 rounded-full bg-white/10" />
+                  <div className="space-y-2">
+                    <div className="h-4 w-32 bg-white/10 rounded" />
+                    <div className="h-3 w-20 bg-white/5 rounded" />
+                  </div>
+                </div>
+                <div className="h-8 w-24 bg-white/5 rounded-xl" />
+              </div>
+            ))}
+          </div>
+        </section>
+      </main>
+    );
+  }
+
+  // ERROR STATE with recovery actions
+  if (error && topCreators.length === 0) {
+    return (
+      <main className="min-h-screen bg-[#0a0a0a] text-white flex items-center justify-center px-4 py-24 font-sans">
+        <div className="max-w-md w-full bg-[#141414] border border-white/10 rounded-3xl p-8 text-center shadow-2xl space-y-6">
+          <div className="w-16 h-16 bg-red-500/10 border border-red-500/20 rounded-2xl mx-auto flex items-center justify-center text-red-500">
+            <AlertTriangle className="w-8 h-8" />
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-black text-white tracking-tight">Leaderboard Unavailable</h2>
+            <p className="text-sm text-gray-400 mt-2 leading-relaxed">
+              {error}
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-3 pt-2">
+            <button
+              onClick={() => {
+                setError(null);
+                setLoading(true);
+                setRetryCount(c => c + 1);
+              }}
+              className="btn-primary w-full py-3 flex items-center justify-center gap-2 cursor-pointer shadow-lg"
+            >
+              <RotateCcw className="w-4 h-4" /> Retry Loading
+            </button>
+
+            <Link href="/explore" className="w-full">
+              <button className="btn-secondary w-full py-3 flex items-center justify-center gap-2 cursor-pointer">
+                <Compass className="w-4 h-4" /> Explore Subtitles
+              </button>
+            </Link>
+
+            <Link href="/" className="w-full">
+              <button className="text-xs text-gray-400 hover:text-white transition-colors py-2">
+                Back to Home
+              </button>
+            </Link>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  // EMPTY STATE
+  if (!loading && !error && topCreators.length === 0) {
+    return (
+      <main className="min-h-screen bg-[#0a0a0a] text-white flex items-center justify-center px-4 py-24 font-sans">
+        <div className="max-w-md w-full bg-[#141414] border border-white/10 rounded-3xl p-8 text-center shadow-2xl space-y-6">
+          <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-2xl mx-auto flex items-center justify-center text-gray-400">
+            <Users className="w-8 h-8" />
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-black text-white tracking-tight">No Ranked Subtitlers Yet</h2>
+            <p className="text-sm text-gray-400 mt-2 leading-relaxed">
+              Be the first creator to upload high-quality Sinhala subtitles and climb to the top of our community leaderboard!
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-3 pt-2">
+            <Link href="/apply" className="w-full">
+              <button className="btn-primary w-full py-3 flex items-center justify-center gap-2 cursor-pointer">
+                Become a Creator
+              </button>
+            </Link>
+
+            <Link href="/explore" className="w-full">
+              <button className="btn-secondary w-full py-3 flex items-center justify-center gap-2 cursor-pointer">
+                <Compass className="w-4 h-4" /> Explore Subtitles
+              </button>
+            </Link>
+          </div>
+        </div>
+      </main>
     );
   }
 
