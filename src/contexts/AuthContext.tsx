@@ -9,7 +9,11 @@ interface AuthContextType {
   user: User | null;
   userData: UserData | null;
   loading: boolean;
-  signIn: () => Promise<void>;
+  signIn: () => void;
+  signInWithGoogle: () => Promise<void>;
+  isAuthModalOpen: boolean;
+  openAuthModal: () => void;
+  closeAuthModal: () => void;
   signOut: () => Promise<void>;
   logout: () => Promise<void>;
   updateProfile: (displayName: string, photoURL: string, bio: string) => Promise<void>;
@@ -24,6 +28,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+  const openAuthModal = () => setIsAuthModalOpen(true);
+  const closeAuthModal = () => setIsAuthModalOpen(false);
 
   useEffect(() => {
     // Check and save referral query parameter on app visit
@@ -45,6 +53,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
+      if (currentUser) {
+        setIsAuthModalOpen(false);
+      }
       
       if (unsubscribeDoc) {
         unsubscribeDoc();
@@ -197,15 +208,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => clearInterval(interval);
   }, [user]);
 
-  const signIn = async () => {
+  // signIn opens the AuthModal so users clearly see the context and benefits before Google popup
+  const signIn = () => {
+    setIsAuthModalOpen(true);
+  };
+
+  // signInWithGoogle is called directly from the AuthModal when clicking "Continue with Google"
+  const signInWithGoogle = async () => {
     try {
       await signInWithPopup(auth, googleProvider);
+      setIsAuthModalOpen(false);
     } catch (error: any) {
       if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
         console.log('Sign-in cancelled by user.');
-      } else {
-        console.error("Error signing in:", error);
+        return;
       }
+      console.error("Error signing in:", error);
+      throw error;
     }
   };
 
@@ -347,6 +366,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       userData, 
       loading, 
       signIn, 
+      signInWithGoogle,
+      isAuthModalOpen,
+      openAuthModal,
+      closeAuthModal,
       signOut: signOutUser, 
       logout: signOutUser,
       updateProfile,

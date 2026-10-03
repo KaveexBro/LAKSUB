@@ -1569,8 +1569,13 @@ export const AdminDashboard: React.FC = () => {
                                       </td>
                                       <td className="p-4 pl-12 text-gray-300 italic">
                                         S{sub.season?.toString().padStart(2, '0')} E{sub.episode?.toString().padStart(2, '0')}
+                                        {sub.fileFormat && (
+                                          <span className="ml-2 bg-white/5 border border-white/10 text-gray-300 text-[10px] px-1.5 py-0.5 rounded font-mono not-italic">
+                                            {sub.fileFormat} {sub.version || ''}
+                                          </span>
+                                        )}
                                         {sub.isAdult && (
-                                          <span className="ml-2 bg-red-600 text-white text-[8px] px-1 rounded font-bold">18+</span>
+                                          <span className="ml-2 bg-red-600 text-white text-[8px] px-1 rounded font-bold not-italic">18+</span>
                                         )}
                                       </td>
                                       <td className="p-4 text-gray-500 text-xs">Episode</td>

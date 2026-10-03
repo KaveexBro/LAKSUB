@@ -5,7 +5,7 @@ import { db } from '../firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { Subtitle, Rating } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
-import { Download, Star, Clock, AlertCircle, Crown, Users, Calendar, Film, Play, Info, ThumbsUp, MessageSquare, Share2, Flag, CheckCircle2, ArrowRight, ChevronRight, ChevronDown, ChevronUp, Heart, Award, ShieldCheck, Zap, X, ArrowLeft, Copy, Send, Bookmark, CheckCircle, Video, FileText, Coins, FileCode, Check } from 'lucide-react';
+import { Download, Star, Clock, AlertCircle, Crown, Users, Calendar, Film, Play, Info, ThumbsUp, MessageSquare, Share2, Flag, CheckCircle2, ArrowRight, ChevronRight, ChevronDown, ChevronUp, Heart, Award, ShieldCheck, Zap, X, ArrowLeft, Copy, Send, Bookmark, CheckCircle, Video, FileText, Coins, FileCode, Check, Edit } from 'lucide-react';
 import DOMPurify from 'dompurify';
 import { Helmet } from 'react-helmet-async';
 import { getTMDBDetails, getTMDBImageUrl, getTMDBEpisodeDetails } from '../services/tmdbService';
@@ -17,6 +17,7 @@ import { SchemaInjector } from '../components/SchemaInjector';
 import { SoftDownloadButton } from '../components/SoftDownloadButton';
 import { triggerPointsBonusToast } from '../utils/pointsAndReferrals';
 import { PointManager } from '../services/PointManager';
+import { EditSubtitleModal } from '../components/EditSubtitleModal';
 
 const SubtitleComments = React.lazy(() => import('../components/SubtitleComments').then(module => ({ default: module.SubtitleComments })));
 
@@ -53,6 +54,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
   const [verifyingAge, setVerifyingAge] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [showWatchOnlineModal, setShowWatchOnlineModal] = useState(false);
+  const [isEditingSubtitle, setIsEditingSubtitle] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
   const [ratings, setRatings] = useState<Rating[]>([]);
   const [commentInput, setCommentInput] = useState('');
@@ -844,7 +846,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
 
       <div className="w-full mx-auto mb-6"><AdZone zoneName="subtitle-details" /></div>
 
-      {/* Subtitle File Specifications Panel - Only shown if metadata was genuinely configured */}
+      {/* Subtitle File Specifications Panel - Only shown if metadata was configured */}
       {(() => {
         const rawCompatibleRips = Array.isArray(subtitle.compatibleRips) 
           ? subtitle.compatibleRips 
@@ -852,14 +854,7 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
             ? (subtitle.compatibleRips as string).split(',').map((s: string) => s.trim()).filter(Boolean)
             : [];
 
-        // Guard against legacy subtitles created prior to this feature that had auto-filled defaults saved
-        const isLegacyAutoFilled = 
-          new Date(subtitle.createdAt) < new Date('2026-10-01T00:00:00Z') &&
-          subtitle.fileSize === '~45 KB' &&
-          subtitle.version === 'v1.0' &&
-          subtitle.encoding === 'UTF-8';
-
-        const hasMetadata = !isLegacyAutoFilled && Boolean(
+        const hasMetadata = Boolean(
           (subtitle.fileFormat && subtitle.fileFormat.trim()) ||
           (subtitle.encoding && subtitle.encoding.trim()) ||
           (subtitle.version && subtitle.version.trim()) ||
@@ -867,7 +862,27 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
           rawCompatibleRips.length > 0
         );
 
-        if (!hasMetadata) return null;
+        const canEditSubtitle = Boolean(user && (userData?.role === 'admin' || user.uid === subtitle.authorUid));
+
+        if (!hasMetadata) {
+          if (canEditSubtitle) {
+            return (
+              <div className="bg-[#121212]/60 border border-dashed border-white/10 rounded-2xl p-3.5 mb-6 text-left flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2 text-xs text-gray-400">
+                  <FileCode className="w-4 h-4 text-gray-500" />
+                  <span>No subtitle specifications configured yet.</span>
+                </div>
+                <button
+                  onClick={() => setIsEditingSubtitle(true)}
+                  className="text-xs bg-white/5 hover:bg-white/10 text-gray-200 hover:text-white px-3 py-1.5 rounded-lg border border-white/10 transition-colors flex items-center gap-1.5 font-semibold cursor-pointer"
+                >
+                  <Edit className="w-3.5 h-3.5 text-netflix-red" /> Add Metadata
+                </button>
+              </div>
+            );
+          }
+          return null;
+        }
 
         return (
           <div className="bg-[#121212] border border-white/10 rounded-2xl p-4 md:p-5 mb-6 shadow-xl space-y-3.5 text-left">
@@ -876,9 +891,20 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
                 <FileCode className="w-4 h-4 text-netflix-red" />
                 <h3 className="text-xs font-bold uppercase tracking-wider text-white">Subtitle Specifications</h3>
               </div>
-              <span className="text-[10px] font-bold bg-netflix-red/10 text-netflix-red border border-netflix-red/20 px-2 py-0.5 rounded-full uppercase">
-                Sinhala (si-LK)
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-bold bg-netflix-red/10 text-netflix-red border border-netflix-red/20 px-2 py-0.5 rounded-full uppercase">
+                  Sinhala (si-LK)
+                </span>
+                {canEditSubtitle && (
+                  <button
+                    onClick={() => setIsEditingSubtitle(true)}
+                    className="text-[10px] text-gray-400 hover:text-white flex items-center gap-1 bg-white/5 hover:bg-white/10 px-2 py-0.5 rounded border border-white/10 transition-colors cursor-pointer"
+                    title="Edit Subtitle & Metadata"
+                  >
+                    <Edit className="w-2.5 h-2.5" /> Edit
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Specs Grid - Only render attributes that are actually defined */}
@@ -1020,6 +1046,15 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
         >
           <Share2 className="w-5 h-5" /> Share
         </button>
+
+        {user && subtitle && (userData?.role === 'admin' || user.uid === subtitle.authorUid) && (
+          <button 
+            onClick={() => setIsEditingSubtitle(true)}
+            className="w-full sm:w-auto lg:w-full bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/30 font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer text-sm shadow-md"
+          >
+            <Edit className="w-4 h-4" /> Edit Subtitle & Specs
+          </button>
+        )}
 
         {subtitle.telegramLink && (
           <a
@@ -1879,6 +1914,17 @@ export const SubtitleDetails: React.FC<{ params?: { id?: string, slug?: string }
           </div>
         )}
       </AnimatePresence>
+
+      {isEditingSubtitle && subtitle && (
+        <EditSubtitleModal
+          subtitle={subtitle}
+          onClose={() => setIsEditingSubtitle(false)}
+          onUpdate={(updatedSub) => {
+            setSubtitle(updatedSub);
+            setIsEditingSubtitle(false);
+          }}
+        />
+      )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 pb-10">
         <AdZone zoneName="subtitle-details-bottom" />

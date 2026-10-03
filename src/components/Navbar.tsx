@@ -227,24 +227,38 @@ export const Navbar: React.FC = () => {
               </div>
               
               <div className="mt-auto pt-8 border-t border-white/5">
-                {isPro && userData?.proExpiry && (
-                  <div className="mb-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl">
-                    <p className="text-[10px] text-yellow-500 font-bold tracking-wide mb-1 flex items-center gap-1">
-                      <Crown className="w-3 h-3" /> Pro Member
-                    </p>
-                    <p className="text-xs font-bold text-white">
-                      Expires: {new Date(userData.proExpiry).toLocaleDateString()}
-                    </p>
-                  </div>
-                )}
-                {!isPro && (
-                  <Link 
-                    href="/upgrade" 
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="block w-full text-center bg-netflix-red text-white py-3 rounded-xl font-bold tracking-wide text-sm"
+                {!user ? (
+                  <button 
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      signIn();
+                    }}
+                    className="block w-full text-center bg-netflix-red text-white py-3 rounded-xl font-bold tracking-wide text-sm cursor-pointer shadow-lg active:scale-95 transition-all"
                   >
-                    Upgrade to Pro
-                  </Link>
+                    Sign In
+                  </button>
+                ) : (
+                  <>
+                    {isPro && userData?.proExpiry && (
+                      <div className="mb-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl">
+                        <p className="text-[10px] text-yellow-500 font-bold tracking-wide mb-1 flex items-center gap-1">
+                          <Crown className="w-3 h-3" /> Pro Member
+                        </p>
+                        <p className="text-xs font-bold text-white">
+                          Expires: {new Date(userData.proExpiry).toLocaleDateString()}
+                        </p>
+                      </div>
+                    )}
+                    {!isPro && (
+                      <Link 
+                        href="/upgrade" 
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="block w-full text-center bg-netflix-red text-white py-3 rounded-xl font-bold tracking-wide text-sm"
+                      >
+                        Upgrade to Pro
+                      </Link>
+                    )}
+                  </>
                 )}
               </div>
             </motion.div>

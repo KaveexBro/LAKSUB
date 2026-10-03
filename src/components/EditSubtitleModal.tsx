@@ -209,12 +209,23 @@ export const EditSubtitleModal: React.FC<EditSubtitleModalProps> = ({ subtitle, 
       if (tmdbId === '') delete updatedSubtitle.tmdbId;
       if (posterPath === '') delete updatedSubtitle.posterPath;
       if (backdropPath === '') delete updatedSubtitle.backdropPath;
+      if (telegramLink === '') delete updatedSubtitle.telegramLink;
+      if (watchOnlineLink === '') delete updatedSubtitle.watchOnlineLink;
 
       if (!fileFormat.trim()) delete updatedSubtitle.fileFormat;
+      else updatedSubtitle.fileFormat = fileFormat.trim();
+
       if (!encoding.trim()) delete updatedSubtitle.encoding;
+      else updatedSubtitle.encoding = encoding.trim();
+
       if (!version.trim()) delete updatedSubtitle.version;
+      else updatedSubtitle.version = version.trim();
+
       if (!fileSize.trim()) delete updatedSubtitle.fileSize;
+      else updatedSubtitle.fileSize = fileSize.trim();
+
       if (compatibleRips.length === 0) delete updatedSubtitle.compatibleRips;
+      else updatedSubtitle.compatibleRips = compatibleRips;
 
       if (type !== 'series') {
         delete updatedSubtitle.season;

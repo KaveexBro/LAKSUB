@@ -14,6 +14,7 @@ import { AdBlockDetector } from './components/AdBlockDetector';
 import { GlobalAds } from './components/GlobalAds';
 import { AdZone } from './components/AdZone';
 import { Breadcrumbs } from './components/Breadcrumbs';
+import { AuthModal } from './components/AuthModal';
 
 const Footer = lazy(() => import('./components/Footer').then(module => ({ default: module.Footer })));
 
@@ -60,6 +61,7 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-netflix-bg text-white font-sans selection:bg-netflix-red selection:text-white">
+      <AuthModal />
       {!isStandalonePage && <Navbar />}
       {!isStandalonePage && <Breadcrumbs />}
       {!isStandalonePage && (

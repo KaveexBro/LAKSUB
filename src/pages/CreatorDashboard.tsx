@@ -394,7 +394,14 @@ export const CreatorDashboard: React.FC = () => {
             ) : (
               subtitles.map(sub => (
                 <div key={sub.id} className="bg-netflix-surface p-4 rounded-lg border border-gray-800 flex flex-col">
-                  <h3 className="font-bold text-lg mb-1 truncate">{sub.movieTitle}</h3>
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <h3 className="font-bold text-lg truncate">{sub.movieTitle}</h3>
+                    {sub.fileFormat && (
+                      <span className="bg-white/5 border border-white/10 text-gray-300 text-[10px] px-1.5 py-0.5 rounded font-mono flex-shrink-0">
+                        {sub.fileFormat} {sub.version || ''}
+                      </span>
+                    )}
+                  </div>
                   <div className="flex items-center gap-2 text-xs text-gray-400 mb-4">
                     <span className="text-green-500 font-bold">{sub.averageRating.toFixed(1)} ★</span>
                     <span>({sub.ratingCount} ratings)</span>
